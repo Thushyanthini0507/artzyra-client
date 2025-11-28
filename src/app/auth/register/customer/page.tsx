@@ -65,7 +65,7 @@ export default function CustomerRegisterPage() {
     <div className="min-h-screen flex flex-col">
       <Navbar />
       <main className="flex-1 py-12 px-4">
-        <div className="container mx-auto max-w-2xl">
+        <div className="container mx-auto max-w-2xl shadow-lg p-8 rounded-lg border bg-card text-card-foreground">
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2">Customer Registration</h1>
             <p className="text-gray-600">
