@@ -1,76 +1,66 @@
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useAuth } from "@/contexts/auth-context";
-import { AdminLayout } from "@/components/layouts/admin-layout";
+import { AdminLayout } from "@/components/layout/admin-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, UserCheck, Activity } from "lucide-react";
-import Link from "next/link";
 
 export default function AdminDashboard() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!loading && (!user || user.role !== "admin")) {
-      router.push("/");
-    }
-  }, [user, loading, router]);
-
-  if (loading || !user || user.role !== "admin") {
-    return null;
-  }
-
   return (
     <AdminLayout>
-      <div className="p-8">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Manage users and platform settings</p>
+        </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <Link href="/admin/customers">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  Customer Approvals
-                </CardTitle>
-                <CardDescription>Review pending customer registrations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">Pending</p>
-              </CardContent>
-            </Card>
-          </Link>
-
-          <Link href="/admin/artists">
-            <Card className="hover:shadow-lg transition-shadow cursor-pointer">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <UserCheck className="h-5 w-5" />
-                  Artist Approvals
-                </CardTitle>
-                <CardDescription>Review pending artist registrations</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-2xl font-bold">Pending</p>
-              </CardContent>
-            </Card>
-          </Link>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Total Users</CardTitle>
+              <CardDescription>All registered users</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">0</div>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                System Activity
-              </CardTitle>
-              <CardDescription>Recent platform activity</CardDescription>
+              <CardTitle>Pending Artists</CardTitle>
+              <CardDescription>Awaiting approval</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold">Active</p>
+              <div className="text-3xl font-bold">0</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Pending Deliverers</CardTitle>
+              <CardDescription>Awaiting approval</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">0</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Active Orders</CardTitle>
+              <CardDescription>Platform-wide</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">0</div>
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Common administrative tasks</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">Use the sidebar to navigate to user management sections</p>
+          </CardContent>
+        </Card>
       </div>
     </AdminLayout>
   );

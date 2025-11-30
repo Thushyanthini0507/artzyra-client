@@ -11,6 +11,9 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string; user?: User }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  isLoginOpen: boolean;
+  openLogin: () => void;
+  closeLogin: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +22,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+
+  const openLogin = () => setIsLoginOpen(true);
+  const closeLogin = () => setIsLoginOpen(false);
 
   const refreshUser = async () => {
     try {
@@ -51,6 +58,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
       }
+      closeLogin(); // Close modal on success
       return { success: true, user: response.data.user };
     }
 
@@ -65,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, refreshUser, isLoginOpen, openLogin, closeLogin }}>
       {children}
     </AuthContext.Provider>
   );

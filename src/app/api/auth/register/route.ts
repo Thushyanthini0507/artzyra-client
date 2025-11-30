@@ -31,7 +31,7 @@ export async function POST(request: Request) {
       password: hashedPassword,
       name,
       role: role || "customer",
-      status: role === "artist" ? "pending" : "approved", // Artists need approval
+      status: (role === "artist" || role === "deliverer") ? "pending" : "approved", // Artists and Deliverers need approval
       ...otherData,
     };
 

@@ -1,4 +1,4 @@
-import { PublicLayout } from "@/components/layouts/public-layout";
+import { PublicLayout } from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
