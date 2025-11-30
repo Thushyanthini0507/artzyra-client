@@ -2,8 +2,9 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { User } from "@/lib/auth";
-import { api } from "@/lib/api";
+import { authService } from "@/lib/api/services/authService";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 interface AuthContextType {
   user: User | null;
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const response = await api.get<User>("/api/auth/me");
+      const response = await authService.getCurrentUser();
       if (response.success && response.data) {
         setUser(response.data);
       } else {
@@ -46,28 +47,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     refreshUser();
   }, []);
 
+// ...
+
   const login = async (email: string, password: string) => {
-    const response = await api.post<{ user: User; token: string }>("/api/auth/login", {
-      email,
-      password,
-    });
-
-    if (response.success && response.data) {
-      setUser(response.data.user);
-      // Save token to localStorage for api.ts to use
-      if (response.data.token) {
-        localStorage.setItem("token", response.data.token);
+    try {
+      const response = await authService.login({ email, password });
+      if (response.success && response.data) {
+        setUser(response.data.user);
+        if (response.data.token) {
+          console.log("AuthContext - Setting token cookie:", response.data.token.substring(0, 10) + "...");
+          Cookies.set("token", response.data.token, { expires: 7, path: "/" }); // Expires in 7 days, accessible everywhere
+        }
+        closeLogin();
+        
+        // Redirect based on role
+        const role = response.data.user.role;
+        if (role === "admin") router.push("/admin");
+        else if (role === "artist") router.push("/artist");
+        else if (role === "customer") router.push("/customer");
+        
+        return { success: true, user: response.data.user };
       }
-      closeLogin(); // Close modal on success
-      return { success: true, user: response.data.user };
+      return { success: false, error: response.error };
+    } catch (error: any) {
+      return { success: false, error: error.response?.data?.error || "Login failed" };
     }
-
-    return { success: false, error: response.error };
   };
 
   const logout = async () => {
-    await api.post("/api/auth/logout");
-    localStorage.removeItem("token");
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
+    Cookies.remove("token");
     setUser(null);
     router.push("/");
   };

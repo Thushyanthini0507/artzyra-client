@@ -88,9 +88,9 @@ export function PublicNavbar() {
                 <Button variant="ghost" onClick={openLogin}>
                   Sign In
                 </Button>
-                <Button onClick={openLogin}>
-                  Get Started
-                </Button>
+                <Link href="/auth/register/customer">
+                  <Button>Sign Up</Button>
+                </Link>
               </>
             )}
           </div>

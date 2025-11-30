@@ -1,0 +1,632 @@
+[
+  {
+    "name": "Priya Nataraj",
+    "email": "priya.nataraj@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234501",
+    "bio": "Bharatanatyam specialist with 15 years of experience in classical Indian dance. Trained under renowned gurus and performed at prestigious venues worldwide.",
+    "category": "692be206a77228c53f60c83a",
+    "skills": ["Bharatanatyam", "Kathak", "Classical Choreography", "Temple Dance", "Mudras"],
+    "hourlyRate": 5000,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=1",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday", "Saturday"],
+      "timeRanges": [{ "start": "09:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Lakshmi Venkatesh",
+    "email": "lakshmi.venkatesh@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234502",
+    "bio": "Kathakali performer and instructor with expertise in traditional Kerala dance forms. Passionate about preserving ancient art forms.",
+    "category": "692be206a77228c53f60c83a",
+    "skills": ["Kathakali", "Mohiniyattam", "Traditional Makeup", "Storytelling", "Classical Music"],
+    "hourlyRate": 4500,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=5",
+    "availability": {
+      "days": ["Tuesday", "Thursday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "10:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Arun Kumar",
+    "email": "arun.kumar@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234503",
+    "bio": "Odissi dance master with international recognition. Specializes in temple dance traditions and contemporary fusion.",
+    "category": "692be206a77228c53f60c83a",
+    "skills": ["Odissi", "Temple Dance", "Fusion Choreography", "Classical Theory", "Performance Art"],
+    "hourlyRate": 5500,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=12",
+    "availability": {
+      "days": ["Monday", "Tuesday", "Friday", "Sunday"],
+      "timeRanges": [{ "start": "08:00", "end": "16:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Meera Iyer",
+    "email": "meera.iyer@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234504",
+    "bio": "Kuchipudi artist and choreographer. Known for graceful performances and innovative interpretations of classical themes.",
+    "category": "692be206a77228c53f60c83a",
+    "skills": ["Kuchipudi", "Bharatanatyam", "Classical Choreography", "Dance Therapy", "Cultural Education"],
+    "hourlyRate": 4800,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=9",
+    "availability": {
+      "days": ["Wednesday", "Thursday", "Saturday"],
+      "timeRanges": [{ "start": "09:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Rajesh Pillai",
+    "email": "rajesh.pillai@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234505",
+    "bio": "Manipuri dance expert with focus on devotional and ritualistic performances. Trained in traditional gurukul system.",
+    "category": "692be206a77228c53f60c83a",
+    "skills": ["Manipuri", "Raas Leela", "Devotional Dance", "Traditional Costumes", "Classical Music"],
+    "hourlyRate": 4200,
+    "rating": 4.5,
+    "profileImage": "https://i.pravatar.cc/300?img=13",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday"],
+      "timeRanges": [{ "start": "10:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "DJ Ravi Beats",
+    "email": "dj.ravi@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234506",
+    "bio": "Professional DJ with 10+ years experience in weddings, corporate events, and nightclubs. Specializes in EDM and Bollywood remixes.",
+    "category": "692be206a77228c53f60c840",
+    "skills": ["EDM", "Bollywood Remixes", "House Music", "Mixing & Scratching", "Event Management"],
+    "hourlyRate": 8000,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=14",
+    "availability": {
+      "days": ["Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "18:00", "end": "02:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "DJ Samantha",
+    "email": "dj.samantha@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234507",
+    "bio": "Female DJ specializing in wedding receptions and private parties. Known for reading the crowd and creating perfect vibes.",
+    "category": "692be206a77228c53f60c83b",
+    "skills": ["Wedding DJ", "Top 40 Hits", "Hip Hop", "R&B", "Crowd Reading"],
+    "hourlyRate": 7500,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=10",
+    "availability": {
+      "days": ["Thursday", "Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "17:00", "end": "01:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "DJ Arjun Mix",
+    "email": "dj.arjun@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234508",
+    "bio": "Versatile DJ with expertise in multiple genres. Perfect for corporate events, product launches, and high-energy parties.",
+    "category": "692be206a77228c53f60c83b",
+    "skills": ["Corporate Events", "Techno", "Trance", "Commercial House", "Live Remixing"],
+    "hourlyRate": 9000,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=15",
+    "availability": {
+      "days": ["Friday", "Saturday"],
+      "timeRanges": [{ "start": "19:00", "end": "03:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "DJ Pradeep Spin",
+    "email": "dj.pradeep@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234509",
+    "bio": "Retro and classic hits specialist. Brings nostalgia to every event with carefully curated playlists.",
+    "category": "692be206a77228c53f60c83b",
+    "skills": ["Retro Music", "80s & 90s Hits", "Classic Rock", "Disco", "Playlist Curation"],
+    "hourlyRate": 6500,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=16",
+    "availability": {
+      "days": ["Saturday", "Sunday"],
+      "timeRanges": [{ "start": "16:00", "end": "23:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "DJ Kavya Pulse",
+    "email": "dj.kavya@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234510",
+    "bio": "Progressive house and deep house specialist. Creates immersive musical journeys for club nights and festivals.",
+    "category": "692be206a77228c53f60c83b",
+    "skills": ["Progressive House", "Deep House", "Festival DJ", "Sound Design", "Live Performance"],
+    "hourlyRate": 10000,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=20",
+    "availability": {
+      "days": ["Friday", "Saturday"],
+      "timeRanges": [{ "start": "20:00", "end": "04:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Nisha Fernandez",
+    "email": "nisha.fernandez@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234511",
+    "bio": "Contemporary dancer and choreographer. Specializes in hip-hop, jazz, and fusion styles for stage and screen.",
+    "category": "692be206a77228c53f60c83c",
+    "skills": ["Hip Hop", "Jazz", "Contemporary", "Choreography", "Stage Performance"],
+    "hourlyRate": 4000,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=21",
+    "availability": {
+      "days": ["Monday", "Tuesday", "Thursday", "Saturday"],
+      "timeRanges": [{ "start": "10:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Rohan D'Souza",
+    "email": "rohan.dsouza@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234512",
+    "bio": "Breakdancer and street dance specialist. Winner of multiple national competitions and featured in music videos.",
+    "category": "692be206a77228c53f60c83c",
+    "skills": ["Breaking", "Popping", "Locking", "Street Dance", "Battle Choreography"],
+    "hourlyRate": 3500,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=22",
+    "availability": {
+      "days": ["Wednesday", "Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "14:00", "end": "22:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Anjali Sharma",
+    "email": "anjali.sharma@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234513",
+    "bio": "Bollywood dance instructor and performer. Brings energy and authenticity to every wedding and celebration.",
+    "category": "692be206a77228c53f60c83c",
+    "skills": ["Bollywood Dance", "Wedding Choreography", "Folk Fusion", "Group Performances", "Dance Fitness"],
+    "hourlyRate": 3800,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=23",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday", "Sunday"],
+      "timeRanges": [{ "start": "09:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Vikram Reddy",
+    "email": "vikram.reddy@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234514",
+    "bio": "Salsa and ballroom dance expert. Certified instructor with experience teaching couples and groups.",
+    "category": "692be206a77228c53f60c83c",
+    "skills": ["Salsa", "Bachata", "Ballroom", "Partner Dance", "Dance Instruction"],
+    "hourlyRate": 4200,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=24",
+    "availability": {
+      "days": ["Tuesday", "Thursday", "Saturday"],
+      "timeRanges": [{ "start": "16:00", "end": "21:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Divya Menon",
+    "email": "divya.menon@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234515",
+    "bio": "Freestyle and lyrical dancer. Creates emotional and expressive performances for special events.",
+    "category": "692be206a77228c53f60c83c",
+    "skills": ["Lyrical Dance", "Freestyle", "Emotional Storytelling", "Solo Performance", "Creative Choreography"],
+    "hourlyRate": 3600,
+    "rating": 4.5,
+    "profileImage": "https://i.pravatar.cc/300?img=25",
+    "availability": {
+      "days": ["Monday", "Thursday", "Sunday"],
+      "timeRanges": [{ "start": "11:00", "end": "19:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Arjun Krishnan",
+    "email": "arjun.krishnan@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234516",
+    "bio": "UI/UX designer with 8 years experience creating intuitive digital experiences. Worked with startups and Fortune 500 companies.",
+    "category": "692be206a77228c53f60c83d",
+    "skills": ["UI/UX Design", "Figma", "Adobe XD", "User Research", "Prototyping"],
+    "hourlyRate": 6000,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=26",
+    "availability": {
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "timeRanges": [{ "start": "09:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Sneha Patel",
+    "email": "sneha.patel@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234517",
+    "bio": "Graphic designer specializing in branding and visual identity. Passionate about creating memorable brand experiences.",
+    "category": "692be206a77228c53f60c83d",
+    "skills": ["Graphic Design", "Branding", "Adobe Illustrator", "Logo Design", "Print Design"],
+    "hourlyRate": 5500,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=27",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday"],
+      "timeRanges": [{ "start": "10:00", "end": "19:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Karthik Nair",
+    "email": "karthik.nair@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234518",
+    "bio": "Motion graphics designer and animator. Creates engaging visual content for social media and advertising.",
+    "category": "692be206a77228c53f60c83d",
+    "skills": ["Motion Graphics", "After Effects", "3D Animation", "Video Editing", "Social Media Content"],
+    "hourlyRate": 6500,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=28",
+    "availability": {
+      "days": ["Tuesday", "Thursday", "Saturday"],
+      "timeRanges": [{ "start": "11:00", "end": "20:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Priyanka Gupta",
+    "email": "priyanka.gupta@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234519",
+    "bio": "Web designer with expertise in responsive design and modern web aesthetics. Focused on user-centered design.",
+    "category": "692be206a77228c53f60c83d",
+    "skills": ["Web Design", "Responsive Design", "HTML/CSS", "Webflow", "Design Systems"],
+    "hourlyRate": 5800,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=29",
+    "availability": {
+      "days": ["Monday", "Tuesday", "Thursday", "Friday"],
+      "timeRanges": [{ "start": "09:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Rahul Verma",
+    "email": "rahul.verma@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234520",
+    "bio": "Illustration and character design specialist. Creates unique visual narratives for books, games, and brands.",
+    "category": "692be206a77228c53f60c83d",
+    "skills": ["Illustration", "Character Design", "Digital Painting", "Procreate", "Concept Art"],
+    "hourlyRate": 5200,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=30",
+    "availability": {
+      "days": ["Wednesday", "Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "10:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Aditya Menon",
+    "email": "aditya.menon@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234521",
+    "bio": "Professional guitarist and music composer. Specializes in acoustic performances and original compositions.",
+    "category": "692be206a77228c53f60c83e",
+    "skills": ["Guitar", "Music Composition", "Acoustic Performance", "Recording", "Live Performance"],
+    "hourlyRate": 4500,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=31",
+    "availability": {
+      "days": ["Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "18:00", "end": "23:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Shreya Iyer",
+    "email": "shreya.iyer@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234522",
+    "bio": "Classical vocalist trained in Carnatic music. Performs at weddings, concerts, and cultural events.",
+    "category": "692be206a77228c53f60c83e",
+    "skills": ["Carnatic Vocals", "Classical Music", "Devotional Songs", "Concert Performance", "Music Theory"],
+    "hourlyRate": 5000,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=32",
+    "availability": {
+      "days": ["Thursday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "17:00", "end": "21:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Nikhil Sharma",
+    "email": "nikhil.sharma@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234523",
+    "bio": "Drummer and percussionist with experience in rock, jazz, and fusion bands. Available for studio and live sessions.",
+    "category": "692be206a77228c53f60c83e",
+    "skills": ["Drums", "Percussion", "Rock Music", "Jazz", "Studio Recording"],
+    "hourlyRate": 4000,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=33",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday", "Saturday"],
+      "timeRanges": [{ "start": "15:00", "end": "22:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Kavita Reddy",
+    "email": "kavita.reddy@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234524",
+    "bio": "Violinist specializing in Western classical and contemporary music. Perfect for elegant events and ceremonies.",
+    "category": "692be206a77228c53f60c83e",
+    "skills": ["Violin", "Classical Music", "Contemporary", "Chamber Music", "Solo Performance"],
+    "hourlyRate": 4800,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=34",
+    "availability": {
+      "days": ["Tuesday", "Thursday", "Sunday"],
+      "timeRanges": [{ "start": "16:00", "end": "20:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Ravi Kumar",
+    "email": "ravi.kumar.music@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234525",
+    "bio": "Keyboard player and music producer. Creates background scores and performs at corporate events and weddings.",
+    "category": "692be206a77228c53f60c83e",
+    "skills": ["Keyboard", "Music Production", "Background Scores", "Live Performance", "MIDI Programming"],
+    "hourlyRate": 5500,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=35",
+    "availability": {
+      "days": ["Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "17:00", "end": "23:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Maya Krishnan",
+    "email": "maya.krishnan@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234526",
+    "bio": "Watercolor artist specializing in landscapes and portraits. Creates custom artwork for homes and offices.",
+    "category": "692be206a77228c53f60c83f",
+    "skills": ["Watercolor", "Landscape Painting", "Portrait Art", "Custom Artwork", "Fine Art"],
+    "hourlyRate": 3500,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=36",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday"],
+      "timeRanges": [{ "start": "10:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Suresh Patel",
+    "email": "suresh.patel@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234527",
+    "bio": "Oil painting master with focus on realistic portraits and still life. Commissioned work for galleries and collectors.",
+    "category": "692be206a77228c53f60c83f",
+    "skills": ["Oil Painting", "Realistic Portraits", "Still Life", "Gallery Art", "Commission Work"],
+    "hourlyRate": 4500,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=37",
+    "availability": {
+      "days": ["Tuesday", "Thursday", "Saturday"],
+      "timeRanges": [{ "start": "09:00", "end": "16:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Ananya Nair",
+    "email": "ananya.nair@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234528",
+    "bio": "Abstract and contemporary painter. Creates bold, expressive pieces for modern spaces and art enthusiasts.",
+    "category": "692be206a77228c53f60c83f",
+    "skills": ["Abstract Art", "Contemporary Painting", "Acrylic", "Mixed Media", "Modern Art"],
+    "hourlyRate": 4000,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=38",
+    "availability": {
+      "days": ["Monday", "Thursday", "Sunday"],
+      "timeRanges": [{ "start": "11:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Deepak Rao",
+    "email": "deepak.rao@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234529",
+    "bio": "Mural artist and street art specialist. Transforms walls into stunning visual stories for businesses and communities.",
+    "category": "692be206a77228c53f60c83f",
+    "skills": ["Mural Painting", "Street Art", "Large Scale Art", "Spray Paint", "Public Art"],
+    "hourlyRate": 5000,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=39",
+    "availability": {
+      "days": ["Wednesday", "Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "08:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Pooja Desai",
+    "email": "pooja.desai@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234530",
+    "bio": "Sketch artist and illustrator. Specializes in pencil portraits and detailed architectural drawings.",
+    "category": "692be206a77228c53f60c83f",
+    "skills": ["Sketching", "Pencil Portraits", "Architectural Drawing", "Charcoal Art", "Detailed Illustration"],
+    "hourlyRate": 3200,
+    "rating": 4.5,
+    "profileImage": "https://i.pravatar.cc/300?img=40",
+    "availability": {
+      "days": ["Tuesday", "Thursday", "Saturday"],
+      "timeRanges": [{ "start": "10:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Amit Singh",
+    "email": "amit.singh.photo@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234531",
+    "bio": "Wedding photographer with 12 years experience. Captures candid moments and creates timeless memories.",
+    "category": "692be206a77228c53f60c840",
+    "skills": ["Wedding Photography", "Candid Shots", "Portrait Photography", "Photo Editing", "Drone Photography"],
+    "hourlyRate": 7000,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=41",
+    "availability": {
+      "days": ["Friday", "Saturday", "Sunday"],
+      "timeRanges": [{ "start": "08:00", "end": "22:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Neha Kapoor",
+    "email": "neha.kapoor.photo@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234532",
+    "bio": "Fashion and commercial photographer. Works with brands, models, and advertising agencies.",
+    "category": "692be206a77228c53f60c840",
+    "skills": ["Fashion Photography", "Commercial Shoots", "Studio Lighting", "Product Photography", "Retouching"],
+    "hourlyRate": 8000,
+    "rating": 4.8,
+    "profileImage": "https://i.pravatar.cc/300?img=42",
+    "availability": {
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday"],
+      "timeRanges": [{ "start": "09:00", "end": "18:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Vikram Malhotra",
+    "email": "vikram.malhotra.photo@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234533",
+    "bio": "Wildlife and nature photographer. Passionate about capturing the beauty of the natural world.",
+    "category": "692be206a77228c53f60c840",
+    "skills": ["Wildlife Photography", "Nature Photography", "Landscape", "Macro Photography", "Photo Journalism"],
+    "hourlyRate": 6500,
+    "rating": 4.7,
+    "profileImage": "https://i.pravatar.cc/300?img=43",
+    "availability": {
+      "days": ["Saturday", "Sunday"],
+      "timeRanges": [{ "start": "05:00", "end": "19:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Sanjana Rao",
+    "email": "sanjana.rao.photo@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234534",
+    "bio": "Newborn and family photographer. Creates heartwarming portraits that families treasure forever.",
+    "category": "692be206a77228c53f60c840",
+    "skills": ["Newborn Photography", "Family Portraits", "Maternity Shoots", "Child Photography", "Studio Setup"],
+    "hourlyRate": 5500,
+    "rating": 4.9,
+    "profileImage": "https://i.pravatar.cc/300?img=44",
+    "availability": {
+      "days": ["Monday", "Wednesday", "Friday", "Saturday"],
+      "timeRanges": [{ "start": "10:00", "end": "17:00" }]
+    },
+    "status": "approved"
+  },
+  {
+    "name": "Rajesh Kumar Photo",
+    "email": "rajesh.kumar.photo@artzyra.com",
+    "password": "SecurePass123!",
+    "role": "artist",
+    "phone": "+94771234535",
+    "bio": "Event photographer specializing in corporate events, conferences, and product launches.",
+    "category": "692be206a77228c53f60c840",
+    "skills": ["Event Photography", "Corporate Events", "Conference Coverage", "Product Launch", "Fast Turnaround"],
+    "hourlyRate": 6000,
+    "rating": 4.6,
+    "profileImage": "https://i.pravatar.cc/300?img=45",
+    "availability": {
+      "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "timeRanges": [{ "start": "08:00", "end": "20:00" }]
+    },
+    "status": "approved"
+  }
+]

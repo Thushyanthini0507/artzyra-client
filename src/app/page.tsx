@@ -18,11 +18,14 @@ export default function Home() {
               to designs, find the perfect match for your vision.
             </p>
             <div className="flex gap-4 justify-center">
+              <Link href="/auth/register/customer">
+                <Button size="lg">Sign Up</Button>
+              </Link>
               <Link href="/auth/register/artist">
-                <Button size="lg">Become an Artist</Button>
+                <Button size="lg" variant="outline">Become an Artist</Button>
               </Link>
               <Link href="/browse">
-                <Button size="lg" variant="outline">
+                <Button size="lg" variant="ghost">
                   Browse Artists
                 </Button>
               </Link>

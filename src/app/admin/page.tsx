@@ -1,7 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layout/admin-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { adminService } from "@/lib/api/services/adminService";
+
+interface DashboardStats {
+  totalCustomers: number;
+  totalArtists: number;
+  pendingArtists: number;
+  totalBookings: number;
+  pendingBookings: number;
+}
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState<DashboardStats>({
+    totalCustomers: 0,
+    totalArtists: 0,
+    pendingArtists: 0,
+    totalBookings: 0,
+    pendingBookings: 0,
+  });
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await adminService.getDashboardStatus();
+        if (response.success && response.data) {
+          setStats(response.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch stats", error);
+      }
+    };
+    fetchStats();
+  }, []);
+
+  const totalUsers = stats.totalCustomers + stats.totalArtists;
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -17,7 +53,7 @@ export default function AdminDashboard() {
               <CardDescription>All registered users</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">0</div>
+              <div className="text-3xl font-bold">{totalUsers}</div>
             </CardContent>
           </Card>
 
@@ -27,11 +63,9 @@ export default function AdminDashboard() {
               <CardDescription>Awaiting approval</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">0</div>
+              <div className="text-3xl font-bold">{stats.pendingArtists}</div>
             </CardContent>
           </Card>
-
-
 
           <Card>
             <CardHeader>
@@ -39,7 +73,7 @@ export default function AdminDashboard() {
               <CardDescription>Platform-wide</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">0</div>
+              <div className="text-3xl font-bold">{stats.totalBookings}</div>
             </CardContent>
           </Card>
         </div>

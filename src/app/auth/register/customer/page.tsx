@@ -1,16 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Navbar } from "@/components/navbar";
-import { SimpleFooter } from "@/components/simple-footer";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
-import { useRouter } from "next/navigation";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { PublicLayout } from "@/components/layout/public-layout";
+import { useRegisterCustomer } from "@/hooks/useAuthActions";
+import Link from "next/link";
 
 const customerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -29,11 +28,8 @@ const customerSchema = z.object({
 type CustomerFormData = z.infer<typeof customerSchema>;
 
 export default function CustomerRegisterPage() {
-  const router = useRouter();
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-
+  const { register: registerCustomer, loading, error } = useRegisterCustomer();
+  
   const {
     register,
     handleSubmit,
@@ -43,155 +39,89 @@ export default function CustomerRegisterPage() {
   });
 
   const onSubmit = async (data: CustomerFormData) => {
-    setLoading(true);
-    setError("");
-    setSuccess("");
-
-    const response = await api.post("/api/auth/register/customer", data);
-
-    if (response.success) {
-      setSuccess("Registration successful! Please wait for admin approval.");
-      setTimeout(() => {
-        router.push("/");
-      }, 2000);
-    } else {
-      setError(response.error || "Registration failed");
-    }
-
-    setLoading(false);
+    await registerCustomer(data);
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1 py-12 px-4">
-        <div className="container mx-auto max-w-2xl shadow-lg p-8 rounded-lg border bg-card text-card-foreground">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Customer Registration</h1>
-            <p className="text-gray-600">
-              Create an account to hire artists and manage your projects
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" placeholder="John Doe" {...register("name")} />
-                {errors.name && (
-                  <p className="text-sm text-red-500">{errors.name.message}</p>
-                )}
+    <PublicLayout>
+      <div className="container mx-auto py-10 px-4">
+        <Card className="max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle>Customer Registration</CardTitle>
+            <CardDescription>Create an account to hire artists</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Personal Information</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input id="name" {...register("name")} />
+                    {errors.name && <p className="text-sm text-red-500">{errors.name.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" type="email" {...register("email")} />
+                    {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone</Label>
+                    <Input id="phone" type="tel" {...register("phone")} />
+                    {errors.phone && <p className="text-sm text-red-500">{errors.phone.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="password">Password</Label>
+                    <Input id="password" type="password" {...register("password")} />
+                    {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="john@example.com"
-                  {...register("email")}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter password"
-                  {...register("password")}
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-500">{errors.password.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1234567890"
-                  {...register("phone")}
-                />
-                {errors.phone && (
-                  <p className="text-sm text-red-500">{errors.phone.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="street">Street Address</Label>
-              <Input
-                id="street"
-                placeholder="123 Main St"
-                {...register("address.street")}
-              />
-              {errors.address?.street && (
-                <p className="text-sm text-red-500">{errors.address.street.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input id="city" placeholder="New York" {...register("address.city")} />
-                {errors.address?.city && (
-                  <p className="text-sm text-red-500">{errors.address.city.message}</p>
-                )}
+              <div className="space-y-4">
+                <h3 className="text-lg font-medium">Address</h3>
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="street">Street Address</Label>
+                    <Input id="street" {...register("address.street")} />
+                    {errors.address?.street && <p className="text-sm text-red-500">{errors.address.street.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="city">City</Label>
+                    <Input id="city" {...register("address.city")} />
+                    {errors.address?.city && <p className="text-sm text-red-500">{errors.address.city.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="state">State</Label>
+                    <Input id="state" {...register("address.state")} />
+                    {errors.address?.state && <p className="text-sm text-red-500">{errors.address.state.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="zipCode">Zip Code</Label>
+                    <Input id="zipCode" {...register("address.zipCode")} />
+                    {errors.address?.zipCode && <p className="text-sm text-red-500">{errors.address.zipCode.message}</p>}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="country">Country</Label>
+                    <Input id="country" {...register("address.country")} />
+                    {errors.address?.country && <p className="text-sm text-red-500">{errors.address.country.message}</p>}
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
-                <Input id="state" placeholder="NY" {...register("address.state")} />
-                {errors.address?.state && (
-                  <p className="text-sm text-red-500">{errors.address.state.message}</p>
-                )}
-              </div>
-            </div>
+              {error && <div className="text-red-500 text-sm">{error}</div>}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="zipCode">Zip Code</Label>
-                <Input id="zipCode" placeholder="10001" {...register("address.zipCode")} />
-                {errors.address?.zipCode && (
-                  <p className="text-sm text-red-500">{errors.address.zipCode.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Input id="country" placeholder="USA" {...register("address.country")} />
-                {errors.address?.country && (
-                  <p className="text-sm text-red-500">{errors.address.country.message}</p>
-                )}
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                {error}
-              </div>
-            )}
-
-            {success && (
-              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-                {success}
-              </div>
-            )}
-
-            <Button type="submit" className="w-full" size="lg" disabled={loading}>
-              {loading ? "Registering..." : "Register"}
-            </Button>
-          </form>
-        </div>
-      </main>
-      <SimpleFooter />
-    </div>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Creating Account..." : "Register"}
+              </Button>
+              
+              <p className="text-center text-sm text-muted-foreground">
+                Already have an account? <Link href="/auth/login" className="text-primary hover:underline">Sign in</Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </PublicLayout>
   );
 }

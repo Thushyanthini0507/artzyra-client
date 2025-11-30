@@ -18,8 +18,8 @@ export function CustomerSidebar() {
       icon: LayoutDashboard,
     },
     {
-      href: "/customer/orders",
-      label: "My Orders",
+      href: "/customer/bookings",
+      label: "My Bookings",
       icon: ShoppingBag,
     },
     {

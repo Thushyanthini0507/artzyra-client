@@ -53,7 +53,7 @@ export default function AdminArtistsPage() {
     if (!selectedUser || !actionType) return;
 
     const status = actionType === "approve" ? "approved" : "rejected";
-    const response = await api.patch("/api/admin/users", {
+    const response = await api.put("/api/admin/users", {
       userId: selectedUser._id,
       status,
     });
