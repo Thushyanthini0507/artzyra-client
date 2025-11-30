@@ -38,8 +38,21 @@ export async function POST(request: Request) {
     if (!isMatch) {
       console.log("Login failed: Password mismatch for user:", email);
       return NextResponse.json(
-        { success: false, error: "Debug: Password mismatch" },
+        { success: false, error: "Invalid credentials" }, // Generic error for security
         { status: 401 }
+      );
+    }
+
+    // Check if user is approved (specifically for artists)
+    if (user.role === "artist" && user.status !== "approved") {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: user.status === "pending" 
+            ? "Your account is pending approval from admin." 
+            : "Your account has been rejected." 
+        },
+        { status: 403 }
       );
     }
 
