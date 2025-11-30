@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { email, password, name, role, ...otherData } = body;
+    const { email, password, name, phone, address } = body;
 
     if (!email || !password || !name) {
       return NextResponse.json(
@@ -30,9 +30,10 @@ export async function POST(request: Request) {
       email,
       password: hashedPassword,
       name,
-      role: role || "customer",
-      status: role === "artist" ? "pending" : "approved", // Only artists need approval
-      ...otherData,
+      role: "customer",
+      status: "approved", // Customers are auto-approved
+      phone,
+      address,
     };
 
     const user = await User.create(userData);
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Registration error:", error);
+    console.error("Customer registration error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }

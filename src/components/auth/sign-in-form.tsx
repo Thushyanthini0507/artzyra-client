@@ -49,9 +49,6 @@ export function SignInForm() {
         case "artist":
           router.push("/artist");
           break;
-        case "deliverer":
-          router.push("/deliverer");
-          break;
         case "customer":
           router.push("/customer");
           break;

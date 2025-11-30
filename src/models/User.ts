@@ -4,7 +4,7 @@ export interface IUser extends Document {
   name: string;
   email: string;
   password?: string;
-  role: "admin" | "customer" | "artist" | "deliverer";
+  role: "admin" | "customer" | "artist";
   status: "pending" | "approved" | "rejected";
   // Artist specific fields
   category?: string;
@@ -12,9 +12,7 @@ export interface IUser extends Document {
   bio?: string;
   hourlyRate?: number;
   availability?: string;
-  // Deliverer specific fields
-  vehicleType?: string;
-  licenseNumber?: string;
+
   // Customer specific fields
   phone?: string;
   address?: {
@@ -36,7 +34,7 @@ const UserSchema: Schema<IUser> = new Schema(
     password: { type: String, select: false }, // Don't return password by default
     role: {
       type: String,
-      enum: ["admin", "customer", "artist", "deliverer"],
+      enum: ["admin", "customer", "artist"],
       default: "customer",
     },
     status: {
@@ -50,9 +48,7 @@ const UserSchema: Schema<IUser> = new Schema(
     bio: { type: String },
     hourlyRate: { type: Number },
     availability: { type: String },
-    // Deliverer fields
-    vehicleType: { type: String },
-    licenseNumber: { type: String },
+
     // Customer fields
     phone: { type: String },
     address: {

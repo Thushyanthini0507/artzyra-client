@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
 import { api } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
@@ -52,12 +52,18 @@ export default function ArtistRegisterPage() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
+        console.log("Fetching categories...");
         const response = await api.get<any>("/api/categories");
+        console.log("Categories response:", response);
         if (response.success && Array.isArray(response.data)) {
+          console.log("Setting categories:", response.data.length);
           setCategories(response.data);
         } else if (response.success && response.data && Array.isArray(response.data.data)) {
            // Handle paginated response structure if needed, based on the curl output it was data.data
+           console.log("Setting categories from data.data:", response.data.data.length);
            setCategories(response.data.data);
+        } else {
+          console.error("Unexpected response format:", response);
         }
       } catch (err) {
         console.error("Failed to fetch categories", err);
@@ -167,18 +173,23 @@ export default function ArtistRegisterPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={(value) => setValue("category", value)}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat._id} value={cat._id}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <select
+                  id="category"
+                  className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  {...register("category")}
+                >
+                  <option value="">Select category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat._id}>
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+                {categories.length > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    {categories.length} categories available
+                  </p>
+                )}
                 {errors.category && (
                   <p className="text-sm text-red-500">{errors.category.message}</p>
                 )}
@@ -212,20 +223,17 @@ export default function ArtistRegisterPage() {
 
             <div className="space-y-2">
               <Label htmlFor="availability">Availability</Label>
-              <Select
-                value={availability}
-                onValueChange={(value) => setValue("availability", value)}
+              <select
+                id="availability"
+                className="flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                {...register("availability")}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select availability" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="full-time">Full Time</SelectItem>
-                  <SelectItem value="part-time">Part Time</SelectItem>
-                  <SelectItem value="weekends">Weekends Only</SelectItem>
-                  <SelectItem value="flexible">Flexible</SelectItem>
-                </SelectContent>
-              </Select>
+                <option value="">Select availability</option>
+                <option value="full-time">Full Time</option>
+                <option value="part-time">Part Time</option>
+                <option value="weekends">Weekends Only</option>
+                <option value="flexible">Flexible</option>
+              </select>
               {errors.availability && (
                 <p className="text-sm text-red-500">{errors.availability.message}</p>
               )}

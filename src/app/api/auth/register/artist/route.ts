@@ -7,11 +7,18 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const body = await request.json();
-    const { email, password, name, role, ...otherData } = body;
+    const { email, password, name, shopName, phone, bio, category, skills, hourlyRate, availability } = body;
 
     if (!email || !password || !name) {
       return NextResponse.json(
         { success: false, error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (!category) {
+      return NextResponse.json(
+        { success: false, error: "Category is required for artist registration" },
         { status: 400 }
       );
     }
@@ -26,13 +33,21 @@ export async function POST(request: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Parse skills from comma-separated string to array
+    const skillsArray = typeof skills === 'string' ? skills.split(',').map(s => s.trim()) : skills;
+
     const userData = {
       email,
       password: hashedPassword,
       name,
-      role: role || "customer",
-      status: role === "artist" ? "pending" : "approved", // Only artists need approval
-      ...otherData,
+      role: "artist",
+      status: "pending", // Artists need admin approval
+      phone,
+      bio,
+      category,
+      skills: skillsArray,
+      hourlyRate: parseFloat(hourlyRate),
+      availability,
     };
 
     const user = await User.create(userData);
@@ -46,7 +61,7 @@ export async function POST(request: Request) {
       { status: 201 }
     );
   } catch (error: any) {
-    console.error("Registration error:", error);
+    console.error("Artist registration error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }

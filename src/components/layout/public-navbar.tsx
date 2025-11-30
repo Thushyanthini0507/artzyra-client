@@ -24,8 +24,6 @@ export function PublicNavbar() {
         return "/admin";
       case "artist":
         return "/artist";
-      case "deliverer":
-        return "/deliverer";
       case "customer":
         return "/customer";
       default:

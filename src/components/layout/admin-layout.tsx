@@ -22,11 +22,6 @@ const sidebarItems = [
     href: "/admin/artists",
     icon: UserCheck,
   },
-  {
-    title: "Deliverers",
-    href: "/admin/deliverers",
-    icon: Package,
-  },
 ];
 
 export function AdminLayout({ children }: { children: React.ReactNode }) {

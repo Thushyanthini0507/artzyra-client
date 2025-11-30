@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "customer" | "artist" | "deliverer";
+export type UserRole = "admin" | "customer" | "artist";
 export type UserStatus = "pending" | "approved" | "rejected";
 
 export interface User {
@@ -13,9 +13,7 @@ export interface User {
   bio?: string;
   hourlyRate?: number;
   availability?: string;
-  // Deliverer fields
-  vehicleType?: string;
-  licenseNumber?: string;
+
   // Customer fields
   phone?: string;
   address?: {

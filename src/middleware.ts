@@ -16,12 +16,10 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
-  // Define protected routes and allowed roles
   const protectedRoutes = [
     { path: "/admin", roles: ["admin"] },
     { path: "/artist", roles: ["artist"] },
     { path: "/customer", roles: ["customer"] },
-    { path: "/deliverer", roles: ["deliverer"] },
   ];
 
   const matchedRoute = protectedRoutes.find((route) =>
@@ -45,7 +43,6 @@ export async function middleware(request: NextRequest) {
         if (userRole === "admin") return NextResponse.redirect(new URL("/admin", request.url));
         if (userRole === "artist") return NextResponse.redirect(new URL("/artist", request.url));
         if (userRole === "customer") return NextResponse.redirect(new URL("/customer", request.url));
-        if (userRole === "deliverer") return NextResponse.redirect(new URL("/deliverer", request.url));
         return NextResponse.redirect(new URL("/", request.url));
       }
     } catch (error) {
@@ -58,5 +55,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/artist/:path*", "/customer/:path*", "/deliverer/:path*"],
+  matcher: ["/admin/:path*", "/artist/:path*", "/customer/:path*"],
 };

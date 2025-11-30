@@ -31,15 +31,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Pending Deliverers</CardTitle>
-              <CardDescription>Awaiting approval</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold">0</div>
-            </CardContent>
-          </Card>
+
 
           <Card>
             <CardHeader>
