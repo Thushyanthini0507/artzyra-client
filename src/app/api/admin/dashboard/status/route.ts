@@ -1,34 +1,12 @@
 import { NextResponse } from "next/server";
-import { headers, cookies } from "next/headers";
-import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
 import Booking from "@/models/Booking";
-
-const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
-async function isAdmin(request: Request) {
-  try {
-    const headersList = await headers();
-    let token = headersList.get("authorization")?.split(" ")[1];
-
-    if (!token) {
-      const cookieStore = await cookies();
-      token = cookieStore.get("token")?.value;
-    }
-
-    if (!token) return false;
-
-    const decoded: any = jwt.verify(token, JWT_SECRET);
-    return decoded.role === "admin";
-  } catch (error) {
-    return false;
-  }
-}
+import { isAdmin } from "@/lib/adminAuth";
 
 export async function GET(request: Request) {
   try {
-    if (!(await isAdmin(request))) {
+    if (!(await isAdmin())) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
 

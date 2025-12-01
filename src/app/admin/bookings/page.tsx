@@ -1,93 +1,98 @@
 "use client";
 
-import { AdminLayout } from "@/components/layout/admin-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAdminBookings } from "@/hooks/useAdminHooks";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useEffect, useState } from "react";
+import { adminService } from "@/lib/api/services/adminService";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatusBadge } from "@/components/admin/StatusBadge";
 
-export default function AdminBookingsPage() {
-  const { bookings, loading } = useAdminBookings();
+export default function BookingsPage() {
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await adminService.getBookings();
+        if (response.data.success && response.data.data) {
+          setBookings(response.data.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch bookings", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchBookings();
+  }, []);
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">All Bookings</h1>
-          <p className="text-muted-foreground">View all platform bookings</p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Booking List</CardTitle>
-            <CardDescription>Complete list of all bookings in the system</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="space-y-2">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <Skeleton key={i} className="h-12 w-full" />
-                ))}
-              </div>
-            ) : bookings.length === 0 ? (
-              <p className="text-center text-muted-foreground py-10">No bookings found</p>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Service</TableHead>
-                      <TableHead>Customer</TableHead>
-                      <TableHead>Artist</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Location</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Created</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {bookings.map((booking) => (
-                      <TableRow key={booking._id}>
-                        <TableCell className="font-medium">{booking.service || "N/A"}</TableCell>
-                        <TableCell>
-                          {typeof booking.customer === 'object' ? booking.customer.name : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          {typeof booking.artist === 'object' ? booking.artist.name : "N/A"}
-                        </TableCell>
-                        <TableCell>
-                          {booking.date ? new Date(booking.date).toLocaleDateString() : "N/A"}
-                        </TableCell>
-                        <TableCell>{booking.location || "N/A"}</TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={
-                              booking.status === "completed"
-                                ? "default"
-                                : booking.status === "accepted"
-                                ? "secondary"
-                                : booking.status === "cancelled"
-                                ? "destructive"
-                                : "outline"
-                            }
-                            className="capitalize"
-                          >
-                            {booking.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {booking.createdAt ? new Date(booking.createdAt).toLocaleDateString() : "N/A"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Bookings</h1>
+        <p className="text-muted-foreground">View all platform bookings.</p>
       </div>
-    </AdminLayout>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>All Bookings</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Customer</TableHead>
+                <TableHead>Artist</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">
+                    Loading...
+                  </TableCell>
+                </TableRow>
+              ) : bookings.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center">
+                    No bookings found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                bookings.map((booking) => (
+                  <TableRow key={booking._id}>
+                    <TableCell className="font-mono text-xs">
+                      {booking._id.slice(-6).toUpperCase()}
+                    </TableCell>
+                    <TableCell>{booking.customer?.name || "Unknown"}</TableCell>
+                    <TableCell>{booking.artist?.name || "Unknown"}</TableCell>
+                    <TableCell>
+                      {new Date(booking.bookingDate).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <StatusBadge status={booking.status} />
+                    </TableCell>
+                    <TableCell className="text-right">
+                      ${booking.totalAmount?.toFixed(2) || "0.00"}
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
