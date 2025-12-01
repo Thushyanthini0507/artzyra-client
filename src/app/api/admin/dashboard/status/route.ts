@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
@@ -10,7 +10,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 async function isAdmin(request: Request) {
   try {
     const headersList = await headers();
-    const token = headersList.get("authorization")?.split(" ")[1];
+    let token = headersList.get("authorization")?.split(" ")[1];
+
+    if (!token) {
+      const cookieStore = await cookies();
+      token = cookieStore.get("token")?.value;
+    }
 
     if (!token) return false;
 

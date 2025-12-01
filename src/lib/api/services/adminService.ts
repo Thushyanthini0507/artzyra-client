@@ -25,4 +25,12 @@ export const adminService = {
     const response = await api.get("/api/admin/dashboard/status");
     return response.data;
   },
+  approveArtist: async (artistId: string) => {
+    const response = await api.patch(`/api/artists/${artistId}/approve`);
+    return response.data;
+  },
+  rejectArtist: async (artistId: string, reason?: string) => {
+    const response = await api.patch(`/api/artists/${artistId}/reject`, { reason });
+    return response.data;
+  },
 };
