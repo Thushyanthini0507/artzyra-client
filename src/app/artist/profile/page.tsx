@@ -1,81 +1,96 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ArtistLayout } from "@/components/layout/artist-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { artistService } from "@/lib/api/services/artistService";
+import { categoryService } from "@/lib/api/services/categoryService";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 
 export default function ArtistProfilePage() {
+  const [profile, setProfile] = useState<any>(null);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    email: "",
+    phone: "",
     bio: "",
-    hourlyRate: "",
+    category: "",
     skills: "",
+    hourlyRate: "",
     availability: "",
-    phone: "", // Added phone as it's often useful
   });
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    const fetchData = async () => {
+      try {
+        const [profileRes, categoriesRes] = await Promise.all([
+          artistService.getProfile(),
+          categoryService.getAllCategories(),
+        ]);
 
-  const fetchProfile = async () => {
-    try {
-      const response = await artistService.getProfile();
-      if (response.success && response.data) {
-        const artist = response.data;
-        setFormData({
-          name: artist.name || "",
-          bio: artist.bio || "",
-          hourlyRate: artist.hourlyRate?.toString() || "",
-          skills: artist.skills?.join(", ") || "",
-          availability: artist.availability || "",
-          phone: artist.phone || "",
-        });
+        if (profileRes.success && profileRes.data) {
+          const data = profileRes.data;
+          setProfile(data);
+          setFormData({
+            name: data.name || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            bio: data.bio || "",
+            category: data.category?._id || "",
+            skills: Array.isArray(data.skills) ? data.skills.join(", ") : "",
+            hourlyRate: data.hourlyRate?.toString() || "",
+            availability: data.availability || "",
+          });
+        }
+
+        if (categoriesRes.success && categoriesRes.data) {
+          setCategories(categoriesRes.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile", error);
+        toast.error("Failed to load profile");
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      toast.error("Failed to load profile");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+    };
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
     try {
-      // Format data for API
-      const dataToSubmit = {
-        ...formData,
-        hourlyRate: parseFloat(formData.hourlyRate) || 0,
+      const updateData = {
+        name: formData.name,
+        phone: formData.phone,
+        bio: formData.bio,
+        category: formData.category,
         skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),
+        hourlyRate: parseFloat(formData.hourlyRate) || 0,
+        availability: formData.availability,
       };
 
-      const response = await artistService.updateProfile(dataToSubmit);
-
+      const response = await artistService.updateProfile(updateData);
+      
       if (response.success) {
         toast.success("Profile updated successfully");
+        setProfile(response.data);
       } else {
         toast.error(response.error || "Failed to update profile");
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      console.error("Profile update error:", error);
+      toast.error(error.response?.data?.error || "Failed to update profile");
     } finally {
       setSaving(false);
     }
@@ -93,55 +108,77 @@ export default function ArtistProfilePage() {
 
   return (
     <ArtistLayout>
-      <div className="space-y-6 max-w-2xl mx-auto">
+      <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">My Profile</h1>
-          <p className="text-muted-foreground">Manage your public profile information</p>
+          <h1 className="text-3xl font-bold">Profile</h1>
+          <p className="text-muted-foreground">Manage your artist profile information</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Profile Details</CardTitle>
-            <CardDescription>
-              This information will be visible to customers
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+        <form onSubmit={handleSubmit}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Personal Information</CardTitle>
+              <CardDescription>Update your profile details</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  name="bio"
-                  value={formData.bio}
-                  onChange={handleChange}
-                  placeholder="Tell customers about yourself and your experience..."
-                  rows={4}
-                />
-              </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    disabled
+                  />
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Phone</Label>
+                  <Input
+                    id="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category *</Label>
+                  <Select
+                    value={formData.category}
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat._id} value={cat._id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="hourlyRate">Hourly Rate ($)</Label>
                   <Input
                     id="hourlyRate"
-                    name="hourlyRate"
                     type="number"
                     min="0"
                     step="0.01"
                     value={formData.hourlyRate}
-                    onChange={handleChange}
+                    onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
                   />
                 </div>
 
@@ -149,55 +186,43 @@ export default function ArtistProfilePage() {
                   <Label htmlFor="availability">Availability</Label>
                   <Input
                     id="availability"
-                    name="availability"
+                    placeholder="e.g., Mon-Fri, 9AM-5PM"
                     value={formData.availability}
-                    onChange={handleChange}
-                    placeholder="e.g., Weekends, Mon-Fri 9-5"
+                    onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
+                <Label htmlFor="bio">Bio</Label>
+                <Textarea
+                  id="bio"
+                  rows={4}
+                  placeholder="Tell customers about yourself..."
+                  value={formData.bio}
+                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="skills">Skills (comma separated)</Label>
+                <Label htmlFor="skills">Skills (comma-separated)</Label>
                 <Input
                   id="skills"
-                  name="skills"
+                  placeholder="e.g., Portrait, Landscape, Digital Art"
                   value={formData.skills}
-                  onChange={handleChange}
-                  placeholder="e.g., Oil Painting, Sketching, Portrait"
+                  onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
                 />
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {formData.skills.split(",").map((skill, i) => {
-                    const trimmed = skill.trim();
-                    if (!trimmed) return null;
-                    return (
-                      <Badge key={i} variant="secondary">
-                        {trimmed}
-                      </Badge>
-                    );
-                  })}
-                </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end gap-2">
                 <Button type="submit" disabled={saving}>
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Changes
                 </Button>
               </div>
-            </form>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </form>
       </div>
     </ArtistLayout>
   );

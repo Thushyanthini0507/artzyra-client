@@ -4,28 +4,43 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 import { cn } from "@/lib/utils";
-import { Home, Package, BarChart, User } from "lucide-react";
+import { LayoutDashboard, Calendar, User, DollarSign, Settings, CalendarDays, Star } from "lucide-react";
 
 const sidebarItems = [
   {
     title: "Dashboard",
     href: "/artist",
-    icon: Home,
+    icon: LayoutDashboard,
   },
   {
-    title: "My Services",
-    href: "/artist/services",
-    icon: Package,
+    title: "Bookings",
+    href: "/artist/bookings",
+    icon: CalendarDays,
   },
   {
-    title: "Orders",
-    href: "/artist/orders",
-    icon: BarChart,
+    title: "Calendar",
+    href: "/artist/calendar",
+    icon: Calendar,
   },
   {
     title: "Profile",
     href: "/artist/profile",
     icon: User,
+  },
+  {
+    title: "Reviews",
+    href: "/artist/reviews",
+    icon: Star,
+  },
+  {
+    title: "Earnings",
+    href: "/artist/earnings",
+    icon: DollarSign,
+  },
+  {
+    title: "Settings",
+    href: "/artist/settings",
+    icon: Settings,
   },
 ];
 

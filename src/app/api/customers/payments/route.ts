@@ -3,11 +3,10 @@ import { headers, cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import dbConnect from "@/lib/db";
 import Payment from "@/models/Payment";
-import Booking from "@/models/Booking";
+import Booking from "@/models/Booking"; // Ensure Booking is registered
+import User from "@/models/User"; // Ensure User is registered
 
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
-
-// ...
 
 async function getCustomer(request: Request) {
   try {
@@ -30,7 +29,7 @@ async function getCustomer(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function GET(request: Request) {
   try {
     const userId = await getCustomer(request);
     if (!userId) {
@@ -38,29 +37,26 @@ export async function POST(request: Request) {
     }
 
     await dbConnect();
-    const body = await request.json();
-    const { booking: bookingId, amount, paymentMethod } = body;
 
-    const booking = await Booking.findOne({ _id: bookingId, customer: userId });
-    if (!booking) {
-      return NextResponse.json({ success: false, error: "Booking not found" }, { status: 404 });
-    }
+    // Ensure models are registered
+    // This is sometimes needed if models haven't been compiled yet in the dev server
+    const _ = Booking; 
+    const __ = User;
 
-    const payment = await Payment.create({
-      booking: bookingId,
-      customer: userId,
-      artist: booking.artist,
-      amount,
-      paymentMethod,
-      status: "completed", // Simulating immediate completion
-      transactionId: `TXN-${Date.now()}`
-    });
+    const payments = await Payment.find({ customer: userId })
+      .populate({
+        path: "booking",
+        select: "service artist totalAmount",
+        populate: {
+          path: "artist",
+          select: "name"
+        }
+      })
+      .sort({ createdAt: -1 });
 
-    // Update booking status to completed
-    await Booking.findByIdAndUpdate(bookingId, { status: "completed" });
-
-    return NextResponse.json({ success: true, data: payment }, { status: 201 });
+    return NextResponse.json({ success: true, data: payments });
   } catch (error: any) {
+    console.error("Error fetching customer payments:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }

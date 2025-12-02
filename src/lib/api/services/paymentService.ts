@@ -10,4 +10,8 @@ export const paymentService = {
     const response = await api.get("/api/payments", { params });
     return response.data;
   },
+  getCustomerPayments: async () => {
+    const response = await api.get("/api/customers/payments");
+    return response.data;
+  },
 };

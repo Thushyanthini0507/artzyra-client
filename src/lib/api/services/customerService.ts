@@ -10,4 +10,12 @@ export const customerService = {
     const response = await api.put("/api/customers/profile", data);
     return response.data;
   },
+  getBookings: async () => {
+    const response = await api.get("/api/customers/bookings");
+    return response.data;
+  },
+  getReviews: async () => {
+    const response = await api.get("/api/customers/reviews");
+    return response.data;
+  },
 };

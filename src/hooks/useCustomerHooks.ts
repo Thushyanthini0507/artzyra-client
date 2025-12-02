@@ -131,23 +131,71 @@ export function useCustomerReviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await reviewService.getCustomerReviews();
-        if (response.success) {
-          setReviews(response.data);
-        }
-      } catch (error) {
-        console.error("Failed to fetch reviews", error);
-      } finally {
-        setLoading(false);
+  const fetchReviews = async () => {
+    setLoading(true);
+    try {
+      const response = await reviewService.getCustomerReviews();
+      if (response.success) {
+        setReviews(response.data);
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch reviews", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchReviews();
   }, []);
 
-  return { reviews, loading };
+  return { reviews, loading, refresh: fetchReviews };
+}
+
+export function useUpdateReview() {
+  const [loading, setLoading] = useState(false);
+
+  const updateReview = async (id: string, data: { rating?: number; comment?: string }) => {
+    setLoading(true);
+    try {
+      const response = await reviewService.updateReview(id, data);
+      if (response.success) {
+        toast.success("Review updated successfully!");
+        return response.data;
+      } else {
+        toast.error(response.error || "Failed to update review");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to update review");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { updateReview, loading };
+}
+
+export function useDeleteReview() {
+  const [loading, setLoading] = useState(false);
+
+  const deleteReview = async (id: string, onSuccess?: () => void) => {
+    setLoading(true);
+    try {
+      const response = await reviewService.deleteReview(id);
+      if (response.success) {
+        toast.success("Review deleted successfully!");
+        if (onSuccess) onSuccess();
+      } else {
+        toast.error(response.error || "Failed to delete review");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Failed to delete review");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { deleteReview, loading };
 }
 
 export function useCreatePayment() {

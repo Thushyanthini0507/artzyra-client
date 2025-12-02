@@ -1,21 +1,38 @@
 "use client";
 
+import { useState } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useCustomerBookings, useDeleteBooking } from "@/hooks/useCustomerHooks";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit, Eye } from "lucide-react";
+import { Trash2, Edit, Eye, CreditCard, Star } from "lucide-react";
+import { PaymentDialog } from "@/components/customer/PaymentDialog";
+import { ReviewDialog } from "@/components/customer/ReviewDialog";
 
 export default function CustomerBookingsPage() {
   const { bookings, loading, refresh } = useCustomerBookings();
   const { deleteBooking } = useDeleteBooking();
+  
+  const [selectedBooking, setSelectedBooking] = useState<any>(null);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
 
   const handleDelete = async (id: string) => {
     if (confirm("Are you sure you want to delete this booking?")) {
       await deleteBooking(id, refresh);
     }
+  };
+
+  const handlePay = (booking: any) => {
+    setSelectedBooking(booking);
+    setIsPaymentOpen(true);
+  };
+
+  const handleReview = (booking: any) => {
+    setSelectedBooking(booking);
+    setIsReviewOpen(true);
   };
 
   return (
@@ -61,28 +78,46 @@ export default function CustomerBookingsPage() {
                         <span>{new Date(booking.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">{booking.location}</p>
-                      <Badge variant={booking.status === "completed" ? "default" : booking.status === "accepted" ? "secondary" : "outline"} className="mt-2 capitalize">
-                        {booking.status}
-                      </Badge>
+                      <div className="flex items-center gap-2 mt-2">
+                        <Badge variant={booking.status === "completed" ? "default" : booking.status === "accepted" ? "secondary" : "outline"} className="capitalize">
+                          {booking.status}
+                        </Badge>
+                        {booking.totalAmount && (
+                          <span className="text-sm font-medium ml-2">${booking.totalAmount}</span>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <Link href={`/customer/bookings/${booking._id}`}>
-                        <Button variant="outline" size="sm" className="gap-2">
-                          <Eye className="h-4 w-4" /> View
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      {booking.status === "accepted" && (
+                        <Button size="sm" className="gap-2 bg-green-600 hover:bg-green-700" onClick={() => handlePay(booking)}>
+                          <CreditCard className="h-4 w-4" /> Pay Now
                         </Button>
-                      </Link>
-                      {booking.status === "pending" && (
-                        <>
-                          <Link href={`/customer/bookings/${booking._id}/edit`}>
-                            <Button variant="ghost" size="icon">
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                          </Link>
-                          <Button variant="ghost" size="icon" onClick={() => handleDelete(booking._id)}>
-                            <Trash2 className="h-4 w-4 text-red-500" />
-                          </Button>
-                        </>
                       )}
+                      {booking.status === "completed" && (
+                        <Button size="sm" variant="secondary" className="gap-2" onClick={() => handleReview(booking)}>
+                          <Star className="h-4 w-4" /> Review
+                        </Button>
+                      )}
+                      
+                      <div className="flex gap-2">
+                        <Link href={`/customer/bookings/${booking._id}`}>
+                          <Button variant="outline" size="sm" className="gap-2">
+                            <Eye className="h-4 w-4" /> View
+                          </Button>
+                        </Link>
+                        {booking.status === "pending" && (
+                          <>
+                            <Link href={`/customer/bookings/${booking._id}/edit`}>
+                              <Button variant="ghost" size="icon">
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                            </Link>
+                            <Button variant="ghost" size="icon" onClick={() => handleDelete(booking._id)}>
+                              <Trash2 className="h-4 w-4 text-red-500" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -90,6 +125,26 @@ export default function CustomerBookingsPage() {
             )}
           </CardContent>
         </Card>
+
+        <PaymentDialog 
+          open={isPaymentOpen} 
+          onOpenChange={setIsPaymentOpen} 
+          booking={selectedBooking} 
+          onSuccess={() => {
+            refresh();
+            // Optional: redirect to payments page or show success toast (handled in dialog)
+          }} 
+        />
+
+        <ReviewDialog 
+          open={isReviewOpen} 
+          onOpenChange={setIsReviewOpen} 
+          booking={selectedBooking} 
+          onSuccess={() => {
+            refresh();
+            // Optional: redirect to reviews page or show success toast (handled in dialog)
+          }} 
+        />
       </div>
     </CustomerLayout>
   );

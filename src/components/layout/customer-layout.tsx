@@ -4,23 +4,28 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 import { cn } from "@/lib/utils";
-import { Home, ShoppingCart, User, Package } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Heart, Mail, User } from "lucide-react";
 
 const sidebarItems = [
   {
     title: "Dashboard",
     href: "/customer",
-    icon: Home,
+    icon: LayoutDashboard,
   },
   {
-    title: "Orders",
-    href: "/customer/orders",
-    icon: ShoppingCart,
+    title: "My Bookings",
+    href: "/customer/bookings",
+    icon: CalendarDays,
   },
   {
-    title: "Artists",
-    href: "/customer/artists",
-    icon: Package,
+    title: "My Favorites",
+    href: "/customer/favorites",
+    icon: Heart,
+  },
+  {
+    title: "Messages",
+    href: "/customer/messages",
+    icon: Mail,
   },
   {
     title: "Profile",
