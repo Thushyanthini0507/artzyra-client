@@ -9,6 +9,7 @@ export const uploadService = {
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
+        credentials: "include", // Include cookies (HTTP-only token) in requests
         // Do not set Content-Type header, let browser set it with boundary
       });
 

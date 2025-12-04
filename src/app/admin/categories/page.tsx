@@ -33,7 +33,11 @@ export default function CategoriesPage() {
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
-  const [formData, setFormData] = useState({ name: "", description: "", image: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    image: "",
+  });
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -68,7 +72,7 @@ export default function CategoriesPage() {
         toast.error("Please select an image file");
         return;
       }
-      
+
       // Validate file size (max 10MB for Cloudinary)
       const MAX_SIZE = 10 * 1024 * 1024; // 10MB
       if (file.size > MAX_SIZE) {
@@ -109,7 +113,7 @@ export default function CategoriesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form
     if (!formData.name || formData.name.trim().length === 0) {
       toast.error("Category name is required");
@@ -134,19 +138,22 @@ export default function CategoriesPage() {
 
       const dataToSubmit = {
         ...formData,
-        image: imageUrl
+        image: imageUrl,
       };
 
-      console.log("Submitting category with data:", { 
-        name: dataToSubmit.name, 
+      console.log("Submitting category with data:", {
+        name: dataToSubmit.name,
         hasDescription: !!dataToSubmit.description,
-        hasImage: !!dataToSubmit.image
+        hasImage: !!dataToSubmit.image,
       });
 
       let response;
       if (editingCategory) {
         console.log("Updating category:", editingCategory._id);
-        response = await adminService.updateCategory(editingCategory._id, dataToSubmit);
+        response = await adminService.updateCategory(
+          editingCategory._id,
+          dataToSubmit
+        );
         if (response.success) {
           toast.success("Category updated");
         } else {
@@ -158,7 +165,7 @@ export default function CategoriesPage() {
         console.log("Creating new category");
         response = await adminService.createCategory(dataToSubmit);
         console.log("Create response:", response);
-        
+
         if (response.success) {
           toast.success("Category created successfully");
         } else {
@@ -167,44 +174,55 @@ export default function CategoriesPage() {
           return;
         }
       }
-      
-      setIsDialogOpen(false);
-      setEditingCategory(null);
-      setFormData({ name: "", description: "", image: "" });
-      setImagePreview("");
-      setSelectedFile(null);
+
+      handleDialogOpenChange(false);
       fetchCategories();
     } catch (error: any) {
       console.error("Category save error:", error);
       console.error("Error details:", {
         message: error.message,
         error: error.error,
-        stack: error.stack
+        stack: error.stack,
       });
-      toast.error(error.message || error.error || "Failed to save category. Check console for details.");
+      toast.error(
+        error.message ||
+          error.error ||
+          "Failed to save category. Check console for details."
+      );
     }
   };
 
   const handleEdit = (category: any) => {
     setEditingCategory(category);
-    setFormData({ 
-      name: category.name, 
+    setFormData({
+      name: category.name,
       description: category.description || "",
-      image: category.image || ""
+      image: category.image || "",
     });
     setImagePreview(category.image || "");
     setIsDialogOpen(true);
   };
 
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
+  const handleDialogOpenChange = (open: boolean) => {
+    setIsDialogOpen(open);
+    if (!open) {
+      // Reset form when dialog closes
+      setEditingCategory(null);
+      setFormData({ name: "", description: "", image: "" });
+      setImagePreview("");
+      setSelectedFile(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleAddCategory = () => {
     setEditingCategory(null);
     setFormData({ name: "", description: "", image: "" });
     setImagePreview("");
     setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -227,23 +245,20 @@ export default function CategoriesPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Categories</h1>
+          <div className="ml-20">
+            <h1 className="text-3xl font-bold tracking-tight">
+              Categories
+            </h1>
             <p className="text-muted-foreground">Manage artist categories.</p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
+          <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
-              <Button onClick={() => {
-                setEditingCategory(null);
-                setFormData({ name: "", description: "", image: "" });
-                setImagePreview("");
-                setSelectedFile(null);
-              }}>
+              <Button onClick={handleAddCategory}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Category
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
               <DialogHeader>
                 <DialogTitle>
                   {editingCategory ? "Edit Category" : "Add Category"}
@@ -255,7 +270,9 @@ export default function CategoriesPage() {
                   <Input
                     id="name"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, name: e.target.value })
+                    }
                     required
                     placeholder="e.g., Digital Art, Photography"
                   />
@@ -265,7 +282,9 @@ export default function CategoriesPage() {
                   <Textarea
                     id="description"
                     value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, description: e.target.value })
+                    }
                     placeholder="Describe this category..."
                     rows={4}
                   />
@@ -297,8 +316,12 @@ export default function CategoriesPage() {
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">Click to upload image</p>
-                        <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                        <p className="text-sm text-gray-600">
+                          Click to upload image
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          PNG, JPG up to 5MB
+                        </p>
                       </div>
                     )}
                     <Input
@@ -323,7 +346,11 @@ export default function CategoriesPage() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2 pt-4">
-                  <Button type="button" variant="outline" onClick={handleDialogClose}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleDialogOpenChange(false)}
+                  >
                     Cancel
                   </Button>
                   <Button type="submit">Save</Button>
@@ -333,81 +360,87 @@ export default function CategoriesPage() {
           </Dialog>
         </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>All Categories</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center">
-                    Loading...
-                  </TableCell>
-                </TableRow>
-              ) : categories.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center">
-                    No categories found.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                categories.map((category) => (
-                  <TableRow key={category._id}>
-                    <TableCell>
-                      {category.image ? (
-                        <div className="relative w-16 h-16 rounded overflow-hidden">
-                          <Image
-                            src={category.image}
-                            alt={category.name}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center">
-                          <ImageIcon className="h-6 w-6 text-gray-400" />
-                        </div>
-                      )}
-                    </TableCell>
-                    <TableCell className="font-medium">{category.name}</TableCell>
-                    <TableCell className="max-w-md truncate">{category.description || "-"}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          onClick={() => handleEdit(category)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                          onClick={() => handleDelete(category._id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+        <div className="flex justify-center">
+          <Card className="w-full max-w-6xl">
+            <CardHeader>
+              <CardTitle>All Categories</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
-    </div>
+                </TableHeader>
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center">
+                        Loading...
+                      </TableCell>
+                    </TableRow>
+                  ) : categories.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={4} className="text-center">
+                        No categories found.
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    categories.map((category) => (
+                      <TableRow key={category._id}>
+                        <TableCell>
+                          {category.image ? (
+                            <div className="relative w-16 h-16 rounded overflow-hidden">
+                              <Image
+                                src={category.image}
+                                alt={category.name}
+                                fill
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center">
+                              <ImageIcon className="h-6 w-6 text-gray-400" />
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-medium">
+                          {category.name}
+                        </TableCell>
+                        <TableCell className="max-w-md truncate">
+                          {category.description || "-"}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => handleEdit(category)}
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => handleDelete(category._id)}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </AdminLayout>
   );
 }
