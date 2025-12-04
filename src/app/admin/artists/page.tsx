@@ -38,11 +38,24 @@ export default function AdminArtistsPage() {
 
   const fetchArtists = async () => {
     setLoading(true);
-    const response = await nextApi.get<User[]>("/api/admin/users?role=artist");
-    if (response.success && response.data) {
-      setArtists(response.data);
+    try {
+      console.log("Fetching artists...");
+      const response = await nextApi.get<User[]>("/api/admin/users?role=artist");
+      console.log("Artists response:", response);
+      
+      if (response.success && response.data) {
+        console.log("Setting artists:", response.data);
+        setArtists(Array.isArray(response.data) ? response.data : []);
+      } else {
+        console.error("Failed to fetch artists:", response.error);
+        toast.error(response.error || "Failed to fetch artists");
+      }
+    } catch (error) {
+      console.error("Error fetching artists:", error);
+      toast.error("Failed to fetch artists");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   useEffect(() => {

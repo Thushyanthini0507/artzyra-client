@@ -15,11 +15,16 @@ export async function PUT(
     const { categoryId } = await params;
     await dbConnect();
     const body = await request.json();
-    const { name, description } = body;
+    const { name, description, image } = body;
+
+    const updateData: any = {};
+    if (name !== undefined) updateData.name = name;
+    if (description !== undefined) updateData.description = description;
+    if (image !== undefined) updateData.image = image;
 
     const category = await Category.findByIdAndUpdate(
       categoryId,
-      { name, description },
+      updateData,
       { new: true }
     );
 

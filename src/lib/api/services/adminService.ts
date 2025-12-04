@@ -26,11 +26,11 @@ export const adminService = {
   },
 
   approveArtist: async (artistId: string) => {
-    return api.put(`/artists/${artistId}/approve`, {});
+    return api.put(`/api/artists/${artistId}/approve`, {});
   },
 
   rejectArtist: async (artistId: string) => {
-    return api.put(`/artists/${artistId}/reject`, {});
+    return api.put(`/api/artists/${artistId}/reject`, {});
   },
 
   // Bookings
@@ -52,11 +52,11 @@ export const adminService = {
     return api.get("/api/categories");
   },
 
-  createCategory: async (data: { name: string; description?: string }) => {
+  createCategory: async (data: { name: string; description?: string; image?: string }) => {
     return api.post("/api/categories", data);
   },
 
-  updateCategory: async (id: string, data: { name?: string; description?: string }) => {
+  updateCategory: async (id: string, data: { name?: string; description?: string; image?: string }) => {
     return api.put(`/api/categories/${id}`, data);
   },
 

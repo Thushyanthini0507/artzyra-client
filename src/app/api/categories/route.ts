@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import Category from "@/models/Category";
+import { isAdmin } from "@/lib/adminAuth";
 
 export async function GET() {
   try {
@@ -23,9 +24,18 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    // Check admin authentication
+    const adminCheck = await isAdmin();
+    if (!adminCheck) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized - Admin access required" },
+        { status: 403 }
+      );
+    }
+
     await dbConnect();
     const body = await request.json();
-    const { name, description } = body;
+    const { name, description, image } = body;
 
     if (!name) {
       return NextResponse.json(
@@ -42,10 +52,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const category = await Category.create({ name, description });
+    const category = await Category.create({ name, description, image });
 
     return NextResponse.json(
-      { success: true, data: category },
+      { success: true, data: category, message: "Category created successfully" },
       { status: 201 }
     );
   } catch (error: any) {

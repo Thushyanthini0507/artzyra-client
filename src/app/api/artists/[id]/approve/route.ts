@@ -8,27 +8,45 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    if (!(await isAdmin())) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    const adminCheck = await isAdmin();
+    if (!adminCheck) {
+      return NextResponse.json(
+        { success: false, error: "Unauthorized - Admin access required" },
+        { status: 403 }
+      );
     }
 
     const { id } = await params;
     await dbConnect();
 
-    const artist = await User.findById(id);
+    const artist = await User.findByIdAndUpdate(
+      id,
+      { status: "approved" },
+      { new: true }
+    ).select("-password");
+
     if (!artist) {
-      return NextResponse.json({ success: false, error: "Artist not found" }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: "Artist not found" },
+        { status: 404 }
+      );
     }
 
     if (artist.role !== "artist") {
-      return NextResponse.json({ success: false, error: "User is not an artist" }, { status: 400 });
+      return NextResponse.json(
+        { success: false, error: "User is not an artist" },
+        { status: 400 }
+      );
     }
 
-    artist.status = "approved";
-    await artist.save();
-
-    return NextResponse.json({ success: true, data: artist });
+    console.log(`Artist ${id} approved by admin`);
+    return NextResponse.json({
+      success: true,
+      data: artist,
+      message: "Artist approved successfully",
+    });
   } catch (error: any) {
+    console.error("PUT /api/artists/[id]/approve error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }

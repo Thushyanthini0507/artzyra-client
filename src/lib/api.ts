@@ -25,27 +25,46 @@ class NextApiClient {
     }
 
     try {
+      console.log(`[nextApi] Making request to: ${endpoint}`);
       const response = await fetch(endpoint, {
         ...options,
         headers,
         credentials: "include", // Include cookies (HTTP-only token) in requests
       });
 
-      const data = await response.json();
+      console.log(`[nextApi] Response status: ${response.status} for ${endpoint}`);
 
-      if (!response.ok) {
+      // Check if response is JSON
+      const contentType = response.headers.get("content-type");
+      let data;
+
+      if (contentType && contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error(`[nextApi] Non-JSON response from ${endpoint}:`, text);
         return {
           success: false,
-          error: data.message || data.error || "Request failed",
+          error: `Server returned non-JSON response: ${text.substring(0, 100)}`,
         };
       }
 
+      if (!response.ok) {
+        console.error(`[nextApi] Error response from ${endpoint}:`, data);
+        return {
+          success: false,
+          error: data.message || data.error || `Request failed with status ${response.status}`,
+        };
+      }
+
+      console.log(`[nextApi] Success response from ${endpoint}:`, data);
       return {
         success: true,
-        data: data.data || data,
+        data: data.data !== undefined ? data.data : data,
         message: data.message,
       };
     } catch (error) {
+      console.error(`[nextApi] Network error for ${endpoint}:`, error);
       return {
         success: false,
         error: error instanceof Error ? error.message : "Network error",

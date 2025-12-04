@@ -5,7 +5,7 @@ import { isAdmin } from "@/lib/adminAuth";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string; action: string } }
+  { params }: { params: Promise<{ id: string; action: string }> }
 ) {
   try {
     const adminCheck = await isAdmin();
@@ -16,7 +16,7 @@ export async function PUT(
       );
     }
 
-    const { id, action } = params;
+    const { id, action } = await params;
 
     if (!["approve", "reject"].includes(action)) {
       return NextResponse.json(

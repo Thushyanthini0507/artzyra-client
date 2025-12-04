@@ -54,11 +54,24 @@ export default function CustomerApprovalsPage() {
 
   const fetchCustomers = async () => {
     setLoadingData(true);
-    const response = await nextApi.get<Customer[]>("/api/admin/customers/pending");
-    if (response.success && response.data) {
-      setCustomers(response.data);
+    try {
+      console.log("Fetching customers...");
+      const response = await nextApi.get<Customer[]>("/api/admin/customers/pending");
+      console.log("Customers response:", response);
+      
+      if (response.success && response.data) {
+        console.log("Setting customers:", response.data);
+        setCustomers(Array.isArray(response.data) ? response.data : []);
+      } else {
+        console.error("Failed to fetch customers:", response.error);
+        toast.error(response.error || "Failed to fetch customers");
+      }
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      toast.error("Failed to fetch customers");
+    } finally {
+      setLoadingData(false);
     }
-    setLoadingData(false);
   };
 
   useEffect(() => {
@@ -73,12 +86,12 @@ export default function CustomerApprovalsPage() {
     if (!selectedCustomer || !action) return;
 
     setProcessing(true);
-    const endpoint = `/api/admin/customers/${selectedCustomer.id}/${action}`;
+    const endpoint = `/api/admin/customers/${selectedCustomer._id || selectedCustomer.id}/${action}`;
     const response = await nextApi.put(endpoint);
 
     if (response.success) {
       toast.success(`Customer ${action === "approve" ? "approved" : "rejected"} successfully`);
-      setCustomers(customers.filter((c) => c.id !== selectedCustomer.id));
+      setCustomers(customers.filter((c) => (c._id || c.id) !== (selectedCustomer._id || selectedCustomer.id)));
     } else {
       toast.error(response.error || "Action failed");
     }
@@ -108,7 +121,7 @@ export default function CustomerApprovalsPage() {
         ) : (
           <div className="space-y-4">
             {customers.map((customer) => (
-              <Card key={customer.id}>
+              <Card key={customer._id || customer.id}>
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
