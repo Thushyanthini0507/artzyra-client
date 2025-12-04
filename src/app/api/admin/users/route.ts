@@ -5,8 +5,10 @@ import { isAdmin } from "@/lib/adminAuth";
 
 export async function GET(request: Request) {
   try {
-    if (!(await isAdmin())) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    const adminCheck = await isAdmin();
+    if (!adminCheck) {
+      console.log("GET /api/admin/users: Unauthorized - not admin");
+      return NextResponse.json({ success: false, error: "Unauthorized - Admin access required" }, { status: 403 });
     }
 
     await dbConnect();
@@ -20,6 +22,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, data: users });
   } catch (error: any) {
+    console.error("GET /api/admin/users error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }
@@ -29,8 +32,10 @@ export async function GET(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    if (!(await isAdmin())) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    const adminCheck = await isAdmin();
+    if (!adminCheck) {
+      console.log("PUT /api/admin/users: Unauthorized - not admin");
+      return NextResponse.json({ success: false, error: "Unauthorized - Admin access required" }, { status: 403 });
     }
 
     await dbConnect();
@@ -38,7 +43,11 @@ export async function PUT(request: Request) {
     const { userId, status } = body;
 
     if (!userId || !status) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "Missing required fields: userId and status" }, { status: 400 });
+    }
+
+    if (!["pending", "approved", "rejected"].includes(status)) {
+      return NextResponse.json({ success: false, error: "Invalid status. Must be: pending, approved, or rejected" }, { status: 400 });
     }
 
     const user = await User.findByIdAndUpdate(
@@ -51,8 +60,10 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, data: user });
+    console.log(`User ${userId} status updated to ${status} by admin`);
+    return NextResponse.json({ success: true, data: user, message: `User ${status} successfully` });
   } catch (error: any) {
+    console.error("PUT /api/admin/users error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }

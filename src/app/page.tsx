@@ -1,8 +1,10 @@
 import { PublicLayout } from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { HomeCategories } from "@/components/HomeCategories";
 
 export default function Home() {
+
   return (
     <PublicLayout>
       <section className="py-20 px-4">
@@ -31,6 +33,8 @@ export default function Home() {
               </Link>
             </div>
           </div>
+
+          <HomeCategories />
 
           <div className="grid md:grid-cols-3 gap-8 mt-20">
             <div className="text-center p-6">

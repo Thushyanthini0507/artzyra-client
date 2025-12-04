@@ -17,11 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { api } from "@/lib/api";
+import { nextApi } from "@/lib/api";
 import { toast } from "sonner";
 
 interface Customer {
-  id: string;
+  _id: string;
+  id?: string; // For backward compatibility
   name: string;
   email: string;
   phone: string;
@@ -53,7 +54,7 @@ export default function CustomerApprovalsPage() {
 
   const fetchCustomers = async () => {
     setLoadingData(true);
-    const response = await api.get<Customer[]>("/api/admin/customers/pending");
+    const response = await nextApi.get<Customer[]>("/api/admin/customers/pending");
     if (response.success && response.data) {
       setCustomers(response.data);
     }
@@ -73,7 +74,7 @@ export default function CustomerApprovalsPage() {
 
     setProcessing(true);
     const endpoint = `/api/admin/customers/${selectedCustomer.id}/${action}`;
-    const response = await api.put(endpoint);
+    const response = await nextApi.put(endpoint);
 
     if (response.success) {
       toast.success(`Customer ${action === "approve" ? "approved" : "rejected"} successfully`);

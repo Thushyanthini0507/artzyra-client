@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { api } from "@/lib/api";
+import { nextApi } from "@/lib/api";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 
@@ -38,7 +38,7 @@ export default function AdminArtistsPage() {
 
   const fetchArtists = async () => {
     setLoading(true);
-    const response = await api.get<User[]>("/api/admin/users?role=artist");
+    const response = await nextApi.get<User[]>("/api/admin/users?role=artist");
     if (response.success && response.data) {
       setArtists(response.data);
     }
@@ -53,7 +53,7 @@ export default function AdminArtistsPage() {
     if (!selectedUser || !actionType) return;
 
     const status = actionType === "approve" ? "approved" : "rejected";
-    const response = await api.put("/api/admin/users", {
+    const response = await nextApi.put("/api/admin/users", {
       userId: selectedUser._id,
       status,
     });

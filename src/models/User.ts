@@ -23,6 +23,7 @@ export interface IUser extends Document {
     country: string;
   };
   profileImage?: string;
+  favorites?: string[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -59,6 +60,7 @@ const UserSchema: Schema<IUser> = new Schema(
       country: String,
     },
     profileImage: { type: String },
+    favorites: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

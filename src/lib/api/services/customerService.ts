@@ -18,4 +18,12 @@ export const customerService = {
     const response = await api.get("/api/customers/reviews");
     return response.data;
   },
+  getFavorites: async () => {
+    const response = await api.get("/api/customers/favorites");
+    return response.data;
+  },
+  toggleFavorite: async (artistId: string) => {
+    const response = await api.post("/api/customers/favorites", { artistId });
+    return response.data;
+  },
 };
