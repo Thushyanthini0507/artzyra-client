@@ -30,3 +30,4 @@ const Image: Model<IImage> =
   mongoose.models.Image || mongoose.model<IImage>("Image", ImageSchema);
 
 export default Image;
+

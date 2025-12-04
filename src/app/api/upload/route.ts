@@ -49,8 +49,11 @@ async function getUserId(request: Request) {
 
 export async function POST(request: NextRequest) {
   try {
+    console.log("Upload API called");
+    
     // Check authentication
     const userId = await getUserId(request);
+    console.log("User ID:", userId);
     if (!userId) {
       return NextResponse.json(
         { success: false, error: "Unauthorized - Please log in to upload images" },
@@ -59,10 +62,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate Cloudinary configuration
-    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_API_KEY || !CLOUDINARY_API_SECRET) {
-      console.error("Cloudinary configuration missing");
+    console.log("Checking Cloudinary config:", {
+      hasCloudName: !!CLOUDINARY_CLOUD_NAME,
+      hasApiKey: !!CLOUDINARY_API_KEY,
+      hasApiSecret: !!CLOUDINARY_API_SECRET,
+      cloudName: CLOUDINARY_CLOUD_NAME
+    });
+    
+    const missingVars = [];
+    if (!CLOUDINARY_CLOUD_NAME) missingVars.push("CLOUDINARY_CLOUD_NAME");
+    if (!CLOUDINARY_API_KEY) missingVars.push("CLOUDINARY_API_KEY");
+    if (!CLOUDINARY_API_SECRET) missingVars.push("CLOUDINARY_API_SECRET");
+    
+    if (missingVars.length > 0) {
+      console.error("Cloudinary configuration missing:", missingVars.join(", "));
       return NextResponse.json(
-        { success: false, error: "Image upload service not configured" },
+        { 
+          success: false, 
+          error: `Image upload service not configured. Missing: ${missingVars.join(", ")}. Please check your .env.local file and restart your server.` 
+        },
         { status: 500 }
       );
     }
@@ -111,33 +129,50 @@ export async function POST(request: NextRequest) {
     cloudinaryFormData.append("folder", "artzyra/may");
 
     // Use upload preset for unsigned uploads (recommended and easier)
-    if (uploadPreset) {
+    if (uploadPreset && uploadPreset.trim() !== "") {
+      console.log("Using unsigned upload with preset:", uploadPreset);
       cloudinaryFormData.append("upload_preset", uploadPreset);
     } else {
       // If no preset, use signed upload with API secret
+      console.log("Using signed upload (no preset configured)");
       const timestamp = Math.round(new Date().getTime() / 1000);
+      const folder = "artzyra/may";
+      
+      // Generate signature with all parameters (except file and api_key)
+      const signature = generateCloudinarySignature({
+        timestamp,
+        folder,
+      });
+      
       cloudinaryFormData.append("timestamp", timestamp.toString());
       cloudinaryFormData.append("api_key", CLOUDINARY_API_KEY!);
-      cloudinaryFormData.append("signature", generateCloudinarySignature({
-        timestamp,
-        folder: "artzyra/may",
-      }));
+      cloudinaryFormData.append("signature", signature);
+      
+      console.log("Signed upload params:", { timestamp, folder, hasSignature: !!signature });
     }
 
     // Upload to Cloudinary
-    const cloudinaryResponse = await fetch(
-      `https://api.cloudinary.com/v1_1/artzyra/image/upload`,
-      {
-        method: "POST",
-        body: cloudinaryFormData,
-      }
-    );
+    const cloudinaryUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`;
+    console.log("Uploading to Cloudinary:", cloudinaryUrl);
+    
+    const cloudinaryResponse = await fetch(cloudinaryUrl, {
+      method: "POST",
+      body: cloudinaryFormData,
+    });
 
     if (!cloudinaryResponse.ok) {
-      const errorData = await cloudinaryResponse.json();
-      console.error("Cloudinary upload error:", errorData);
+      let errorMessage = "Failed to upload image to Cloudinary";
+      try {
+        const errorData = await cloudinaryResponse.json();
+        console.error("Cloudinary upload error:", errorData);
+        errorMessage = errorData.error?.message || errorData.message || errorMessage;
+      } catch (e) {
+        const errorText = await cloudinaryResponse.text();
+        console.error("Cloudinary upload error (non-JSON):", errorText);
+        errorMessage = `Cloudinary error: ${cloudinaryResponse.status} ${cloudinaryResponse.statusText}`;
+      }
       return NextResponse.json(
-        { success: false, error: "Failed to upload image to Cloudinary" },
+        { success: false, error: errorMessage },
         { status: 500 }
       );
     }
@@ -169,10 +204,34 @@ export async function POST(request: NextRequest) {
     );
   } catch (error: any) {
     console.error("Upload error:", error);
+    console.error("Error name:", error.name);
+    console.error("Error message:", error.message);
+    console.error("Error stack:", error.stack);
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Server Error" },
+      { 
+        success: false, 
+        error: error.message || "Internal Server Error",
+        details: process.env.NODE_ENV === "development" ? {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        } : undefined
+      },
       { status: 500 }
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

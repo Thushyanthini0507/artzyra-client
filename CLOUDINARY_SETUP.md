@@ -26,7 +26,7 @@ This guide explains how to set up Cloudinary for image uploads in the May Galler
 4. Configure:
    - **Preset name**: `artzyra-upload` (or any name you prefer)
    - **Signing mode**: Select **Unsigned** (for easier client uploads)
-   - **Folder**: `artzyra/may` (optional, but recommended for organization)
+   - **Folder**: `artzyra/categories` (optional, but recommended for organization)
    - **Allowed formats**: Select image formats (jpg, png, gif, webp)
    - **Max file size**: 10MB (or your preferred limit)
 5. Click **Save**
@@ -171,4 +171,5 @@ Fetches all uploaded images (public endpoint).
 - Implement image categories/tags
 - Add user-specific image galleries
 - Implement image search/filtering
+
 
