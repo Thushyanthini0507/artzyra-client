@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db";
 import User from "@/models/User";
+import Booking from "@/models/Booking";
+import { checkBookingAvailability } from "@/lib/booking-utils";
 
 export async function GET(
   request: Request,
@@ -8,26 +10,51 @@ export async function GET(
 ) {
   try {
     await dbConnect();
-    
-    // Await params as it is a Promise in Next.js 15+ (and potentially 16)
-    // Even if using older version, it's safer to treat as promise or check documentation, 
-    // but based on recent Next.js changes, params are async.
-    // However, looking at other routes might clarify if I should await it.
-    // Let's assume standard Next.js 13/14 behavior first where it's an object, 
-    // but the type signature I used above implies Promise. 
-    // Let's check a sibling route to be consistent.
-    
-    // Actually, let's just use the standard signature and await if needed or access directly.
-    // To be safe and consistent with modern Next.js, I will await it.
     const { categoryId } = await params;
 
-    const artists = await User.find({
+    // Get query parameters for date and time filtering
+    const { searchParams } = new URL(request.url);
+    const bookingDate = searchParams.get("bookingDate");
+    const startTime = searchParams.get("startTime");
+    const endTime = searchParams.get("endTime");
+
+    // Find all approved artists in this category
+    const allArtists = await User.find({
       role: "artist",
       status: "approved",
       category: categoryId,
     }).select("-password");
 
-    return NextResponse.json({ success: true, data: artists });
+    // If date/time filters are provided, filter out unavailable artists
+    if (bookingDate && startTime && endTime) {
+      const availableArtists = [];
+
+      for (const artist of allArtists) {
+        // Get existing bookings for this artist on the selected date
+        const existingBookings = await Booking.find({
+          artist: artist._id,
+          bookingDate: new Date(bookingDate),
+        }).populate("artist");
+
+        // Check if artist is available
+        const availability = checkBookingAvailability(
+          artist._id.toString(),
+          bookingDate,
+          startTime,
+          endTime,
+          existingBookings
+        );
+
+        if (availability.available) {
+          availableArtists.push(artist);
+        }
+      }
+
+      return NextResponse.json({ success: true, data: availableArtists });
+    }
+
+    // If no date/time filters, return all artists
+    return NextResponse.json({ success: true, data: allArtists });
   } catch (error: any) {
     console.error("Error fetching artists by category:", error);
     return NextResponse.json(

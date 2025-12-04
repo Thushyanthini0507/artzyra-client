@@ -8,12 +8,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { artistService } from "@/lib/api/services/artistService";
 import { toast } from "sonner";
-import { Check, X, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function ArtistBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -34,39 +33,6 @@ export default function ArtistBookingsPage() {
     fetchBookings();
   }, []);
 
-  const handleAccept = async (bookingId: string) => {
-    setActionLoading(bookingId);
-    try {
-      const response = await artistService.acceptBooking(bookingId);
-      if (response.success) {
-        toast.success("Booking accepted");
-        fetchBookings();
-      } else {
-        toast.error(response.error || "Failed to accept booking");
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to accept booking");
-    } finally {
-      setActionLoading(null);
-    }
-  };
-
-  const handleReject = async (bookingId: string) => {
-    setActionLoading(bookingId);
-    try {
-      const response = await artistService.rejectBooking(bookingId);
-      if (response.success) {
-        toast.success("Booking rejected");
-        fetchBookings();
-      } else {
-        toast.error(response.error || "Failed to reject booking");
-      }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to reject booking");
-    } finally {
-      setActionLoading(null);
-    }
-  };
 
   const getStatusBadge = (status: string) => {
     const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
@@ -107,7 +73,7 @@ export default function ArtistBookingsPage() {
                     <TableHead>Location</TableHead>
                     <TableHead>Amount</TableHead>
                     <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>Time</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -124,43 +90,10 @@ export default function ArtistBookingsPage() {
                       <TableCell>{booking.location || "N/A"}</TableCell>
                       <TableCell>${booking.totalAmount || 0}</TableCell>
                       <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                      <TableCell className="text-right">
-                        {booking.status === "pending" && (
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                              onClick={() => handleAccept(booking._id)}
-                              disabled={actionLoading === booking._id}
-                            >
-                              {actionLoading === booking._id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <Check className="mr-2 h-4 w-4" />
-                                  Accept
-                                </>
-                              )}
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleReject(booking._id)}
-                              disabled={actionLoading === booking._id}
-                            >
-                              {actionLoading === booking._id ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
-                              ) : (
-                                <>
-                                  <X className="mr-2 h-4 w-4" />
-                                  Reject
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        )}
+                      <TableCell>
+                        {booking.startTime && booking.endTime 
+                          ? `${booking.startTime} - ${booking.endTime}`
+                          : "N/A"}
                       </TableCell>
                     </TableRow>
                   ))}

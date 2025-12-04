@@ -8,7 +8,7 @@ export interface IBooking extends Document {
   endTime: string;
   location: string;
   specialRequests?: string;
-  status: "pending" | "accepted" | "rejected" | "completed" | "cancelled";
+  status: "pending" | "accepted" | "confirmed" | "rejected" | "completed" | "cancelled";
   totalAmount?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -25,8 +25,8 @@ const BookingSchema: Schema<IBooking> = new Schema(
     specialRequests: { type: String },
     status: {
       type: String,
-      enum: ["pending", "accepted", "rejected", "completed", "cancelled"],
-      default: "pending",
+      enum: ["pending", "accepted", "confirmed", "rejected", "completed", "cancelled"],
+      default: "confirmed", // Auto-confirm bookings
     },
     totalAmount: { type: Number },
   },
