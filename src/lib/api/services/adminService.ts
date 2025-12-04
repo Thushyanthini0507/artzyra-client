@@ -1,4 +1,4 @@
-import api from "../axios";
+import { nextApi } from "../../api";
 
 export interface DashboardStats {
   totalCustomers: number;
@@ -11,56 +11,56 @@ export interface DashboardStats {
 export const adminService = {
   // Dashboard
   getDashboardStatus: async () => {
-    return api.get<{ data: DashboardStats }>("/api/admin/dashboard/status");
+    return nextApi.get<{ data: DashboardStats }>("/api/admin/dashboard/status");
   },
 
   // Users
   getUsers: async (role?: string) => {
     const query = role ? `?role=${role}` : "";
-    return api.get(`/api/admin/users${query}`);
+    return nextApi.get(`/api/admin/users${query}`);
   },
 
   // Artists
   getPendingArtists: async () => {
-    return api.get("/api/admin/pending/artists");
+    return nextApi.get("/api/admin/pending/artists");
   },
 
   approveArtist: async (artistId: string) => {
-    return api.put(`/api/artists/${artistId}/approve`, {});
+    return nextApi.put(`/api/artists/${artistId}/approve`, {});
   },
 
   rejectArtist: async (artistId: string) => {
-    return api.put(`/api/artists/${artistId}/reject`, {});
+    return nextApi.put(`/api/artists/${artistId}/reject`, {});
   },
 
   // Bookings
   getBookings: async () => {
-    return api.get("/api/admin/bookings");
+    return nextApi.get("/api/admin/bookings");
   },
 
   // Payments
   getPayments: async () => {
-    return api.get("/api/admin/payments");
+    return nextApi.get("/api/admin/payments");
   },
 
   refundPayment: async (paymentId: string) => {
-    return api.post(`/payments/${paymentId}/refund`, {});
+    return nextApi.post(`/api/payments/${paymentId}/refund`, {});
   },
 
   // Categories
   getCategories: async () => {
-    return api.get("/api/categories");
+    return nextApi.get("/api/categories");
   },
 
   createCategory: async (data: { name: string; description?: string; image?: string }) => {
-    return api.post("/api/categories", data);
+    return nextApi.post("/api/categories", data);
   },
 
   updateCategory: async (id: string, data: { name?: string; description?: string; image?: string }) => {
-    return api.put(`/api/categories/${id}`, data);
+    return nextApi.put(`/api/categories/${id}`, data);
   },
 
   deleteCategory: async (id: string) => {
-    return api.delete(`/api/categories/${id}`);
+    return nextApi.delete(`/api/categories/${id}`);
   },
 };

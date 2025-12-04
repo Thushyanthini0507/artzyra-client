@@ -24,8 +24,8 @@ export default function UsersPage() {
     setLoading(true);
     try {
       const response = await adminService.getUsers(role === "all" ? undefined : role);
-      if (response.data.success && response.data.data) {
-        setUsers(response.data.data);
+      if (response.success && response.data) {
+        setUsers(response.data as any[]);
       }
     } catch (error) {
       console.error("Failed to fetch users", error);

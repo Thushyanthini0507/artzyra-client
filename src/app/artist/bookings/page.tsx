@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { artistService } from "@/lib/api/services/artistService";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function ArtistBookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -88,7 +89,7 @@ export default function ArtistBookingsPage() {
                       <TableCell>{booking.service || "N/A"}</TableCell>
                       <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
                       <TableCell>{booking.location || "N/A"}</TableCell>
-                      <TableCell>${booking.totalAmount || 0}</TableCell>
+                      <TableCell>{formatLKR(booking.totalAmount)}</TableCell>
                       <TableCell>{getStatusBadge(booking.status)}</TableCell>
                       <TableCell>
                         {booking.startTime && booking.endTime 

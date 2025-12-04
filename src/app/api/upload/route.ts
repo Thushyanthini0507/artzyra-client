@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
 
     // Upload to Cloudinary
     const cloudinaryResponse = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      `https://api.cloudinary.com/v1_1/artzyra/image/upload`,
       {
         method: "POST",
         body: cloudinaryFormData,

@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/admin/StatusBadge";
 import { toast } from "sonner";
 import { RotateCcw } from "lucide-react";
+import { formatLKR } from "@/lib/utils/currency";
 
 // Assuming we might need to fetch payments separately or reuse bookings endpoint if it includes payment info.
 // For now, let's assume we can get payments or extract them from bookings, 
@@ -42,8 +43,8 @@ export default function PaymentsPage() {
     const fetchPayments = async () => {
         try {
             const response = await adminService.getPayments(); 
-            if (response.data.success && response.data.data) {
-                setPayments(response.data.data);
+            if (response.success && response.data) {
+                setPayments(response.data as any[]);
             }
         } catch (error) {
             console.error("Failed to fetch payments", error);
@@ -109,7 +110,7 @@ export default function PaymentsPage() {
                       {payment._id.slice(-8).toUpperCase()}
                     </TableCell>
                     <TableCell>{payment.customer?.name || "Unknown"}</TableCell>
-                    <TableCell>${payment.totalAmount?.toFixed(2)}</TableCell>
+                    <TableCell>{formatLKR(payment.totalAmount)}</TableCell>
                     <TableCell>
                       <StatusBadge status={payment.status} />
                     </TableCell>

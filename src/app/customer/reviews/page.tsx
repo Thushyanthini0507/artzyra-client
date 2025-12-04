@@ -90,7 +90,7 @@ export default function CustomerReviewsPage() {
                         <h3 className="font-semibold">
                           {typeof review.artist === 'string' ? 'Artist' : review.artist?.name || 'Artist'}
                         </h3>
-                        <span className="text-xs text-muted-foreground">• {review.service}</span>
+                        <span className="text-xs text-muted-foreground">• {(review.booking as any)?.service}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         {renderStars(review.rating)}

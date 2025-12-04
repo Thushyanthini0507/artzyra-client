@@ -11,6 +11,7 @@ import { ReviewForm } from "@/components/customer/review-form";
 import { Booking } from "@/types";
 import { useParams } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function BookingDetailsPage() {
   const params = useParams();
@@ -66,7 +67,7 @@ export default function BookingDetailsPage() {
               </div>
               <div>
                 <h3 className="font-semibold">Total Amount</h3>
-                <p className="text-xl font-bold">${booking.totalAmount}</p>
+                <p className="text-xl font-bold">{formatLKR(booking.totalAmount)}</p>
               </div>
             </CardContent>
           </Card>

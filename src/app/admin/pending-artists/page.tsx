@@ -24,8 +24,8 @@ export default function PendingArtistsPage() {
     setLoading(true);
     try {
       const response = await adminService.getPendingArtists();
-      if (response.data.success && response.data.data) {
-        setArtists(response.data.data);
+      if (response.success && response.data) {
+        setArtists(response.data as any[]);
       }
     } catch (error) {
       console.error("Failed to fetch pending artists", error);

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { paymentService } from "@/lib/api/services/paymentService";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function CustomerPaymentsPage() {
   const [payments, setPayments] = useState<any[]>([]);
@@ -81,7 +82,7 @@ export default function CustomerPaymentsPage() {
                           {typeof payment.booking?.artist === 'object' ? payment.booking.artist.name : 'Artist'}
                         </div>
                       </TableCell>
-                      <TableCell>${payment.amount}</TableCell>
+                      <TableCell>{formatLKR(payment.amount)}</TableCell>
                       <TableCell>{getStatusBadge(payment.status)}</TableCell>
                       <TableCell className="capitalize">{payment.paymentMethod}</TableCell>
                     </TableRow>

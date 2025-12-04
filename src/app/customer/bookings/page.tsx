@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Trash2, Edit, Eye, CreditCard, Star } from "lucide-react";
 import { PaymentDialog } from "@/components/customer/PaymentDialog";
 import { ReviewDialog } from "@/components/customer/ReviewDialog";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function CustomerBookingsPage() {
   const { bookings, loading, refresh } = useCustomerBookings();
@@ -83,7 +84,7 @@ export default function CustomerBookingsPage() {
                           {booking.status}
                         </Badge>
                         {booking.totalAmount && (
-                          <span className="text-sm font-medium ml-2">${booking.totalAmount}</span>
+                          <span className="text-sm font-medium ml-2">{formatLKR(booking.totalAmount)}</span>
                         )}
                       </div>
                     </div>

@@ -10,6 +10,7 @@ import { artistService } from "@/lib/api/services/artistService";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function ArtistDashboard() {
   const [stats, setStats] = useState({
@@ -94,7 +95,7 @@ export default function ArtistDashboard() {
               <CardDescription>Total earnings</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">${stats.revenue}</div>
+              <div className="text-3xl font-bold">{formatLKR(stats.revenue)}</div>
             </CardContent>
           </Card>
 
@@ -155,7 +156,7 @@ export default function ArtistDashboard() {
                           ? `${booking.startTime} - ${booking.endTime}`
                           : "N/A"}
                       </TableCell>
-                      <TableCell>${booking.totalAmount || 0}</TableCell>
+                      <TableCell>{formatLKR(booking.totalAmount)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

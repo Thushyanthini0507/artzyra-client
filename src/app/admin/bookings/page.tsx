@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/admin/StatusBadge";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -21,8 +22,8 @@ export default function BookingsPage() {
     const fetchBookings = async () => {
       try {
         const response = await adminService.getBookings();
-        if (response.data.success && response.data.data) {
-          setBookings(response.data.data);
+        if (response.success && response.data) {
+          setBookings(response.data as any[]);
         }
       } catch (error) {
         console.error("Failed to fetch bookings", error);
@@ -84,7 +85,7 @@ export default function BookingsPage() {
                       <StatusBadge status={booking.status} />
                     </TableCell>
                     <TableCell className="text-right">
-                      ${booking.totalAmount?.toFixed(2) || "0.00"}
+                      {formatLKR(booking.totalAmount)}
                     </TableCell>
                   </TableRow>
                 ))

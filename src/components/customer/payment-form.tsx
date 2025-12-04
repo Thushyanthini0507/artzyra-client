@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useCreatePayment } from "@/hooks/useCustomerHooks";
+import { formatLKR } from "@/lib/utils/currency";
 
 const paymentSchema = z.object({
   amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
@@ -53,7 +54,7 @@ export function PaymentForm({ bookingId, amount, onSuccess }: PaymentFormProps) 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="amount">Amount ($)</Label>
+        <Label htmlFor="amount">Amount (LKR)</Label>
         <Input id="amount" {...register("amount")} readOnly />
       </div>
 
@@ -77,7 +78,7 @@ export function PaymentForm({ bookingId, amount, onSuccess }: PaymentFormProps) 
       </div>
 
       <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Processing..." : `Pay $${amount}`}
+        {loading ? "Processing..." : `Pay ${formatLKR(amount)}`}
       </Button>
     </form>
   );

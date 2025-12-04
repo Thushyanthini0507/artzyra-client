@@ -11,6 +11,7 @@ import { categoryService } from "@/lib/api/services/categoryService";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { customerService } from "@/lib/api/services/customerService";
 import { useAuth } from "@/contexts/auth-context";
+import { formatHourlyRate } from "@/lib/utils/currency";
 
 export function BrowseArtists() {
   const searchParams = useSearchParams();
@@ -149,7 +150,7 @@ export function BrowseArtists() {
                 </CardDescription>
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium">
-                    ${artist.hourlyRate || 0}/hr
+                    {formatHourlyRate(artist.hourlyRate)}
                   </span>
                   <Button size="sm" variant="secondary">
                     View Profile

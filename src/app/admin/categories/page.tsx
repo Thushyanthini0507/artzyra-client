@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { adminService } from "@/lib/api/services/adminService";
+import { uploadService } from "@/lib/api/services/uploadService";
 import {
   Table,
   TableBody,
@@ -34,17 +35,22 @@ export default function CategoriesPage() {
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const [formData, setFormData] = useState({ name: "", description: "", image: "" });
   const [imagePreview, setImagePreview] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchCategories = async () => {
     setLoading(true);
     try {
       const response = await adminService.getCategories();
-      if (response.data.success && response.data.data) {
-        setCategories(response.data.data);
+      if (response.success && response.data) {
+        setCategories(Array.isArray(response.data) ? response.data : []);
+      } else {
+        console.error("Failed to fetch categories:", response.error);
+        toast.error(response.error || "Failed to load categories");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch categories", error);
+      toast.error(error.message || "Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -63,18 +69,30 @@ export default function CategoriesPage() {
         return;
       }
       
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image size must be less than 5MB");
+      // Validate file size (max 10MB for Cloudinary)
+      const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+      if (file.size > MAX_SIZE) {
+        toast.error("Image size must be less than 10MB.");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
         return;
       }
 
-      // Convert to base64
+      setSelectedFile(file);
+
+      // Convert to base64 for preview only
       const reader = new FileReader();
+      reader.onerror = () => {
+        toast.error("Failed to read image file");
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      };
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setFormData({ ...formData, image: base64String });
         setImagePreview(base64String);
+        // We don't set formData.image here anymore, we'll handle it on submit
       };
       reader.readAsDataURL(file);
     }
@@ -83,6 +101,7 @@ export default function CategoriesPage() {
   const handleRemoveImage = () => {
     setFormData({ ...formData, image: "" });
     setImagePreview("");
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -90,21 +109,79 @@ export default function CategoriesPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    if (!formData.name || formData.name.trim().length === 0) {
+      toast.error("Category name is required");
+      return;
+    }
+
     try {
-      if (editingCategory) {
-        await adminService.updateCategory(editingCategory._id, formData);
-        toast.success("Category updated");
-      } else {
-        await adminService.createCategory(formData);
-        toast.success("Category created");
+      let imageUrl = formData.image;
+
+      // Upload image if a new file is selected
+      if (selectedFile) {
+        const uploadToast = toast.loading("Uploading image...");
+        const uploadResult = await uploadService.uploadImage(selectedFile);
+        toast.dismiss(uploadToast);
+
+        if (!uploadResult.success || !uploadResult.data) {
+          toast.error(uploadResult.error || "Failed to upload image");
+          return;
+        }
+        imageUrl = uploadResult.data.url;
       }
+
+      const dataToSubmit = {
+        ...formData,
+        image: imageUrl
+      };
+
+      console.log("Submitting category with data:", { 
+        name: dataToSubmit.name, 
+        hasDescription: !!dataToSubmit.description,
+        hasImage: !!dataToSubmit.image
+      });
+
+      let response;
+      if (editingCategory) {
+        console.log("Updating category:", editingCategory._id);
+        response = await adminService.updateCategory(editingCategory._id, dataToSubmit);
+        if (response.success) {
+          toast.success("Category updated");
+        } else {
+          console.error("Update failed:", response.error);
+          toast.error(response.error || "Failed to update category");
+          return;
+        }
+      } else {
+        console.log("Creating new category");
+        response = await adminService.createCategory(dataToSubmit);
+        console.log("Create response:", response);
+        
+        if (response.success) {
+          toast.success("Category created successfully");
+        } else {
+          console.error("Create failed:", response.error);
+          toast.error(response.error || "Failed to create category");
+          return;
+        }
+      }
+      
       setIsDialogOpen(false);
       setEditingCategory(null);
       setFormData({ name: "", description: "", image: "" });
       setImagePreview("");
+      setSelectedFile(null);
       fetchCategories();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to save category");
+      console.error("Category save error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        error: error.error,
+        stack: error.stack
+      });
+      toast.error(error.message || error.error || "Failed to save category. Check console for details.");
     }
   };
 
@@ -124,6 +201,7 @@ export default function CategoriesPage() {
     setEditingCategory(null);
     setFormData({ name: "", description: "", image: "" });
     setImagePreview("");
+    setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -132,11 +210,16 @@ export default function CategoriesPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this category?")) return;
     try {
-      await adminService.deleteCategory(id);
-      toast.success("Category deleted");
-      fetchCategories();
-    } catch (error) {
-      toast.error("Failed to delete category");
+      const response = await adminService.deleteCategory(id);
+      if (response.success) {
+        toast.success("Category deleted");
+        fetchCategories();
+      } else {
+        toast.error(response.error || "Failed to delete category");
+      }
+    } catch (error: any) {
+      console.error("Delete error:", error);
+      toast.error(error.message || error.error || "Failed to delete category");
     }
   };
 
@@ -154,6 +237,7 @@ export default function CategoriesPage() {
                 setEditingCategory(null);
                 setFormData({ name: "", description: "", image: "" });
                 setImagePreview("");
+                setSelectedFile(null);
               }}>
                 <Plus className="mr-2 h-4 w-4" />
                 Add Category

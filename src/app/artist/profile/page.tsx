@@ -171,7 +171,7 @@ export default function ArtistProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hourlyRate">Hourly Rate ($)</Label>
+                  <Label htmlFor="hourlyRate">Hourly Rate (LKR)</Label>
                   <Input
                     id="hourlyRate"
                     type="number"

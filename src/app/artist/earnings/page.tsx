@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { artistService } from "@/lib/api/services/artistService";
 import { Loader2, DollarSign, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
+import { formatLKR } from "@/lib/utils/currency";
 
 export default function ArtistEarningsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -62,7 +63,7 @@ export default function ArtistEarningsPage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats.totalEarnings}</div>
+              <div className="text-2xl font-bold">{formatLKR(stats.totalEarnings)}</div>
               <p className="text-xs text-muted-foreground">From {stats.completedBookings} completed bookings</p>
             </CardContent>
           </Card>
@@ -73,7 +74,7 @@ export default function ArtistEarningsPage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-orange-500">${stats.pendingEarnings}</div>
+              <div className="text-2xl font-bold text-orange-500">{formatLKR(stats.pendingEarnings)}</div>
               <p className="text-xs text-muted-foreground">From accepted bookings</p>
             </CardContent>
           </Card>
@@ -127,7 +128,7 @@ export default function ArtistEarningsPage() {
                       <TableCell>
                         <Badge variant="default">Completed</Badge>
                       </TableCell>
-                      <TableCell className="text-right font-medium">${booking.totalAmount || 0}</TableCell>
+                      <TableCell className="text-right font-medium">{formatLKR(booking.totalAmount)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>

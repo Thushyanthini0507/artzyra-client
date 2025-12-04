@@ -13,8 +13,8 @@ export function useAdminUsers(role?: string) {
     setLoading(true);
     try {
       const response = await adminService.getUsers(role);
-      if (response.data.success && response.data.data) {
-        setUsers(response.data.data);
+      if (response.success && response.data) {
+        setUsers(Array.isArray(response.data) ? response.data : []);
       }
     } catch (err: any) {
       setError(err.message || "Failed to fetch users");
@@ -40,8 +40,8 @@ export function usePendingArtists() {
     setLoading(true);
     try {
       const response = await adminService.getPendingArtists();
-      if (response.data.success && response.data.data) {
-        setArtists(response.data.data);
+      if (response.success && response.data) {
+        setArtists(Array.isArray(response.data) ? response.data : []);
       }
     } catch (err: any) {
       setError(err.message || "Failed to fetch pending artists");
@@ -67,8 +67,8 @@ export function useAdminBookings() {
     setLoading(true);
     try {
       const response = await adminService.getBookings();
-      if (response.data.success && response.data.data) {
-        setBookings(response.data.data);
+      if (response.success && response.data) {
+        setBookings(Array.isArray(response.data) ? response.data : []);
       }
     } catch (err: any) {
       setError(err.message || "Failed to fetch bookings");
@@ -94,8 +94,8 @@ export function useAdminCategories() {
     setLoading(true);
     try {
       const response = await categoryService.getAllCategories();
-      if (response.data.success && response.data.data) {
-        setCategories(response.data.data);
+      if (response.success && response.data) {
+        setCategories(Array.isArray(response.data) ? response.data : []);
       }
     } catch (err: any) {
       setError(err.message || "Failed to fetch categories");
@@ -119,12 +119,12 @@ export function useCreateCategory() {
     setLoading(true);
     try {
       const response = await categoryService.createCategory(data);
-      if (response.data.success) {
+      if (response.success) {
         toast.success("Category created successfully");
-        return { success: true, data: response.data.data };
+        return { success: true, data: response.data };
       } else {
-        toast.error(response.data.error || "Failed to create category");
-        return { success: false, error: response.data.error };
+        toast.error(response.error || "Failed to create category");
+        return { success: false, error: response.error };
       }
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || err.message || "Failed to create category";
@@ -146,12 +146,12 @@ export function useUpdateCategory() {
     setLoading(true);
     try {
       const response = await categoryService.updateCategory(categoryId, data);
-      if (response.data.success) {
+      if (response.success) {
         toast.success("Category updated successfully");
-        return { success: true, data: response.data.data };
+        return { success: true, data: response.data };
       } else {
-        toast.error(response.data.error || "Failed to update category");
-        return { success: false, error: response.data.error };
+        toast.error(response.error || "Failed to update category");
+        return { success: false, error: response.error };
       }
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || err.message || "Failed to update category";
@@ -173,12 +173,12 @@ export function useDeleteCategory() {
     setLoading(true);
     try {
       const response = await categoryService.deleteCategory(categoryId);
-      if (response.data.success) {
+      if (response.success) {
         toast.success("Category deleted successfully");
         return { success: true };
       } else {
-        toast.error(response.data.error || "Failed to delete category");
-        return { success: false, error: response.data.error };
+        toast.error(response.error || "Failed to delete category");
+        return { success: false, error: response.error };
       }
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || err.message || "Failed to delete category";
@@ -200,12 +200,12 @@ export function useApproveArtist() {
     setLoading(true);
     try {
       const response = await adminService.approveArtist(artistId);
-      if (response.data.success) {
+      if (response.success) {
         toast.success("Artist approved successfully");
         return { success: true };
       } else {
-        toast.error(response.data.error || "Failed to approve artist");
-        return { success: false, error: response.data.error };
+        toast.error(response.error || "Failed to approve artist");
+        return { success: false, error: response.error };
       }
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || err.message || "Failed to approve artist";
@@ -227,12 +227,12 @@ export function useRejectArtist() {
     setLoading(true);
     try {
       const response = await adminService.rejectArtist(artistId);
-      if (response.data.success) {
+      if (response.success) {
         toast.success("Artist rejected");
         return { success: true };
       } else {
-        toast.error(response.data.error || "Failed to reject artist");
-        return { success: false, error: response.data.error };
+        toast.error(response.error || "Failed to reject artist");
+        return { success: false, error: response.error };
       }
     } catch (err: any) {
       const errorMsg = err.response?.data?.error || err.message || "Failed to reject artist";

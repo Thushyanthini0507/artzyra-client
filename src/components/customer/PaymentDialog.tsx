@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreatePayment } from "@/hooks/useCustomerHooks";
 import { Loader2, CreditCard } from "lucide-react";
+import { formatLKR } from "@/lib/utils/currency";
 
 interface PaymentDialogProps {
   open: boolean;
@@ -50,7 +51,7 @@ export function PaymentDialog({ open, onOpenChange, booking, onSuccess }: Paymen
               <p className="text-sm font-medium leading-none">Total Amount</p>
               <p className="text-sm text-muted-foreground">For {booking.service}</p>
             </div>
-            <div className="font-bold text-2xl">${booking.totalAmount}</div>
+            <div className="font-bold text-2xl">{formatLKR(booking.totalAmount)}</div>
           </div>
           
           <div className="space-y-2">
