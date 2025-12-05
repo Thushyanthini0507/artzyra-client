@@ -28,11 +28,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const openLogin = () => setIsLoginOpen(true);
   const closeLogin = () => setIsLoginOpen(false);
 
+  const normalizeUser = (userData: any): User | null => {
+    if (!userData) return null;
+    
+    // Handle different backend response structures
+    const user = userData.user || userData;
+    
+    // Ensure required fields exist with fallbacks
+    return {
+      _id: user._id || user.id,
+      email: user.email || "",
+      name: user.name || user.username || user.fullName || user.email?.split("@")[0] || "User",
+      role: user.role || "customer",
+      status: user.status,
+      ...user,
+    } as User;
+  };
+
   const refreshUser = async () => {
     try {
       const response = await authService.getCurrentUser();
       if (response.success && response.data) {
-        setUser(response.data);
+        const normalizedUser = normalizeUser(response.data);
+        setUser(normalizedUser);
       } else {
         setUser(null);
       }
@@ -53,24 +71,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.login({ email, password });
       if (response.success && response.data) {
-        setUser(response.data.user);
-        if (response.data.token) {
-          console.log("AuthContext - Setting token cookie:", response.data.token.substring(0, 10) + "...");
-          Cookies.set("token", response.data.token, { expires: 7, path: "/" }); // Expires in 7 days, accessible everywhere
+        // Normalize user data to handle different backend response structures
+        const userData = response.data.user || response.data;
+        const normalizedUser = normalizeUser(userData);
+        
+        if (normalizedUser) {
+          setUser(normalizedUser);
+          
+          // Handle token - could be in response.data.token or response.data.accessToken, etc.
+          const token = response.data.token || response.data.accessToken || response.token;
+          if (token) {
+            console.log("AuthContext - Setting token cookie:", token.substring(0, 10) + "...");
+            Cookies.set("token", token, { expires: 7, path: "/" }); // Expires in 7 days, accessible everywhere
+          }
+          closeLogin();
+          
+          // Redirect based on role
+          const role = normalizedUser.role;
+          if (role === "admin") router.push("/admin");
+          else if (role === "artist") router.push("/artist");
+          else if (role === "customer") router.push("/customer");
+          
+          return { success: true, user: normalizedUser };
         }
-        closeLogin();
-        
-        // Redirect based on role
-        const role = response.data.user.role;
-        if (role === "admin") router.push("/admin");
-        else if (role === "artist") router.push("/artist");
-        else if (role === "customer") router.push("/customer");
-        
-        return { success: true, user: response.data.user };
       }
-      return { success: false, error: response.error };
+      return { success: false, error: response.error || "Login failed" };
     } catch (error: any) {
-      return { success: false, error: error.response?.data?.error || "Login failed" };
+      return { success: false, error: error.response?.data?.error || error.message || "Login failed" };
     }
   };
 

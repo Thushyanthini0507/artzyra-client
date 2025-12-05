@@ -17,6 +17,16 @@ import { User, LogOut } from "lucide-react";
 export function PublicNavbar() {
   const { user, openLogin, logout } = useAuth();
 
+  const getInitials = (name: string | undefined) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   const getDashboardLink = () => {
     if (!user) return "/";
     switch (user.role) {
@@ -57,7 +67,7 @@ export function PublicNavbar() {
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar>
                       <AvatarFallback>
-                        {user.name.charAt(0).toUpperCase()}
+                        {getInitials(user.name)}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -65,7 +75,7 @@ export function PublicNavbar() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium">{user.name}</p>
+                      <p className="text-sm font-medium">{user.name || user.email || "User"}</p>
                       <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
                   </DropdownMenuLabel>

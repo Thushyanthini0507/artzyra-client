@@ -7,7 +7,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { api } from "@/lib/api";
+import api from "@/lib/api/axios";
 import { toast } from "sonner";
 
 const signUpSchema = z.object({
@@ -36,19 +36,28 @@ export function SignUpForm() {
     setLoading(true);
     setError("");
 
-    const response = await api.post("/api/auth/register", {
-      ...data,
-      role: "customer",
-    });
+    try {
+      const response = await api.post("/api/auth/register", {
+        ...data,
+        role: "customer",
+      });
 
-    if (response.success) {
-      toast.success("Account created successfully! Please sign in.");
-      reset();
-    } else {
-      setError(response.error || "Registration failed");
+      const responseData = response.data;
+      // Handle both { success: true, ... } and direct response formats
+      if (responseData.success !== false) {
+        toast.success("Account created successfully! Please sign in.");
+        reset();
+      } else {
+        setError(responseData.error || "Registration failed");
+      }
+    } catch (error: any) {
+      console.error("Registration error:", error);
+      const errorMessage = error.response?.data?.error || error.message || "Registration failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

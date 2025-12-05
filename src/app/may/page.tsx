@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Upload, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import Image from "next/image";
-import { nextApi } from "@/lib/api";
+import api from "@/lib/api/axios";
 
 interface ImageData {
   _id: string;
@@ -37,13 +37,16 @@ export default function MayPage() {
   const fetchImages = async () => {
     setLoading(true);
     try {
-      const response = await nextApi.get<ImageData[]>("/api/images");
-      if (response.success && response.data) {
-        setImages(Array.isArray(response.data) ? response.data : []);
+      const response = await api.get<ImageData[]>("/api/images");
+      const responseData = response.data;
+      const data = responseData.success !== undefined ? responseData.data : responseData;
+      
+      if (responseData.success !== false && data) {
+        setImages(Array.isArray(data) ? data : []);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch images:", error);
-      toast.error("Failed to load images");
+      toast.error(error.response?.data?.error || error.message || "Failed to load images");
     } finally {
       setLoading(false);
     }

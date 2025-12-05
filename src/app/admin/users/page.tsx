@@ -1,113 +1,81 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminService } from "@/lib/api/services/adminService";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StatusBadge } from "@/components/admin/StatusBadge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+// Replace this with your actual API URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+}
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
+  const [error, setError] = useState<string | null>(null);
 
-  const fetchUsers = async (role?: string) => {
-    setLoading(true);
+  // Fetch users from backend
+  const fetchUsers = async () => {
     try {
-      const response = await adminService.getUsers(role === "all" ? undefined : role);
-      if (response.success && response.data) {
-        setUsers(response.data as any[]);
+      setLoading(true);
+      setError(null);
+
+      const token = localStorage.getItem("token"); // If you use JWT
+      const res = await fetch(`${API_URL}/users`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Error ${res.status}: ${res.statusText}`);
       }
-    } catch (error) {
-      console.error("Failed to fetch users", error);
+
+      const data = await res.json();
+      setUsers(data);
+    } catch (err: any) {
+      setError(err.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers(activeTab);
-  }, [activeTab]);
+    fetchUsers();
+  }, []);
+
+  if (loading) return <p>Loading users...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Users</h1>
-        <p className="text-muted-foreground">Manage customers and artists.</p>
-      </div>
-
-      <Tabs defaultValue="all" onValueChange={setActiveTab} className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="all">All Users</TabsTrigger>
-          <TabsTrigger value="customer">Customers</TabsTrigger>
-          <TabsTrigger value="artist">Artists</TabsTrigger>
-          <TabsTrigger value="admin">Admins</TabsTrigger>
-        </TabsList>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>User List</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>User</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Joined</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
-                      No users found.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  users.map((user) => (
-                    <TableRow key={user._id}>
-                      <TableCell className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={user.profileImage} />
-                          <AvatarFallback>{user.name?.charAt(0) || "U"}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{user.name}</div>
-                          <div className="text-sm text-muted-foreground">{user.email}</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="capitalize">{user.role}</TableCell>
-                      <TableCell>
-                        <StatusBadge status={user.status || "active"} />
-                      </TableCell>
-                      <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      </Tabs>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Users List</h1>
+      {users.length === 0 ? (
+        <p>No users found.</p>
+      ) : (
+        <table className="w-full border border-gray-300">
+          <thead>
+            <tr className="bg-gray-200">
+              <th className="p-2 border">ID</th>
+              <th className="p-2 border">Name</th>
+              <th className="p-2 border">Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user._id} className="text-center">
+                <td className="p-2 border">{user._id}</td>
+                <td className="p-2 border">{user.name}</td>
+                <td className="p-2 border">{user.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { nextApi } from "@/lib/api";
+import api from "@/lib/api/axios";
 import { toast } from "sonner";
 
 interface Customer {
@@ -56,19 +56,22 @@ export default function CustomerApprovalsPage() {
     setLoadingData(true);
     try {
       console.log("Fetching customers...");
-      const response = await nextApi.get<Customer[]>("/api/admin/customers/pending");
+      const response = await api.get<Customer[]>("/api/admin/customers/pending");
       console.log("Customers response:", response);
       
-      if (response.success && response.data) {
-        console.log("Setting customers:", response.data);
-        setCustomers(Array.isArray(response.data) ? response.data : []);
+      const responseData = response.data;
+      const data = responseData.success !== undefined ? responseData.data : responseData;
+      
+      if (responseData.success !== false && data) {
+        console.log("Setting customers:", data);
+        setCustomers(Array.isArray(data) ? data : []);
       } else {
-        console.error("Failed to fetch customers:", response.error);
-        toast.error(response.error || "Failed to fetch customers");
+        console.error("Failed to fetch customers:", responseData.error);
+        toast.error(responseData.error || "Failed to fetch customers");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error fetching customers:", error);
-      toast.error("Failed to fetch customers");
+      toast.error(error.response?.data?.error || error.message || "Failed to fetch customers");
     } finally {
       setLoadingData(false);
     }
@@ -86,19 +89,25 @@ export default function CustomerApprovalsPage() {
     if (!selectedCustomer || !action) return;
 
     setProcessing(true);
-    const endpoint = `/api/admin/customers/${selectedCustomer._id || selectedCustomer.id}/${action}`;
-    const response = await nextApi.put(endpoint);
+    try {
+      const endpoint = `/api/admin/customers/${selectedCustomer._id || selectedCustomer.id}/${action}`;
+      const response = await api.put(endpoint);
 
-    if (response.success) {
-      toast.success(`Customer ${action === "approve" ? "approved" : "rejected"} successfully`);
-      setCustomers(customers.filter((c) => (c._id || c.id) !== (selectedCustomer._id || selectedCustomer.id)));
-    } else {
-      toast.error(response.error || "Action failed");
+      const responseData = response.data;
+      if (responseData.success !== false) {
+        toast.success(`Customer ${action === "approve" ? "approved" : "rejected"} successfully`);
+        setCustomers(customers.filter((c) => (c._id || c.id) !== (selectedCustomer._id || selectedCustomer.id)));
+      } else {
+        toast.error(responseData.error || "Action failed");
+      }
+    } catch (error: any) {
+      console.error("Error updating customer status:", error);
+      toast.error(error.response?.data?.error || error.message || "Action failed");
+    } finally {
+      setProcessing(false);
+      setSelectedCustomer(null);
+      setAction(null);
     }
-
-    setProcessing(false);
-    setSelectedCustomer(null);
-    setAction(null);
   };
 
   if (loading || !user || user.role !== "admin") {

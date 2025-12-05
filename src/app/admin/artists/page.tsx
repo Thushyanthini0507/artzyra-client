@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { AdminLayout } from "@/components/layout/admin-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -15,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { nextApi } from "@/lib/api";
+import api from "@/lib/api/axios";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 
@@ -34,25 +40,45 @@ export default function AdminArtistsPage() {
   const [artists, setArtists] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [actionType, setActionType] = useState<"approve" | "reject" | null>(null);
+  const [actionType, setActionType] = useState<"approve" | "reject" | null>(
+    null
+  );
 
   const fetchArtists = async () => {
     setLoading(true);
     try {
       console.log("Fetching artists...");
-      const response = await nextApi.get<User[]>("/api/admin/users?role=artist");
+      const response = await api.get<any>("/api/admin/users?role=artist");
       console.log("Artists response:", response);
-      
-      if (response.success && response.data) {
-        console.log("Setting artists:", response.data);
-        setArtists(Array.isArray(response.data) ? response.data : []);
+
+      const responseData = response.data;
+      // Handle both { success: true, data: [...] } and direct array responses
+      let data: User[];
+      if (
+        responseData &&
+        typeof responseData === "object" &&
+        "success" in responseData
+      ) {
+        if (responseData.success && responseData.data) {
+          data = Array.isArray(responseData.data) ? responseData.data : [];
+        } else {
+          console.error("Failed to fetch artists:", responseData.error);
+          toast.error(responseData.error || "Failed to fetch artists");
+          return;
+        }
       } else {
-        console.error("Failed to fetch artists:", response.error);
-        toast.error(response.error || "Failed to fetch artists");
+        data = Array.isArray(responseData) ? responseData : [];
       }
-    } catch (error) {
+
+      console.log("Setting artists:", data);
+      setArtists(data);
+    } catch (error: any) {
       console.error("Error fetching artists:", error);
-      toast.error("Failed to fetch artists");
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to fetch artists"
+      );
     } finally {
       setLoading(false);
     }
@@ -65,17 +91,27 @@ export default function AdminArtistsPage() {
   const handleAction = async () => {
     if (!selectedUser || !actionType) return;
 
-    const status = actionType === "approve" ? "approved" : "rejected";
-    const response = await nextApi.put("/api/admin/users", {
-      userId: selectedUser._id,
-      status,
-    });
+    try {
+      const status = actionType === "approve" ? "approved" : "rejected";
+      const response = await api.put("/api/admin/users", {
+        userId: selectedUser._id,
+        status,
+      });
 
-    if (response.success) {
-      toast.success(`Artist ${status} successfully`);
-      fetchArtists();
-    } else {
-      toast.error(response.error || "Failed to update status");
+      const responseData = response.data;
+      if (responseData.success !== false) {
+        toast.success(`Artist ${status} successfully`);
+        fetchArtists();
+      } else {
+        toast.error(responseData.error || "Failed to update status");
+      }
+    } catch (error: any) {
+      console.error("Error updating artist status:", error);
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to update status"
+      );
     }
 
     setSelectedUser(null);
@@ -92,7 +128,9 @@ export default function AdminArtistsPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Artist Management</h1>
-          <p className="text-muted-foreground">Approve or reject artist registrations</p>
+          <p className="text-muted-foreground">
+            Approve or reject artist registrations
+          </p>
         </div>
 
         {loading ? (
@@ -100,7 +138,9 @@ export default function AdminArtistsPage() {
         ) : artists.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-center text-muted-foreground">No artists found</p>
+              <p className="text-center text-muted-foreground">
+                No artists found
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -130,14 +170,16 @@ export default function AdminArtistsPage() {
                   <div className="space-y-2">
                     {artist.category && (
                       <p className="text-sm">
-                        <span className="font-medium">Category:</span> {artist.category}
+                        <span className="font-medium">Category:</span>{" "}
+                        {artist.category}
                       </p>
                     )}
                     <p className="text-sm text-muted-foreground">
-                      Registered: {new Date(artist.createdAt).toLocaleDateString()}
+                      Registered:{" "}
+                      {new Date(artist.createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  
+
                   {artist.status === "pending" && (
                     <div className="flex gap-2 mt-4">
                       <Button
@@ -166,14 +208,18 @@ export default function AdminArtistsPage() {
         )}
       </div>
 
-      <AlertDialog open={!!selectedUser} onOpenChange={() => setSelectedUser(null)}>
+      <AlertDialog
+        open={!!selectedUser}
+        onOpenChange={() => setSelectedUser(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>
               {actionType === "approve" ? "Approve" : "Reject"} Artist
             </AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to {actionType} {selectedUser?.name}? This action can be reversed later.
+              Are you sure you want to {actionType} {selectedUser?.name}? This
+              action can be reversed later.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

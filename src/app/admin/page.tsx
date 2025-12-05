@@ -18,14 +18,16 @@ export default function AdminDashboard() {
     const fetchStats = async () => {
       try {
         const response = await adminService.getDashboardStatus();
+        console.log("Dashboard response:", response);
         
         if (response.success && response.data) {
           const statsData = response.data as DashboardStats;
           setStats(statsData);
         } else if (response.error) {
-          // Error already handled by toast in service layer
+          console.error("Dashboard error:", response.error);
         }
-      } catch (error) {
+      } catch (error: any) {
+        console.error("Failed to fetch dashboard stats:", error);
       }
     };
     fetchStats();
