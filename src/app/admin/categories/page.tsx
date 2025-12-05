@@ -49,11 +49,9 @@ export default function CategoriesPage() {
       if (response.success && response.data) {
         setCategories(Array.isArray(response.data) ? response.data : []);
       } else {
-        console.error("Failed to fetch categories:", response.error);
         toast.error(response.error || "Failed to load categories");
       }
     } catch (error: any) {
-      console.error("Failed to fetch categories", error);
       toast.error(error.message || "Failed to load categories");
     } finally {
       setLoading(false);
@@ -141,15 +139,8 @@ export default function CategoriesPage() {
         image: imageUrl,
       };
 
-      console.log("Submitting category with data:", {
-        name: dataToSubmit.name,
-        hasDescription: !!dataToSubmit.description,
-        hasImage: !!dataToSubmit.image,
-      });
-
       let response;
       if (editingCategory) {
-        console.log("Updating category:", editingCategory._id);
         response = await adminService.updateCategory(
           editingCategory._id,
           dataToSubmit
@@ -157,19 +148,15 @@ export default function CategoriesPage() {
         if (response.success) {
           toast.success("Category updated");
         } else {
-          console.error("Update failed:", response.error);
           toast.error(response.error || "Failed to update category");
           return;
         }
       } else {
-        console.log("Creating new category");
         response = await adminService.createCategory(dataToSubmit);
-        console.log("Create response:", response);
 
         if (response.success) {
           toast.success("Category created successfully");
         } else {
-          console.error("Create failed:", response.error);
           toast.error(response.error || "Failed to create category");
           return;
         }
@@ -178,16 +165,8 @@ export default function CategoriesPage() {
       handleDialogOpenChange(false);
       fetchCategories();
     } catch (error: any) {
-      console.error("Category save error:", error);
-      console.error("Error details:", {
-        message: error.message,
-        error: error.error,
-        stack: error.stack,
-      });
       toast.error(
-        error.message ||
-          error.error ||
-          "Failed to save category. Check console for details."
+        error.message || error.error || "Failed to save category"
       );
     }
   };
@@ -236,7 +215,6 @@ export default function CategoriesPage() {
         toast.error(response.error || "Failed to delete category");
       }
     } catch (error: any) {
-      console.error("Delete error:", error);
       toast.error(error.message || error.error || "Failed to delete category");
     }
   };

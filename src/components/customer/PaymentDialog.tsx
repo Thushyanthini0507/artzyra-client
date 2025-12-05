@@ -28,7 +28,7 @@ export function PaymentDialog({ open, onOpenChange, booking, onSuccess }: Paymen
       booking: booking._id,
       amount: booking.totalAmount,
       paymentMethod,
-      status: "completed", // Auto-complete for demo
+      status: "completed",
     });
 
     if (result) {

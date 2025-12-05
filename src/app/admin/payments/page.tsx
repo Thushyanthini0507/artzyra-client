@@ -17,29 +17,13 @@ import { toast } from "sonner";
 import { RotateCcw } from "lucide-react";
 import { formatLKR } from "@/lib/utils/currency";
 
-// Assuming we might need to fetch payments separately or reuse bookings endpoint if it includes payment info.
-// For now, let's assume we can get payments or extract them from bookings, 
-// but typically a dedicated payments endpoint is better. 
-// Since the user didn't explicitly ask for a GET /admin/payments endpoint in the list but asked for "Refund payments UI",
-// I'll assume we might need to fetch bookings that are paid, or I should have added a GET payments endpoint.
-// Let's check the user request again: "GET /api/admin/bookings" is there. 
-// I'll use bookings for now, assuming they have payment info, or I'll create a mock payments list if needed.
-// Actually, I'll implement a basic payments fetcher if I can, or just use bookings and show payment status.
-// Wait, the user asked for "Refund payments UI".
-// I'll assume I can list payments. I'll add a GET /api/admin/payments endpoint to be safe/complete, 
-// or just fetch bookings and show a "Refund" button for completed bookings.
-// Let's stick to the plan: "Refund payments UI".
-// I'll create a new endpoint for GET /api/admin/payments to make this clean.
+// ... imports
 
 export default function PaymentsPage() {
-  // Mocking payments for now or fetching from a new endpoint I'll create shortly
   const [payments, setPayments] = useState<any[]>([]); 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // TODO: Implement GET /api/admin/payments or fetch via bookings
-    // For now, let's try to fetch bookings and map them to payments if possible, 
-    // or just fetch from a new endpoint I will create.
     const fetchPayments = async () => {
         try {
             const response = await adminService.getPayments(); 
@@ -48,6 +32,7 @@ export default function PaymentsPage() {
             }
         } catch (error) {
             console.error("Failed to fetch payments", error);
+            toast.error("Failed to load payments");
         } finally {
             setLoading(false);
         }

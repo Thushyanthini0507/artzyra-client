@@ -36,57 +36,39 @@ async function createAdminUser() {
   try {
     console.log('🔌 Connecting to MongoDB...');
     await mongoose.connect(MONGODB_URI);
-    console.log('✅ Connected to MongoDB');
+    console.log('✅ Connected');
 
-    // Check if admin already exists
     const existingAdmin = await User.findOne({ email: 'admin@artzyra.com' });
     
     if (existingAdmin) {
-      console.log('ℹ️  Admin user already exists');
-      console.log('📧 Email: admin@artzyra.com');
-      console.log('🔑 Password: admin123');
-      console.log('👤 Role:', existingAdmin.role);
-      
-      // Update to ensure it's admin role
       if (existingAdmin.role !== 'admin') {
         existingAdmin.role = 'admin';
         await existingAdmin.save();
-        console.log('✅ Updated user role to admin');
+        console.log('✅ Updated existing user to admin role');
+      } else {
+        console.log('ℹ️  Admin user already exists');
       }
     } else {
-      // Create new admin user
       const hashedPassword = await bcrypt.hash('admin123', 10);
-      
-      const admin = await User.create({
+      await User.create({
         name: 'Admin User',
         email: 'admin@artzyra.com',
         password: hashedPassword,
         role: 'admin',
         phone: '+94771234567',
       });
-
-      console.log('✅ Admin user created successfully!');
-      console.log('📧 Email: admin@artzyra.com');
-      console.log('🔑 Password: admin123');
-      console.log('👤 Role:', admin.role);
+      console.log('✅ Admin user created');
     }
 
-    console.log('\n🎯 Next steps:');
-    console.log('1. Go to http://localhost:3000/auth/login (or :3001)');
-    console.log('2. Login with:');
-    console.log('   Email: admin@artzyra.com');
-    console.log('   Password: admin123');
-    console.log('3. Navigate to /admin/categories');
-    console.log('4. You should now be able to create categories!');
+    console.log('\nLogin Credentials:');
+    console.log('Email: admin@artzyra.com');
+    console.log('Password: admin123');
 
   } catch (error) {
     console.error('❌ Error:', error.message);
-    if (error.code === 11000) {
-      console.log('ℹ️  Admin user already exists in database');
-    }
   } finally {
     await mongoose.connection.close();
-    console.log('\n🔌 Database connection closed');
+    console.log('🔌 Disconnected');
   }
 }
 

@@ -14,10 +14,8 @@ async function getCustomer(request: Request) {
     if (!token) return null;
 
     const decoded: any = jwt.verify(token, JWT_SECRET);
-    if (decoded.role !== "customer") return null;
-
-    return decoded.userId;
-  } catch (error) {
+    return decoded.role === "customer" ? decoded.userId : null;
+  } catch {
     return null;
   }
 }
@@ -25,21 +23,17 @@ async function getCustomer(request: Request) {
 export async function GET(request: Request) {
   try {
     const userId = await getCustomer(request);
-    if (!userId) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
+    if (!userId) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
     await dbConnect();
     const user = await User.findById(userId).populate("favorites");
     
-    if (!user) {
-      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
-    }
+    if (!user) return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
 
     return NextResponse.json({ success: true, data: user.favorites || [] });
   } catch (error: any) {
     return NextResponse.json(
-      { success: false, error: error.message || "Internal Server Error" },
+      { success: false, error: error.message },
       { status: 500 }
     );
   }
@@ -48,31 +42,26 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const userId = await getCustomer(request);
-    if (!userId) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
-    }
+    if (!userId) return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
 
     const { artistId } = await request.json();
-    if (!artistId) {
-      return NextResponse.json({ success: false, error: "Artist ID is required" }, { status: 400 });
-    }
+    if (!artistId) return NextResponse.json({ success: false, error: "Artist ID required" }, { status: 400 });
 
     await dbConnect();
     const user = await User.findById(userId);
     
-    if (!user) {
-      return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
-    }
+    if (!user) return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
 
     const favorites = user.favorites || [];
     const index = favorites.indexOf(artistId);
+    const isFavorited = index === -1;
 
-    if (index > -1) {
-      // Remove from favorites
-      favorites.splice(index, 1);
-    } else {
+    if (isFavorited) {
       // Add to favorites
       favorites.push(artistId);
+    } else {
+      // Remove from favorites
+      favorites.splice(index, 1);
     }
 
     user.favorites = favorites;
@@ -81,7 +70,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       success: true, 
       data: favorites,
-      isFavorited: index === -1 // If it was -1, we added it, so now it's favorited
+      isFavorited
     });
   } catch (error: any) {
     return NextResponse.json(

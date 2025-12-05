@@ -57,10 +57,16 @@ class NextApiClient {
         };
       }
 
-      console.log(`[nextApi] Success response from ${endpoint}:`, data);
+      console.log(`[nextApi] Success response from ${endpoint}:`, JSON.stringify(data, null, 2));
+      console.log(`[nextApi] data.data exists:`, data.data !== undefined);
+      console.log(`[nextApi] data.data value:`, data.data);
+      
+      const extractedData = data.data !== undefined ? data.data : data;
+      console.log(`[nextApi] Extracted data:`, JSON.stringify(extractedData, null, 2));
+      
       return {
         success: true,
-        data: data.data !== undefined ? data.data : data,
+        data: extractedData,
         message: data.message,
       };
     } catch (error) {

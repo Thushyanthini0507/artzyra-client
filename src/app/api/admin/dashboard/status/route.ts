@@ -6,11 +6,16 @@ import { isAdmin } from "@/lib/adminAuth";
 
 export async function GET(request: Request) {
   try {
-    if (!(await isAdmin())) {
+    console.log("[Admin Dashboard] Checking admin authorization...");
+    const adminCheck = await isAdmin();
+    if (!adminCheck) {
+      console.log("[Admin Dashboard] Unauthorized - not an admin");
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }
+    console.log("[Admin Dashboard] Admin authorized, fetching stats...");
 
     await dbConnect();
+    console.log("[Admin Dashboard] Database connected");
 
     const [
       totalCustomers,
@@ -26,17 +31,22 @@ export async function GET(request: Request) {
       Booking.countDocuments({ status: "pending" })
     ]);
 
+    const stats = {
+      totalCustomers,
+      totalArtists,
+      pendingArtists,
+      totalBookings,
+      pendingBookings
+    };
+
+    console.log("[Admin Dashboard] Stats fetched:", stats);
+
     return NextResponse.json({
       success: true,
-      data: {
-        totalCustomers,
-        totalArtists,
-        pendingArtists,
-        totalBookings,
-        pendingBookings
-      }
+      data: stats
     });
   } catch (error: any) {
+    console.error("[Admin Dashboard] Error:", error);
     return NextResponse.json(
       { success: false, error: error.message || "Internal Server Error" },
       { status: 500 }
