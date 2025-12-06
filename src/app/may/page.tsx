@@ -37,16 +37,24 @@ export default function MayPage() {
   const fetchImages = async () => {
     setLoading(true);
     try {
-      const response = await api.get<ImageData[]>("/api/images");
-      const responseData = response.data;
-      const data = responseData.success !== undefined ? responseData.data : responseData;
+      const response = await api.get("/api/images");
+      const responseData = response.data as { success?: boolean; data?: ImageData[] } | ImageData[];
       
-      if (responseData.success !== false && data) {
-        setImages(Array.isArray(data) ? data : []);
+      // Handle both wrapped response { success, data } and direct array
+      let data: ImageData[];
+      if (Array.isArray(responseData)) {
+        data = responseData;
+      } else if (responseData && typeof responseData === 'object' && 'data' in responseData) {
+        data = Array.isArray(responseData.data) ? responseData.data : [];
+      } else {
+        data = [];
       }
-    } catch (error: any) {
+      
+      setImages(data);
+    } catch (error: unknown) {
       console.error("Failed to fetch images:", error);
-      toast.error(error.response?.data?.error || error.message || "Failed to load images");
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
+      toast.error(axiosError.response?.data?.error || axiosError.message || "Failed to load images");
     } finally {
       setLoading(false);
     }

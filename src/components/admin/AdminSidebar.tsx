@@ -56,7 +56,7 @@ export function AdminSidebar() {
     <div className="flex h-full w-64 flex-col border-r bg-card">
       <div className="flex h-14 items-center border-b px-6">
         <Link href="/admin" className="flex items-center gap-2 font-semibold">
-          <span className="text-xl font-bold text-primary">Antigravity</span>
+          <span className="text-xl font-bold text-primary">ArtZyra</span>
         </Link>
       </div>
       <div className="flex-1 overflow-auto py-4">

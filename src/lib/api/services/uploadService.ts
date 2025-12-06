@@ -1,5 +1,11 @@
 import api from "../axios";
-import { ApiResponse } from "../../api";
+
+// Define ApiResponse type locally
+interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: string;
+}
 
 export const uploadService = {
   uploadImage: async (file: File): Promise<ApiResponse<{ url: string; publicId: string }>> => {
@@ -20,11 +26,12 @@ export const uploadService = {
           publicId: response.data.data?.cloudinaryPublicId || response.data.cloudinaryPublicId,
         },
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Upload service error:", error);
+      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
       return {
         success: false,
-        error: error.response?.data?.error || error.message || "Network error during upload",
+        error: axiosError.response?.data?.error || axiosError.message || "Network error during upload",
       };
     }
   },

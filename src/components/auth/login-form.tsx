@@ -47,21 +47,8 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
       if (onSuccess) {
         onSuccess();
       }
-      
-      // Redirect based on role
-      switch (result.user.role) {
-        case "admin":
-          router.push("/admin");
-          break;
-        case "artist":
-          router.push("/artist");
-          break;
-        case "customer":
-          router.push("/customer");
-          break;
-        default:
-          router.push("/");
-      }
+      // NOTE: Role-based redirect is handled by auth-context via window.location.href
+      // Do NOT add duplicate redirect here as it causes race conditions
     } else {
       setError(result.error || "Login failed");
     }

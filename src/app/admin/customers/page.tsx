@@ -59,15 +59,16 @@ export default function CustomerApprovalsPage() {
       const response = await api.get<Customer[]>("/api/admin/customers/pending");
       console.log("Customers response:", response);
       
-      const responseData = response.data;
-      const data = responseData.success !== undefined ? responseData.data : responseData;
+      const responseData = response.data as any;
+      const data = responseData?.success !== undefined ? responseData.data : responseData;
       
-      if (responseData.success !== false && data) {
+      if (responseData?.success !== false && data) {
         console.log("Setting customers:", data);
         setCustomers(Array.isArray(data) ? data : []);
       } else {
-        console.error("Failed to fetch customers:", responseData.error);
-        toast.error(responseData.error || "Failed to fetch customers");
+        const errorMsg = (responseData as any)?.error || "Failed to fetch customers";
+        console.error("Failed to fetch customers:", errorMsg);
+        toast.error(errorMsg);
       }
     } catch (error: any) {
       console.error("Error fetching customers:", error);

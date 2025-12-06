@@ -83,10 +83,24 @@ Both must use the **same** JWT_SECRET value.
 
 ## Debugging Steps
 
-### Step 1: Check Browser Console
-Open browser DevTools (F12) → Console tab. Look for:
-- Axios interceptor logs showing token status
-- Any 401 error details
+### Step 1: Check Browser Console (Enhanced Logging)
+Open browser DevTools (F12) → Console tab. You should now see detailed logs:
+
+**Request Interceptor Logs (🔵 Blue):**
+- Shows if token was found in cookies
+- Shows the Authorization header being set
+- Shows all request headers being sent
+
+**Response Error Logs (🔴 Red):**
+- Detailed error information
+- Shows what headers were actually sent
+- Shows backend response data
+- Provides specific troubleshooting steps for 401 errors
+
+Look for:
+- `🔵 Axios Request Interceptor` - Shows token status and headers
+- `🔴 Axios Response Error` - Shows detailed error information
+- Any 401 error with analysis of possible causes
 
 ### Step 2: Check Network Tab
 Open DevTools → Network tab:
@@ -94,9 +108,13 @@ Open DevTools → Network tab:
 2. Click on it
 3. Check **Request Headers**:
    - Should see: `Authorization: Bearer <token>`
+   - If missing, the token wasn't sent (check cookie)
+   - If present but still 401, backend might not be reading it correctly
 4. Check **Response**:
    - Status: 401
-   - Response body might have error details
+   - Response body might have error details like: `{success: false, message: 'Not authorized. No token provided.'}`
+5. Check **Request Payload** (if POST/PUT):
+   - Verify data is being sent correctly
 
 ### Step 3: Check Backend Logs
 Check your backend server console for:
@@ -214,6 +232,37 @@ app.get('/api/admin/pending/artists', authenticateToken, requireAdmin, async (re
 });
 ```
 
+## Understanding the Enhanced Logs
+
+The new logging system provides detailed information:
+
+### Request Interceptor (🔵)
+- **Token in cookie**: Shows if token exists and its length
+- **Authorization header set**: Confirms if header was added
+- **Request headers**: Shows all headers being sent
+
+### Response Error (🔴)
+- **401 Analysis**: Provides specific reasons why 401 occurred:
+  - Token format mismatch
+  - JWT_SECRET mismatch
+  - Token expired
+  - Backend middleware issue
+  - CORS issue
+
+### What to Look For
+
+1. **If token is missing in request:**
+   - Check: `Token in cookie: ❌ MISSING`
+   - Solution: User needs to login again
+
+2. **If token is present but 401:**
+   - Check: `Authorization header sent: ✅ Yes` but still 401
+   - Solution: Backend authentication middleware issue
+
+3. **If CORS error:**
+   - Check: Network tab shows CORS error
+   - Solution: Update backend CORS configuration
+
 ## Still Having Issues?
 
 1. **Check JWT_SECRET**: Ensure both frontend and backend use the same secret
@@ -223,8 +272,39 @@ app.get('/api/admin/pending/artists', authenticateToken, requireAdmin, async (re
 5. **Test with Postman/curl**: Verify backend works independently
 
 ```bash
-# Test with curl
+# Test with curl (replace YOUR_TOKEN_HERE with actual token from browser cookie)
 curl -X GET http://localhost:5000/api/admin/pending/artists \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+  -H "Authorization: Bearer YOUR_TOKEN_HERE" \
+  -H "Content-Type: application/json"
+```
+
+### Quick Test in Browser Console
+
+```javascript
+// Get token from cookie
+const token = document.cookie
+  .split('; ')
+  .find(row => row.startsWith('token='))
+  ?.split('=')[1];
+
+console.log('Token:', token ? token.substring(0, 30) + '...' : 'NOT FOUND');
+
+// Test API call
+if (token) {
+  fetch('http://localhost:5000/api/admin/pending/artists', {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+  })
+  .then(r => {
+    console.log('Status:', r.status);
+    return r.json();
+  })
+  .then(data => console.log('Response:', data))
+  .catch(err => console.error('Error:', err));
+}
 ```
 

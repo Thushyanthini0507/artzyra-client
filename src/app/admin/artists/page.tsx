@@ -31,7 +31,7 @@ interface User {
   email: string;
   role: string;
   status: string;
-  category?: string;
+  category?: string | { _id: string; name: string; description?: string; image?: string };
   vehicleType?: string;
   createdAt: string;
 }
@@ -171,7 +171,9 @@ export default function AdminArtistsPage() {
                     {artist.category && (
                       <p className="text-sm">
                         <span className="font-medium">Category:</span>{" "}
-                        {artist.category}
+                        {typeof artist.category === 'object' 
+                          ? artist.category.name 
+                          : artist.category}
                       </p>
                     )}
                     <p className="text-sm text-muted-foreground">
