@@ -62,7 +62,26 @@ export const adminService = {
     const response = await apiClient.get("/admin/profile");
     return response.data;
   },
-  updateProfile: async (data: { name?: string; phone?: string; permissions?: string[] }) => {
+  updateProfile: async (data: {
+    name?: string;
+    phone?: string;
+    permissions?: string[];
+    bio?: string;
+    department?: string;
+    position?: string;
+    profileImage?: string;
+    socialLinks?: {
+      facebook?: string;
+      instagram?: string;
+      twitter?: string;
+      linkedin?: string;
+    };
+    location?: {
+      city?: string;
+      state?: string;
+      country?: string;
+    };
+  }) => {
     const response = await apiClient.put("/admin/profile", data);
     return response.data;
   },

@@ -36,5 +36,24 @@ export interface UpdateCustomerData {
     country?: string;
   };
   profileImage?: string;
+  dateOfBirth?: string;
+  gender?: string;
+  preferences?: {
+    notifications?: boolean;
+    emailUpdates?: boolean;
+    smsUpdates?: boolean;
+    favoriteCategories?: string[];
+  };
+  socialLinks?: {
+    facebook?: string;
+    instagram?: string;
+    twitter?: string;
+  };
+  emergencyContact?: {
+    name?: string;
+    phone?: string;
+    relationship?: string;
+  };
+  bio?: string;
 }
 
