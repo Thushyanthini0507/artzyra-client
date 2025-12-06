@@ -58,5 +58,13 @@ export const adminService = {
     const response = await apiClient.delete(`/categories/${id}`);
     return response.data;
   },
+  getProfile: async () => {
+    const response = await apiClient.get("/admin/profile");
+    return response.data;
+  },
+  updateProfile: async (data: { name?: string; phone?: string; permissions?: string[] }) => {
+    const response = await apiClient.put("/admin/profile", data);
+    return response.data;
+  },
 };
 
