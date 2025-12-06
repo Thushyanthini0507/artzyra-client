@@ -1,5 +1,6 @@
 import apiClient from "@/lib/apiClient";
 
+
 export const artistService = {
   getAll: async (filters?: any) => {
     const response = await apiClient.get("/artists", { params: filters });
