@@ -21,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import api from "@/lib/api/axios";
+import api from "@/lib/api/apiClient";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 
@@ -31,7 +31,9 @@ interface User {
   email: string;
   role: string;
   status: string;
-  category?: string | { _id: string; name: string; description?: string; image?: string };
+  category?:
+    | string
+    | { _id: string; name: string; description?: string; image?: string };
   vehicleType?: string;
   createdAt: string;
 }
@@ -171,8 +173,8 @@ export default function AdminArtistsPage() {
                     {artist.category && (
                       <p className="text-sm">
                         <span className="font-medium">Category:</span>{" "}
-                        {typeof artist.category === 'object' 
-                          ? artist.category.name 
+                        {typeof artist.category === "object"
+                          ? artist.category.name
                           : artist.category}
                       </p>
                     )}

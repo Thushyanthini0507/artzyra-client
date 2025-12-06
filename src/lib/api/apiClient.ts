@@ -226,7 +226,7 @@ api.interceptors.response.use(
           }
         }
       } else if (status === 404) {
-        console.error("❌ 404 Not Found");
+        console.error(" 404 Not Found");
         console.error("  Endpoint:", fullUrl);
         console.error("  Check if this endpoint exists on your backend");
       } else if (status >= 500) {

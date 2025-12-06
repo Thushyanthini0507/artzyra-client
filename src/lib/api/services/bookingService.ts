@@ -1,4 +1,4 @@
-import api from "../axios";
+import api from "../apiClient";
 import { Booking } from "@/types";
 
 export const bookingService = {
@@ -7,10 +7,17 @@ export const bookingService = {
       const response = await api.post("/api/bookings", data);
       return response.data;
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { error?: string; message?: string } }; message?: string };
+      const axiosError = error as {
+        response?: { data?: { error?: string; message?: string } };
+        message?: string;
+      };
       return {
         success: false,
-        error: axiosError.response?.data?.error || axiosError.response?.data?.message || axiosError.message || "Failed to create booking",
+        error:
+          axiosError.response?.data?.error ||
+          axiosError.response?.data?.message ||
+          axiosError.message ||
+          "Failed to create booking",
       };
     }
   },
@@ -28,10 +35,17 @@ export const bookingService = {
       const response = await api.get(`/api/bookings/${id}`);
       return response.data;
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { error?: string; message?: string } }; message?: string };
+      const axiosError = error as {
+        response?: { data?: { error?: string; message?: string } };
+        message?: string;
+      };
       return {
         success: false,
-        error: axiosError.response?.data?.error || axiosError.response?.data?.message || axiosError.message || "Failed to fetch booking",
+        error:
+          axiosError.response?.data?.error ||
+          axiosError.response?.data?.message ||
+          axiosError.message ||
+          "Failed to fetch booking",
       };
     }
   },
@@ -40,10 +54,17 @@ export const bookingService = {
       const response = await api.put(`/api/bookings/${id}`, data);
       return response.data;
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { error?: string; message?: string } }; message?: string };
+      const axiosError = error as {
+        response?: { data?: { error?: string; message?: string } };
+        message?: string;
+      };
       return {
         success: false,
-        error: axiosError.response?.data?.error || axiosError.response?.data?.message || axiosError.message || "Failed to update booking",
+        error:
+          axiosError.response?.data?.error ||
+          axiosError.response?.data?.message ||
+          axiosError.message ||
+          "Failed to update booking",
       };
     }
   },
@@ -52,12 +73,18 @@ export const bookingService = {
       const response = await api.delete(`/api/bookings/${id}`);
       return response.data;
     } catch (error: unknown) {
-      const axiosError = error as { response?: { data?: { error?: string; message?: string } }; message?: string };
+      const axiosError = error as {
+        response?: { data?: { error?: string; message?: string } };
+        message?: string;
+      };
       return {
         success: false,
-        error: axiosError.response?.data?.error || axiosError.response?.data?.message || axiosError.message || "Failed to delete booking",
+        error:
+          axiosError.response?.data?.error ||
+          axiosError.response?.data?.message ||
+          axiosError.message ||
+          "Failed to delete booking",
       };
     }
   },
 };
-

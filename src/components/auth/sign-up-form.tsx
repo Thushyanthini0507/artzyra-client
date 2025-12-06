@@ -7,7 +7,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import api from "@/lib/api/axios";
+import api from "@/lib/api/apiClient";
 import { toast } from "sonner";
 
 const signUpSchema = z.object({
@@ -52,7 +52,8 @@ export function SignUpForm() {
       }
     } catch (error: any) {
       console.error("Registration error:", error);
-      const errorMessage = error.response?.data?.error || error.message || "Registration failed";
+      const errorMessage =
+        error.response?.data?.error || error.message || "Registration failed";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

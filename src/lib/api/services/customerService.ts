@@ -1,4 +1,4 @@
-import api from "../axios";
+import api from "../apiClient";
 import { Customer } from "@/types";
 
 export const customerService = {

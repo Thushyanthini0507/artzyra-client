@@ -3,14 +3,20 @@
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { PublicLayout } from "@/components/layout/public-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Upload, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import Image from "next/image";
-import api from "@/lib/api/axios";
+import api from "@/lib/api/apiClient";
 
 interface ImageData {
   _id: string;
@@ -38,23 +44,36 @@ export default function MayPage() {
     setLoading(true);
     try {
       const response = await api.get("/api/images");
-      const responseData = response.data as { success?: boolean; data?: ImageData[] } | ImageData[];
-      
+      const responseData = response.data as
+        | { success?: boolean; data?: ImageData[] }
+        | ImageData[];
+
       // Handle both wrapped response { success, data } and direct array
       let data: ImageData[];
       if (Array.isArray(responseData)) {
         data = responseData;
-      } else if (responseData && typeof responseData === 'object' && 'data' in responseData) {
+      } else if (
+        responseData &&
+        typeof responseData === "object" &&
+        "data" in responseData
+      ) {
         data = Array.isArray(responseData.data) ? responseData.data : [];
       } else {
         data = [];
       }
-      
+
       setImages(data);
     } catch (error: unknown) {
       console.error("Failed to fetch images:", error);
-      const axiosError = error as { response?: { data?: { error?: string } }; message?: string };
-      toast.error(axiosError.response?.data?.error || axiosError.message || "Failed to load images");
+      const axiosError = error as {
+        response?: { data?: { error?: string } };
+        message?: string;
+      };
+      toast.error(
+        axiosError.response?.data?.error ||
+          axiosError.message ||
+          "Failed to load images"
+      );
     } finally {
       setLoading(false);
     }
@@ -132,10 +151,10 @@ export default function MayPage() {
       }
 
       toast.success("Image uploaded successfully!");
-      
+
       // Reset form
       handleRemoveFile();
-      
+
       // Refresh images list
       fetchImages();
     } catch (error: any) {
@@ -149,15 +168,19 @@ export default function MayPage() {
   // Get optimized image URL (300px width)
   const getOptimizedImageUrl = (url: string) => {
     // If already contains transformation, return as is
-    if (url.includes("w_300") || url.includes("c_limit") || url.includes("/transform/")) {
+    if (
+      url.includes("w_300") ||
+      url.includes("c_limit") ||
+      url.includes("/transform/")
+    ) {
       return url;
     }
-    
+
     // Check if it's a Cloudinary URL
     if (!url.includes("cloudinary.com")) {
       return url; // Not a Cloudinary URL, return as is
     }
-    
+
     // Add Cloudinary transformation for 300px width
     // Cloudinary URL format: https://res.cloudinary.com/{cloud_name}/image/upload/{transformations}/{public_id}.{format}
     // We need to insert transformations after /upload/
@@ -165,11 +188,11 @@ export default function MayPage() {
     if (uploadIndex === -1) {
       return url; // Invalid Cloudinary URL format
     }
-    
+
     // Insert transformation parameters
     const beforeTransform = url.substring(0, uploadIndex + 8); // Include "/upload/"
     const afterUpload = url.substring(uploadIndex + 8);
-    
+
     // Add transformation: w_300 (width 300px), c_limit (maintain aspect ratio), q_auto (auto quality)
     return `${beforeTransform}w_300,c_limit,q_auto,f_auto/${afterUpload}`;
   };
@@ -201,8 +224,12 @@ export default function MayPage() {
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">Click to select image</p>
-                    <p className="text-xs text-gray-400 mt-1">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-sm text-gray-600">
+                      Click to select image
+                    </p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      PNG, JPG, GIF up to 10MB
+                    </p>
                   </div>
                 ) : (
                   <div className="relative w-full max-w-md mx-auto">
@@ -299,7 +326,7 @@ export default function MayPage() {
         {/* Gallery Section */}
         <div>
           <h2 className="text-2xl font-bold mb-6">Gallery</h2>
-          
+
           {loading ? (
             <div className="flex items-center justify-center h-64">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -309,7 +336,9 @@ export default function MayPage() {
               <CardContent className="pt-6">
                 <div className="text-center py-12">
                   <ImageIcon className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                  <p className="text-muted-foreground">No images uploaded yet</p>
+                  <p className="text-muted-foreground">
+                    No images uploaded yet
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -343,4 +372,3 @@ export default function MayPage() {
     </PublicLayout>
   );
 }
-

@@ -1,4 +1,4 @@
-import api from "../axios";
+import api from "../apiClient";
 import { Review } from "@/types";
 
 export const reviewService = {
@@ -6,7 +6,10 @@ export const reviewService = {
     const response = await api.post("/api/reviews", data);
     return response.data;
   },
-  updateReview: async (reviewId: string, data: { rating?: number; comment?: string }) => {
+  updateReview: async (
+    reviewId: string,
+    data: { rating?: number; comment?: string }
+  ) => {
     const response = await api.put(`/api/reviews/${reviewId}`, data);
     return response.data;
   },

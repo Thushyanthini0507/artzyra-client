@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import api from "@/lib/api/axios";
+import api from "@/lib/api/apiClient";
 import { toast } from "sonner";
 
 interface Customer {
@@ -42,7 +42,9 @@ export default function CustomerApprovalsPage() {
   const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loadingData, setLoadingData] = useState(true);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(
+    null
+  );
   const [action, setAction] = useState<"approve" | "reject" | null>(null);
   const [processing, setProcessing] = useState(false);
 
@@ -56,23 +58,31 @@ export default function CustomerApprovalsPage() {
     setLoadingData(true);
     try {
       console.log("Fetching customers...");
-      const response = await api.get<Customer[]>("/api/admin/customers/pending");
+      const response = await api.get<Customer[]>(
+        "/api/admin/customers/pending"
+      );
       console.log("Customers response:", response);
-      
+
       const responseData = response.data as any;
-      const data = responseData?.success !== undefined ? responseData.data : responseData;
-      
+      const data =
+        responseData?.success !== undefined ? responseData.data : responseData;
+
       if (responseData?.success !== false && data) {
         console.log("Setting customers:", data);
         setCustomers(Array.isArray(data) ? data : []);
       } else {
-        const errorMsg = (responseData as any)?.error || "Failed to fetch customers";
+        const errorMsg =
+          (responseData as any)?.error || "Failed to fetch customers";
         console.error("Failed to fetch customers:", errorMsg);
         toast.error(errorMsg);
       }
     } catch (error: any) {
       console.error("Error fetching customers:", error);
-      toast.error(error.response?.data?.error || error.message || "Failed to fetch customers");
+      toast.error(
+        error.response?.data?.error ||
+          error.message ||
+          "Failed to fetch customers"
+      );
     } finally {
       setLoadingData(false);
     }
@@ -84,26 +94,37 @@ export default function CustomerApprovalsPage() {
     }
   }, [user]);
 
-
-
   const handleAction = async () => {
     if (!selectedCustomer || !action) return;
 
     setProcessing(true);
     try {
-      const endpoint = `/api/admin/customers/${selectedCustomer._id || selectedCustomer.id}/${action}`;
+      const endpoint = `/api/admin/customers/${
+        selectedCustomer._id || selectedCustomer.id
+      }/${action}`;
       const response = await api.put(endpoint);
 
       const responseData = response.data;
       if (responseData.success !== false) {
-        toast.success(`Customer ${action === "approve" ? "approved" : "rejected"} successfully`);
-        setCustomers(customers.filter((c) => (c._id || c.id) !== (selectedCustomer._id || selectedCustomer.id)));
+        toast.success(
+          `Customer ${
+            action === "approve" ? "approved" : "rejected"
+          } successfully`
+        );
+        setCustomers(
+          customers.filter(
+            (c) =>
+              (c._id || c.id) !== (selectedCustomer._id || selectedCustomer.id)
+          )
+        );
       } else {
         toast.error(responseData.error || "Action failed");
       }
     } catch (error: any) {
       console.error("Error updating customer status:", error);
-      toast.error(error.response?.data?.error || error.message || "Action failed");
+      toast.error(
+        error.response?.data?.error || error.message || "Action failed"
+      );
     } finally {
       setProcessing(false);
       setSelectedCustomer(null);
@@ -125,7 +146,9 @@ export default function CustomerApprovalsPage() {
         ) : customers.length === 0 ? (
           <Card>
             <CardContent className="pt-6">
-              <p className="text-center text-gray-500">No pending customer registrations</p>
+              <p className="text-center text-gray-500">
+                No pending customer registrations
+              </p>
             </CardContent>
           </Card>
         ) : (
@@ -136,7 +159,9 @@ export default function CustomerApprovalsPage() {
                   <div className="flex items-start justify-between">
                     <div>
                       <CardTitle>{customer.name}</CardTitle>
-                      <p className="text-sm text-gray-600 mt-1">{customer.email}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {customer.email}
+                      </p>
                     </div>
                     <Badge variant="secondary">{customer.status}</Badge>
                   </div>
@@ -181,22 +206,27 @@ export default function CustomerApprovalsPage() {
           </div>
         )}
 
-        <AlertDialog open={!!selectedCustomer && !!action} onOpenChange={() => {
-          setSelectedCustomer(null);
-          setAction(null);
-        }}>
+        <AlertDialog
+          open={!!selectedCustomer && !!action}
+          onOpenChange={() => {
+            setSelectedCustomer(null);
+            setAction(null);
+          }}
+        >
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>
                 {action === "approve" ? "Approve Customer" : "Reject Customer"}
               </AlertDialogTitle>
               <AlertDialogDescription>
-                Are you sure you want to {action} {selectedCustomer?.name}? This action cannot
-                be undone.
+                Are you sure you want to {action} {selectedCustomer?.name}? This
+                action cannot be undone.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel disabled={processing}>Cancel</AlertDialogCancel>
+              <AlertDialogCancel disabled={processing}>
+                Cancel
+              </AlertDialogCancel>
               <AlertDialogAction onClick={handleAction} disabled={processing}>
                 {processing ? "Processing..." : "Confirm"}
               </AlertDialogAction>

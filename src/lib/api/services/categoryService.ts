@@ -1,4 +1,4 @@
-import api from "../axios";
+import api from "../apiClient";
 
 export const categoryService = {
   getAllCategories: async () => {
@@ -10,7 +10,9 @@ export const categoryService = {
     return response.data;
   },
   getArtistsByCategory: async (categoryId: string, params?: any) => {
-    const response = await api.get(`/api/categories/${categoryId}/artists`, { params });
+    const response = await api.get(`/api/categories/${categoryId}/artists`, {
+      params,
+    });
     return response.data;
   },
   createCategory: async (data: any) => {
