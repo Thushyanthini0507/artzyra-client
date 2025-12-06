@@ -1,22 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArtistLayout } from "@/components/layout/artist-layout";
+import { AdminLayout } from "@/components/layout/admin-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { artistService } from "@/services/artist.service";
-import { categoryService } from "@/services/category.service";
+import { adminService } from "@/services/admin.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { isValidSriLankanPhone, normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
 
-export default function ArtistProfilePage() {
+export default function AdminProfilePage() {
   const [profile, setProfile] = useState<any>(null);
-  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -24,74 +21,52 @@ export default function ArtistProfilePage() {
     email: "",
     phone: "",
     bio: "",
-    category: "",
-    skills: "",
-    hourlyRate: "",
-    availability: "",
-    portfolio: "",
-    website: "",
+    department: "",
+    position: "",
+    profileImage: "",
     socialLinks: {
       facebook: "",
       instagram: "",
       twitter: "",
       linkedin: "",
-      youtube: "",
     },
-    experience: {
-      years: "",
-      description: "",
-    },
-    education: [] as any[],
-    certifications: [] as any[],
-    languages: "",
     location: {
       city: "",
       state: "",
       country: "",
-      zipCode: "",
     },
+    permissions: [] as string[],
   });
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchProfile = async () => {
       try {
-        const [profileRes, categoriesRes] = await Promise.all([
-          artistService.getProfile(),
-          categoryService.getAllCategories(),
-        ]);
-
-        if (profileRes.success && profileRes.data) {
-          const data = profileRes.data.artist || profileRes.data;
-          const user = profileRes.data.user || {};
+        const response = await adminService.getProfile();
+        if (response.success && response.data) {
+          const data = response.data.admin || response.data;
+          const user = response.data.user || {};
           setProfile(data);
           setFormData({
             name: data.name || "",
             email: user.email || data.email || "",
             phone: data.phone || "",
             bio: data.bio || "",
-            category: data.category?._id || "",
-            skills: Array.isArray(data.skills) ? data.skills.join(", ") : "",
-            hourlyRate: data.hourlyRate?.toString() || "",
-            availability: typeof data.availability === "string" ? data.availability : "",
-            portfolio: Array.isArray(data.portfolio) ? data.portfolio.join(", ") : "",
-            website: data.website || "",
+            department: data.department || "",
+            position: data.position || "",
+            profileImage: data.profileImage || "",
             socialLinks: data.socialLinks || {
               facebook: "",
               instagram: "",
               twitter: "",
               linkedin: "",
-              youtube: "",
             },
-            experience: data.experience || { years: "", description: "" },
-            education: Array.isArray(data.education) ? data.education : [],
-            certifications: Array.isArray(data.certifications) ? data.certifications : [],
-            languages: Array.isArray(data.languages) ? data.languages.join(", ") : "",
-            location: data.location || { city: "", state: "", country: "", zipCode: "" },
+            location: data.location || {
+              city: "",
+              state: "",
+              country: "",
+            },
+            permissions: Array.isArray(data.permissions) ? data.permissions : [],
           });
-        }
-
-        if (categoriesRes.success && categoriesRes.data) {
-          setCategories(categoriesRes.data);
         }
       } catch (error) {
         console.error("Failed to fetch profile", error);
@@ -100,7 +75,7 @@ export default function ArtistProfilePage() {
         setLoading(false);
       }
     };
-    fetchData();
+    fetchProfile();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -115,29 +90,18 @@ export default function ArtistProfilePage() {
         return;
       }
 
-      const updateData = {
+      const response = await adminService.updateProfile({
         name: formData.name,
         phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : "",
         bio: formData.bio,
-        category: formData.category,
-        skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),
-        hourlyRate: parseFloat(formData.hourlyRate) || 0,
-        availability: formData.availability,
-        portfolio: formData.portfolio.split(",").map((p) => p.trim()).filter(Boolean),
-        website: formData.website,
+        department: formData.department,
+        position: formData.position,
+        profileImage: formData.profileImage,
         socialLinks: formData.socialLinks,
-        experience: {
-          years: parseInt(formData.experience.years) || 0,
-          description: formData.experience.description,
-        },
-        education: formData.education,
-        certifications: formData.certifications,
-        languages: formData.languages.split(",").map((l) => l.trim()).filter(Boolean),
         location: formData.location,
-      };
+        permissions: formData.permissions,
+      });
 
-      const response = await artistService.updateProfile(updateData);
-      
       if (response.success) {
         toast.success("Profile updated successfully");
         setProfile(response.data);
@@ -154,20 +118,20 @@ export default function ArtistProfilePage() {
 
   if (loading) {
     return (
-      <ArtistLayout>
+      <AdminLayout>
         <div className="flex items-center justify-center h-96">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
-      </ArtistLayout>
+      </AdminLayout>
     );
   }
 
   return (
-    <ArtistLayout>
+    <AdminLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">Profile</h1>
-          <p className="text-muted-foreground">Manage your artist profile information</p>
+          <h1 className="text-3xl font-bold">Admin Profile</h1>
+          <p className="text-muted-foreground">Manage your admin profile information</p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -218,43 +182,33 @@ export default function ArtistProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat._id} value={cat._id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="hourlyRate">Hourly Rate (LKR)</Label>
+                  <Label htmlFor="department">Department</Label>
                   <Input
-                    id="hourlyRate"
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={formData.hourlyRate}
-                    onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+                    id="department"
+                    placeholder="e.g., Operations, Support, Management"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="availability">Availability</Label>
+                  <Label htmlFor="position">Position</Label>
                   <Input
-                    id="availability"
-                    placeholder="e.g., Mon-Fri, 9AM-5PM"
-                    value={formData.availability}
-                    onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+                    id="position"
+                    placeholder="e.g., Manager, Administrator, Director"
+                    value={formData.position}
+                    onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="profileImage">Profile Image URL</Label>
+                  <Input
+                    id="profileImage"
+                    type="url"
+                    placeholder="https://example.com/image.jpg"
+                    value={formData.profileImage}
+                    onChange={(e) => setFormData({ ...formData, profileImage: e.target.value })}
                   />
                 </div>
               </div>
@@ -264,40 +218,9 @@ export default function ArtistProfilePage() {
                 <Textarea
                   id="bio"
                   rows={4}
-                  placeholder="Tell customers about yourself..."
+                  placeholder="Tell us about yourself..."
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="skills">Skills (comma-separated)</Label>
-                <Input
-                  id="skills"
-                  placeholder="e.g., Portrait, Landscape, Digital Art"
-                  value={formData.skills}
-                  onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="portfolio">Portfolio URLs (comma-separated)</Label>
-                <Input
-                  id="portfolio"
-                  placeholder="e.g., https://example.com/work1, https://example.com/work2"
-                  value={formData.portfolio}
-                  onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
-                <Input
-                  id="website"
-                  type="url"
-                  placeholder="https://yourwebsite.com"
-                  value={formData.website}
-                  onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                 />
               </div>
 
@@ -356,62 +279,7 @@ export default function ArtistProfilePage() {
                       })}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="youtube">YouTube</Label>
-                    <Input
-                      id="youtube"
-                      type="url"
-                      placeholder="https://youtube.com/@yourchannel"
-                      value={formData.socialLinks.youtube}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialLinks: { ...formData.socialLinks, youtube: e.target.value },
-                      })}
-                    />
-                  </div>
                 </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Experience</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="experienceYears">Years of Experience</Label>
-                    <Input
-                      id="experienceYears"
-                      type="number"
-                      min="0"
-                      value={formData.experience.years}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        experience: { ...formData.experience, years: e.target.value },
-                      })}
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="experienceDesc">Experience Description</Label>
-                    <Textarea
-                      id="experienceDesc"
-                      rows={3}
-                      placeholder="Describe your professional experience..."
-                      value={formData.experience.description}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        experience: { ...formData.experience, description: e.target.value },
-                      })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="languages">Languages (comma-separated)</Label>
-                <Input
-                  id="languages"
-                  placeholder="e.g., English, Sinhala, Tamil"
-                  value={formData.languages}
-                  onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-                />
               </div>
 
               <div className="space-y-4">
@@ -450,17 +318,6 @@ export default function ArtistProfilePage() {
                       })}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="zipCode">Zip Code</Label>
-                    <Input
-                      id="zipCode"
-                      value={formData.location.zipCode}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        location: { ...formData.location, zipCode: e.target.value },
-                      })}
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -474,6 +331,7 @@ export default function ArtistProfilePage() {
           </Card>
         </form>
       </div>
-    </ArtistLayout>
+    </AdminLayout>
   );
 }
+

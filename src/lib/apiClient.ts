@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -42,11 +42,12 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 403) {
       // Don't clear token or redirect - user is logged in but not approved
       // The error will be handled by the calling component
-      console.warn("403 Forbidden - User not approved or insufficient permissions");
+      console.warn(
+        "403 Forbidden - User not approved or insufficient permissions"
+      );
     }
     return Promise.reject(error);
   }
 );
 
 export default apiClient;
-
