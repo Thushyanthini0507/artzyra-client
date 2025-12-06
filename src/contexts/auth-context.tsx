@@ -135,33 +135,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           if (!hasToken) setUser(null);
         }
       }
-    } catch {
-      // Fallback: try to decode from JWT token
-      const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
-      if (token) {
-        try {
-          const tokenParts = token.split('.');
-          if (tokenParts.length === 3) {
-            const payload = JSON.parse(atob(tokenParts[1]));
-            const userFromToken = {
-              _id: payload.userId || payload.id || payload._id,
-              email: payload.email || "",
-              name: payload.name || payload.email?.split("@")[0] || "User",
-              role: String(payload.role || "").toLowerCase().trim(),
-            };
-            console.log("🔵 AuthContext - Error fallback: Decoded user from JWT token:", userFromToken);
-            setUser(userFromToken as User);
-          } else {
+    } catch (error: any) {
+      // Handle 403 Forbidden (user authenticated but not approved) - don't clear user
+      if (error.response?.status === 403) {
+        console.warn("🔵 AuthContext - 403 Forbidden: User authenticated but not approved");
+        // Don't clear user - they're logged in but pending approval
+        // Try to decode from JWT token to keep user in context
+        const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+        if (token) {
+          try {
+            const tokenParts = token.split('.');
+            if (tokenParts.length === 3) {
+              const payload = JSON.parse(atob(tokenParts[1]));
+              const userFromToken = {
+                _id: payload.userId || payload.id || payload._id,
+                email: payload.email || "",
+                name: payload.name || payload.email?.split("@")[0] || "User",
+                role: String(payload.role || "").toLowerCase().trim(),
+              };
+              console.log("🔵 AuthContext - 403: Keeping user from JWT token:", userFromToken);
+              setUser(userFromToken as User);
+            }
+          } catch (e) {
+            console.warn("🔵 AuthContext - Could not decode JWT token:", e);
+          }
+        }
+      } else if (error.response?.status === 401) {
+        // 401 Unauthorized - clear user and redirect
+        console.warn("🔵 AuthContext - 401 Unauthorized: Clearing user");
+        setUser(null);
+      } else {
+        // Other errors - try to decode from JWT token as fallback
+        const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+        if (token) {
+          try {
+            const tokenParts = token.split('.');
+            if (tokenParts.length === 3) {
+              const payload = JSON.parse(atob(tokenParts[1]));
+              const userFromToken = {
+                _id: payload.userId || payload.id || payload._id,
+                email: payload.email || "",
+                name: payload.name || payload.email?.split("@")[0] || "User",
+                role: String(payload.role || "").toLowerCase().trim(),
+              };
+              console.log("🔵 AuthContext - Error fallback: Decoded user from JWT token:", userFromToken);
+              setUser(userFromToken as User);
+            } else {
+              const hasToken = Cookies.get("token");
+              if (!hasToken) setUser(null);
+            }
+          } catch (e) {
             const hasToken = Cookies.get("token");
             if (!hasToken) setUser(null);
           }
-        } catch (e) {
+        } else {
           const hasToken = Cookies.get("token");
           if (!hasToken) setUser(null);
         }
-      } else {
-        const hasToken = Cookies.get("token");
-        if (!hasToken) setUser(null);
       }
     } finally {
       setLoading(false);
@@ -268,21 +298,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(userToSet);
       console.log("🔵 AuthContext - User set in context with role:", userToSet.role);
 
-      // Save token to both cookie and localStorage
-      try {
-        Cookies.set("token", token, {
-          expires: 7,
-          path: "/",
-          sameSite: "lax",
-        });
-        console.log("🔵 AuthContext - Token saved to cookie");
-      } catch (e) {
-        console.warn("🔵 AuthContext - Failed to set cookie, using localStorage only");
-      }
-
+      // Backend sets the HTTP-only cookie automatically
+      // We only store in localStorage as fallback for debugging
+      // The cookie is set by the backend with proper security settings
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
-        console.log("🔵 AuthContext - Token saved to localStorage");
+        console.log("🔵 AuthContext - Token saved to localStorage (cookie set by backend)");
       }
 
       closeLogin();
@@ -370,7 +391,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       await authService.logout();
     } catch {}
 
+    // Clear client-side storage
     Cookies.remove("token");
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+    }
     setUser(null);
     router.push("/");
   };

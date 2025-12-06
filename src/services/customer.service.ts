@@ -7,7 +7,7 @@ export const customerService = {
     return response.data;
   },
   updateProfile: async (data: Partial<UpdateCustomerData>) => {
-    const response = await apiClient.patch("/customers/profile", data);
+    const response = await apiClient.put("/customers/profile", data);
     return response.data;
   },
   getBookings: async () => {

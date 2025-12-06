@@ -19,11 +19,11 @@ export const reviewService = {
     return response.data;
   },
   update: async (reviewId: string, data: Partial<UpdateReviewData>) => {
-    const response = await apiClient.patch(`/reviews/${reviewId}`, data);
+    const response = await apiClient.put(`/reviews/${reviewId}`, data);
     return response.data;
   },
   updateReview: async (reviewId: string, data: Partial<UpdateReviewData>) => {
-    const response = await apiClient.patch(`/reviews/${reviewId}`, data);
+    const response = await apiClient.put(`/reviews/${reviewId}`, data);
     return response.data;
   },
   delete: async (reviewId: string) => {

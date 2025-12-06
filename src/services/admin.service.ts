@@ -23,11 +23,11 @@ export const adminService = {
     return response.data;
   },
   approveArtist: async (artistId: string) => {
-    const response = await apiClient.patch(`/admin/artists/${artistId}/approve`);
+    const response = await apiClient.put(`/admin/artists/${artistId}/approve`);
     return response.data;
   },
   rejectArtist: async (artistId: string) => {
-    const response = await apiClient.patch(`/admin/artists/${artistId}/reject`);
+    const response = await apiClient.put(`/admin/artists/${artistId}/reject`);
     return response.data;
   },
   getBookings: async () => {

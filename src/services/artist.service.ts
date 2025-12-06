@@ -22,7 +22,7 @@ export const artistService = {
     return response.data;
   },
   updateProfile: async (data: any) => {
-    const response = await apiClient.patch("/artists/profile", data);
+    const response = await apiClient.put("/artists/profile", data);
     return response.data;
   },
   getBookings: async (params?: any) => {
@@ -30,11 +30,11 @@ export const artistService = {
     return response.data;
   },
   acceptBooking: async (bookingId: string) => {
-    const response = await apiClient.patch(`/artists/bookings/${bookingId}/accept`);
+    const response = await apiClient.put(`/artists/bookings/${bookingId}/accept`);
     return response.data;
   },
   rejectBooking: async (bookingId: string) => {
-    const response = await apiClient.patch(`/artists/bookings/${bookingId}/reject`);
+    const response = await apiClient.put(`/artists/bookings/${bookingId}/reject`);
     return response.data;
   },
   getReviews: async () => {

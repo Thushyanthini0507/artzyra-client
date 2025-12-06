@@ -28,11 +28,11 @@ export const categoryService = {
     return response.data;
   },
   update: async (categoryId: string, data: any) => {
-    const response = await apiClient.patch(`/categories/${categoryId}`, data);
+    const response = await apiClient.put(`/categories/${categoryId}`, data);
     return response.data;
   },
   updateCategory: async (categoryId: string, data: any) => {
-    const response = await apiClient.patch(`/categories/${categoryId}`, data);
+    const response = await apiClient.put(`/categories/${categoryId}`, data);
     return response.data;
   },
   delete: async (categoryId: string) => {

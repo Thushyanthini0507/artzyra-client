@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { ArtistLayout } from "@/components/layout/artist-layout";
@@ -18,6 +18,16 @@ export default function ArtistDashboard() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   
+  // All hooks must be called before any conditional returns
+  const [stats, setStats] = useState({
+    activeOrders: 0,
+    completedOrders: 0,
+    revenue: 0,
+    services: 1,
+  });
+  const [pendingBookings, setPendingBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   // Protect route - redirect if not artist
   useEffect(() => {
     if (!authLoading) {
@@ -43,35 +53,8 @@ export default function ArtistDashboard() {
       }
     }
   }, [user, authLoading, router]);
-  const [stats, setStats] = useState({
-    activeOrders: 0,
-    completedOrders: 0,
-    revenue: 0,
-    services: 1,
-  });
-  const [pendingBookings, setPendingBookings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Show loading state while auth is loading or user is being verified
-  if (authLoading) {
-    return (
-      <ArtistLayout>
-        <div className="flex items-center justify-center h-screen">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
-            <p>Loading...</p>
-          </div>
-        </div>
-      </ArtistLayout>
-    );
-  }
-
-  // Don't render if user is not artist (redirect is happening)
-  if (!user || (user.role || "").toLowerCase().trim() !== "artist") {
-    return null; // Redirect is happening in useEffect
-  }
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const bookingsResponse = await artistService.getBookings();
       if (bookingsResponse.success && bookingsResponse.data) {
@@ -99,14 +82,33 @@ export default function ArtistDashboard() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Only fetch data if user is confirmed as artist
     if (user && (user.role || "").toLowerCase().trim() === "artist") {
       fetchData();
     }
-  }, [user]);
+  }, [user, fetchData]);
+
+  // Show loading state while auth is loading or user is being verified
+  if (authLoading) {
+    return (
+      <ArtistLayout>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
+            <p>Loading...</p>
+          </div>
+        </div>
+      </ArtistLayout>
+    );
+  }
+
+  // Don't render if user is not artist (redirect is happening)
+  if (!user || (user.role || "").toLowerCase().trim() !== "artist") {
+    return null; // Redirect is happening in useEffect
+  }
 
   return (
     <ArtistLayout>
