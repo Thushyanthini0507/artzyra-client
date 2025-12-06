@@ -5,7 +5,7 @@ import { CustomerLayout } from "@/components/layout/customer-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { bookingService } from "@/lib/api/services/bookingService";
+import { bookingService } from "@/services/booking.service";
 import { PaymentForm } from "@/components/customer/payment-form";
 import { ReviewForm } from "@/components/customer/review-form";
 import { Booking } from "@/types";

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { customerService } from "@/lib/api/services/customerService";
+import { customerService } from "@/services/customer.service";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/auth-context";
 

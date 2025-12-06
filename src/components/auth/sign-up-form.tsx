@@ -7,7 +7,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import api from "@/lib/api/apiClient";
+import { authService } from "@/services/auth.service";
 import { toast } from "sonner";
 
 const signUpSchema = z.object({
@@ -37,18 +37,17 @@ export function SignUpForm() {
     setError("");
 
     try {
-      const response = await api.post("/api/auth/register", {
+      const response = await authService.registerCustomer({
         ...data,
         role: "customer",
       });
 
-      const responseData = response.data;
       // Handle both { success: true, ... } and direct response formats
-      if (responseData.success !== false) {
+      if (response.success !== false) {
         toast.success("Account created successfully! Please sign in.");
         reset();
       } else {
-        setError(responseData.error || "Registration failed");
+        setError(response.error || "Registration failed");
       }
     } catch (error: any) {
       console.error("Registration error:", error);

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { adminService } from "@/lib/api/services/adminService";
-import { categoryService } from "@/lib/api/services/categoryService";
+import { adminService } from "@/services/admin.service";
+import { categoryService } from "@/services/category.service";
 import { toast } from "sonner";
 
 // Admin Users Hook

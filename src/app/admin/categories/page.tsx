@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { adminService } from "@/lib/api/services/adminService";
-import { uploadService } from "@/lib/api/services/uploadService";
+import { adminService } from "@/services/admin.service";
+import { uploadService } from "@/services/upload.service";
 import {
   Table,
   TableBody,

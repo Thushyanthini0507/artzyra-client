@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { artistService } from "@/lib/api/services/artistService";
+import { artistService } from "@/services/artist.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";

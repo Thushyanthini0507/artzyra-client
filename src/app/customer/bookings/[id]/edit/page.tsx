@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { BookingForm } from "@/components/customer/booking-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { bookingService } from "@/lib/api/services/bookingService";
+import { bookingService } from "@/services/booking.service";
 import { Booking } from "@/types";
 import { useParams } from "next/navigation";
 

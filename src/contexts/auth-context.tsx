@@ -8,7 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { User, UserRole } from "@/lib/auth";
-import { authService } from "@/lib/api/services/authService";
+import { authService } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 

@@ -7,9 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { categoryService } from "@/lib/api/services/categoryService";
+import { categoryService } from "@/services/category.service";
 import { FavoriteButton } from "@/components/FavoriteButton";
-import { customerService } from "@/lib/api/services/customerService";
+import { customerService } from "@/services/customer.service";
 import { useAuth } from "@/contexts/auth-context";
 import { formatHourlyRate } from "@/lib/utils/currency";
 

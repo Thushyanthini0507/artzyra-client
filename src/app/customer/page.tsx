@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { bookingService } from "@/lib/api/services/bookingService";
+import { bookingService } from "@/services/booking.service";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import api from "@/lib/api/apiClient";
+import apiClient from "@/lib/apiClient";
 import { toast } from "sonner";
 
 interface Customer {
@@ -58,7 +58,7 @@ export default function CustomerApprovalsPage() {
     setLoadingData(true);
     try {
       console.log("Fetching customers...");
-      const response = await api.get<Customer[]>(
+      const response = await apiClient.get<Customer[]>(
         "/api/admin/customers/pending"
       );
       console.log("Customers response:", response);
@@ -102,7 +102,7 @@ export default function CustomerApprovalsPage() {
       const endpoint = `/api/admin/customers/${
         selectedCustomer._id || selectedCustomer.id
       }/${action}`;
-      const response = await api.put(endpoint);
+      const response = await apiClient.put(endpoint);
 
       const responseData = response.data;
       if (responseData.success !== false) {

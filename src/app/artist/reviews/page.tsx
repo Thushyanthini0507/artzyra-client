@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ArtistLayout } from "@/components/layout/artist-layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { artistService } from "@/lib/api/services/artistService";
+import { artistService } from "@/services/artist.service";
 import { toast } from "sonner";
 import { Loader2, Star } from "lucide-react";
 

@@ -5,7 +5,7 @@ import { CustomerLayout } from "@/components/layout/customer-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { paymentService } from "@/lib/api/services/paymentService";
+import { paymentService } from "@/services/payment.service";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatLKR } from "@/lib/utils/currency";

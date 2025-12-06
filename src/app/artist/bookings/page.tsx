@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { artistService } from "@/lib/api/services/artistService";
+import { artistService } from "@/services/artist.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { formatLKR } from "@/lib/utils/currency";

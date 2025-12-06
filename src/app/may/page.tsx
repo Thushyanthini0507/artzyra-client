@@ -16,7 +16,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Upload, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import Image from "next/image";
-import api from "@/lib/api/apiClient";
+import { uploadService } from "@/services/upload.service";
+import apiClient from "@/lib/apiClient";
 
 interface ImageData {
   _id: string;
@@ -43,7 +44,7 @@ export default function MayPage() {
   const fetchImages = async () => {
     setLoading(true);
     try {
-      const response = await api.get("/api/images");
+      const response = await apiClient.get("/api/images");
       const responseData = response.data as
         | { success?: boolean; data?: ImageData[] }
         | ImageData[];
@@ -135,18 +136,9 @@ export default function MayPage() {
     setUploading(true);
 
     try {
-      const formData = new FormData();
-      formData.append("image", selectedFile);
+      const data = await uploadService.uploadImage(selectedFile);
 
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-        credentials: "include", // Include cookies for authentication
-      });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
+      if (!data.success) {
         throw new Error(data.error || "Upload failed");
       }
 

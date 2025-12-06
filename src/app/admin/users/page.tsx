@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminService } from "@/lib/api/services/adminService";
+import { adminService } from "@/services/admin.service";
 import { toast } from "sonner";
 
 interface User {

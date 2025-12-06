@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
-import { authService } from "@/lib/api/services/authService";
+import { authService } from "@/services/auth.service";
 import { useRouter } from "next/navigation";
 
 export function useLogin() {

@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { adminService } from "@/lib/api/services/adminService";
-import { artistService } from "@/lib/api/services/artistService";
-import { customerService } from "@/lib/api/services/customerService";
-import { bookingService } from "@/lib/api/services/bookingService";
-import { categoryService } from "@/lib/api/services/categoryService";
+import { adminService } from "@/services/admin.service";
+import { artistService } from "@/services/artist.service";
+import { customerService } from "@/services/customer.service";
+import { bookingService } from "@/services/booking.service";
+import { categoryService } from "@/services/category.service";
 
 export function useFetchProfile(role: "artist" | "customer") {
   const [profile, setProfile] = useState<any>(null);

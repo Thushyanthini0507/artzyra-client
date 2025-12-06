@@ -5,7 +5,7 @@ import { ArtistLayout } from "@/components/layout/artist-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { artistService } from "@/lib/api/services/artistService";
+import { artistService } from "@/services/artist.service";
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, User } from "lucide-react";
 import { toast } from "sonner";
 import { formatLKR } from "@/lib/utils/currency";

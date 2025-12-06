@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { adminService } from "@/lib/api/services/adminService";
+import { adminService } from "@/services/admin.service";
 import { AdminLayout } from "@/components/layout/admin-layout";
 import {
   Table,
@@ -16,7 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Check, X, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
-import api from "@/lib/api/apiClient";
+import apiClient from "@/lib/apiClient";
 import Cookies from "js-cookie";
 
 export default function PendingArtistsPage() {
@@ -47,7 +47,7 @@ export default function PendingArtistsPage() {
       // Check Auth
       addLog("Checking /api/auth/me...");
       try {
-        const me = await api.get("/api/auth/me");
+        const me = await apiClient.get("/api/auth/me");
         addLog(`✅ Auth OK: ${me.data.user?.email} (${me.data.user?.role})`);
       } catch (e: any) {
         addLog(`❌ Auth Failed: ${e.response?.status} - ${e.message}`);
@@ -56,7 +56,7 @@ export default function PendingArtistsPage() {
       // Check Dashboard Status
       addLog("Checking /api/admin/dashboard/status...");
       try {
-        const status = await api.get("/api/admin/dashboard/status");
+        const status = await apiClient.get("/api/admin/dashboard/status");
         addLog(
           `✅ Status Response Keys: ${Object.keys(status.data).join(", ")}`
         );
@@ -86,7 +86,7 @@ export default function PendingArtistsPage() {
 
       for (const ep of idEndpoints) {
         try {
-          const res = await api.get(ep);
+          const res = await apiClient.get(ep);
           addLog(`✅ ID Found at ${ep}: ${res.status}`);
           addLog(`   Data: ${JSON.stringify(res.data).substring(0, 100)}...`);
         } catch (e: any) {
@@ -110,7 +110,7 @@ export default function PendingArtistsPage() {
       for (const endpoint of endpoints) {
         addLog(`Checking ${endpoint}...`);
         try {
-          const res = await api.get(endpoint);
+          const res = await apiClient.get(endpoint);
           const data = Array.isArray(res.data) ? res.data : res.data.data || [];
           const isArray = Array.isArray(data);
           addLog(

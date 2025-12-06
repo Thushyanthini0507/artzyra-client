@@ -5,7 +5,7 @@ import { ArtistLayout } from "@/components/layout/artist-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { artistService } from "@/lib/api/services/artistService";
+import { artistService } from "@/services/artist.service";
 import { Loader2, DollarSign, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { formatLKR } from "@/lib/utils/currency";

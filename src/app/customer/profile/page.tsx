@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { customerService } from "@/lib/api/services/customerService";
+import { customerService } from "@/services/customer.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 

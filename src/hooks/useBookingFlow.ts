@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { categoryService } from "@/lib/api/services/categoryService";
-import { bookingService } from "@/lib/api/services/bookingService";
+import { categoryService } from "@/services/category.service";
+import { bookingService } from "@/services/booking.service";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 

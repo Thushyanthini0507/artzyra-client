@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Heart, Star, Loader2 } from "lucide-react";
-import { customerService } from "@/lib/api/services/customerService";
+import { customerService } from "@/services/customer.service";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { FavoriteButton } from "@/components/FavoriteButton";

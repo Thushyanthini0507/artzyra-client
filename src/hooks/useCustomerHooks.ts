@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { bookingService } from "@/lib/api/services/bookingService";
-import { paymentService } from "@/lib/api/services/paymentService";
-import { reviewService } from "@/lib/api/services/reviewService";
-import { customerService } from "@/lib/api/services/customerService";
+import { bookingService } from "@/services/booking.service";
+import { paymentService } from "@/services/payment.service";
+import { reviewService } from "@/services/review.service";
+import { customerService } from "@/services/customer.service";
 import { Booking, Payment, Review, Customer } from "@/types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
