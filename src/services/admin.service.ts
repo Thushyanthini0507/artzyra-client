@@ -13,6 +13,12 @@ export const adminService = {
     const response = await apiClient.get("/admin/dashboard/status");
     return response.data;
   },
+  getAnalytics: async (period: string = "30d") => {
+    const response = await apiClient.get("/admin/analytics", {
+      params: { period },
+    });
+    return response.data;
+  },
   getUsers: async (role?: string) => {
     const params = role ? { role } : {};
     const response = await apiClient.get("/admin/users", { params });
@@ -46,11 +52,18 @@ export const adminService = {
     const response = await apiClient.get("/categories");
     return response.data;
   },
-  createCategory: async (data: { name: string; description?: string; image?: string }) => {
+  createCategory: async (data: {
+    name: string;
+    description?: string;
+    image?: string;
+  }) => {
     const response = await apiClient.post("/categories", data);
     return response.data;
   },
-  updateCategory: async (id: string, data: { name?: string; description?: string; image?: string }) => {
+  updateCategory: async (
+    id: string,
+    data: { name?: string; description?: string; image?: string }
+  ) => {
     const response = await apiClient.patch(`/categories/${id}`, data);
     return response.data;
   },
@@ -86,4 +99,3 @@ export const adminService = {
     return response.data;
   },
 };
-

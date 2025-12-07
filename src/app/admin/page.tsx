@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { adminService, DashboardStats } from "@/services/admin.service";
 import { AdminLayout } from "@/components/layout/admin-layout";
+import { Analytics } from "@/components/admin/Analytics";
 import { 
   Users, 
   Palette, 
@@ -891,6 +892,11 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           )}
+        </div>
+
+        {/* Analytics Section */}
+        <div className="mt-8">
+          <Analytics />
         </div>
       </div>
     </AdminLayout>
