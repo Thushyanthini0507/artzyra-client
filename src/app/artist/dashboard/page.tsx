@@ -339,51 +339,54 @@ export default function ArtistDashboard() {
           </Card>
         </div>
 
-        {/* Performance Overview */}
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Performance Overview</CardTitle>
-                <CardDescription>Earnings (Last 30 Days)</CardDescription>
+        {/* Quick Actions and Performance Overview */}
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Quick Actions - Takes 1 column (Left side) */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2" asChild>
+                  <Link href="/artist/profile">
+                    <Edit className="h-5 w-5" />
+                    <span>Edit Your Profile</span>
+                  </Link>
+                </Button>
+                <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2" asChild>
+                  <Link href="/artist/calendar">
+                    <Calendar className="h-5 w-5" />
+                    <span>Update Your Calendar</span>
+                  </Link>
+                </Button>
+                <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2" asChild>
+                  <Link href={`/artists/${user.id || ""}`}>
+                    <ViewIcon className="h-5 w-5" />
+                    <span>View Portfolio</span>
+                  </Link>
+                </Button>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[300px] flex items-center justify-center border-2 border-dashed rounded-lg">
-              <p className="text-muted-foreground">Chart will be displayed here</p>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" asChild>
-                <Link href="/artist/profile">
-                  <Edit className="h-5 w-5" />
-                  <span>Edit Your Profile</span>
-                </Link>
-              </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" asChild>
-                <Link href="/artist/calendar">
-                  <Calendar className="h-5 w-5" />
-                  <span>Update Your Calendar</span>
-                </Link>
-              </Button>
-              <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" asChild>
-                <Link href={`/artists/${user.id || ""}`}>
-                  <ViewIcon className="h-5 w-5" />
-                  <span>View Portfolio</span>
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Performance Overview - Takes 2 columns (Right side) */}
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle>Performance Overview</CardTitle>
+                  <CardDescription>Earnings (Last 30 Days)</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[300px] flex items-center justify-center border-2 border-dashed rounded-lg">
+                <p className="text-muted-foreground">Chart will be displayed here</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </ArtistLayoutNew>
   );
