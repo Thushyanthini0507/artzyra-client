@@ -3,78 +3,106 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { ArtistLayout } from "@/components/layout/artist-layout";
+import { ArtistLayoutNew } from "@/components/layout/artist-layout-new";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { artistService } from "@/services/artist.service";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, Calendar, TrendingUp, Eye, Edit, Eye as ViewIcon, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { formatLKR } from "@/lib/utils/currency";
+import { cn } from "@/lib/utils";
+
+interface Booking {
+  _id: string;
+  customer?: {
+    name: string;
+    email: string;
+  };
+  category?: {
+    name: string;
+  };
+  bookingDate: string;
+  startTime?: string;
+  endTime?: string;
+  status: string;
+  totalAmount?: number;
+}
 
 export default function ArtistDashboard() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  
-  // All hooks must be called before any conditional returns
-  const [stats, setStats] = useState({
-    activeOrders: 0,
-    completedOrders: 0,
-    revenue: 0,
-    services: 1,
-  });
-  const [pendingBookings, setPendingBookings] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  // Protect route - redirect if not artist
-  useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        console.log("🔴 ArtistDashboard - No user, redirecting to home");
-        router.replace("/");
-      } else {
-        // Use case-insensitive role comparison
-        const userRole = (user.role || "").toLowerCase().trim();
-        if (userRole !== "artist") {
-          console.log("🔴 ArtistDashboard - User is not artist, role is:", userRole);
-          // Redirect based on actual role
-          if (userRole === "admin") {
-            router.replace("/admin");
-          } else if (userRole === "customer") {
-            router.replace("/customer");
-          } else {
-            router.replace("/");
-          }
-        } else {
-          console.log("✅ ArtistDashboard - User is artist, showing dashboard");
-        }
-      }
-    }
-  }, [user, authLoading, router]);
+  const [stats, setStats] = useState({
+    upcomingBookings: 0,
+    pendingRequests: 0,
+    totalEarnings: 0,
+    earningsChange: 0,
+    profileViews: 0,
+    profileViewsChange: 0,
+  });
+  const [upcomingBookings, setUpcomingBookings] = useState<Booking[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState<any>(null);
 
   const fetchData = useCallback(async () => {
     try {
-      const bookingsResponse = await artistService.getBookings();
+      const [bookingsResponse, profileResponse] = await Promise.all([
+        artistService.getBookings(),
+        artistService.getProfile(),
+      ]);
+
       if (bookingsResponse.success && bookingsResponse.data) {
         const bookings = bookingsResponse.data;
-        const active = bookings.filter((b: any) => ["confirmed", "accepted"].includes(b.status)).length;
-        const completed = bookings.filter((b: any) => b.status === "completed").length;
-        const revenue = bookings
-          .filter((b: any) => b.status === "completed")
-          .reduce((acc: number, curr: any) => acc + (curr.totalAmount || 0), 0);
-        
-        // Get confirmed bookings (no pending since bookings auto-confirm)
-        const confirmed = bookings.filter((b: any) => b.status === "confirmed");
-        
-        setStats({
-          activeOrders: active,
-          completedOrders: completed,
-          revenue,
-          services: 1,
+        const now = new Date();
+
+        // Filter upcoming bookings (confirmed/accepted, date in future)
+        const upcoming = bookings.filter((b: Booking) => {
+          const bookingDate = new Date(b.bookingDate);
+          return (
+            ["confirmed", "accepted"].includes(b.status) &&
+            bookingDate >= now
+          );
         });
-        setPendingBookings(confirmed.slice(0, 5)); // Show recent confirmed bookings
+
+        // Filter pending requests
+        const pending = bookings.filter(
+          (b: Booking) => b.status === "pending"
+        );
+
+        // Calculate earnings (completed bookings)
+        const completed = bookings.filter(
+          (b: Booking) => b.status === "completed"
+        );
+        const earnings = completed.reduce(
+          (acc: number, b: Booking) => acc + (b.totalAmount || 0),
+          0
+        );
+
+        setStats({
+          upcomingBookings: upcoming.length,
+          pendingRequests: pending.length,
+          totalEarnings: earnings,
+          earningsChange: 15.2, // This would come from API
+          profileViews: 1450, // This would come from API
+          profileViewsChange: 8.5, // This would come from API
+        });
+
+        // Sort upcoming bookings by date and take first 2
+        setUpcomingBookings(
+          upcoming
+            .sort(
+              (a: Booking, b: Booking) =>
+                new Date(a.bookingDate).getTime() -
+                new Date(b.bookingDate).getTime()
+            )
+            .slice(0, 2)
+        );
+      }
+
+      if (profileResponse.success && profileResponse.data) {
+        setProfile(profileResponse.data.artist || profileResponse.data);
       }
     } catch (error) {
       console.error("Failed to fetch artist data", error);
@@ -85,140 +113,278 @@ export default function ArtistDashboard() {
   }, []);
 
   useEffect(() => {
-    // Only fetch data if user is confirmed as artist
-    if (user && (user.role || "").toLowerCase().trim() === "artist") {
-      fetchData();
+    if (!authLoading) {
+      if (!user) {
+        router.replace("/");
+      } else {
+        const userRole = (user.role || "").toLowerCase().trim();
+        if (userRole !== "artist") {
+          if (userRole === "admin") {
+            router.replace("/admin");
+          } else if (userRole === "customer") {
+            router.replace("/customer");
+          } else {
+            router.replace("/");
+          }
+        } else {
+          fetchData();
+        }
+      }
     }
-  }, [user, fetchData]);
+  }, [user, authLoading, router, fetchData]);
 
-  // Show loading state while auth is loading or user is being verified
-  if (authLoading) {
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good Morning";
+    if (hour < 18) return "Good Afternoon";
+    return "Good Evening";
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "confirmed":
+      case "accepted":
+        return (
+          <Badge className="bg-green-500 hover:bg-green-600">Confirmed</Badge>
+        );
+      case "pending":
+        return (
+          <Badge className="bg-orange-500 hover:bg-orange-600">Pending</Badge>
+        );
+      default:
+        return <Badge variant="secondary">{status}</Badge>;
+    }
+  };
+
+  if (authLoading || loading) {
     return (
-      <ArtistLayout>
+      <ArtistLayoutNew>
         <div className="flex items-center justify-center h-screen">
           <div className="text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4" />
             <p>Loading...</p>
           </div>
         </div>
-      </ArtistLayout>
+      </ArtistLayoutNew>
     );
   }
 
-  // Don't render if user is not artist (redirect is happening)
   if (!user || (user.role || "").toLowerCase().trim() !== "artist") {
-    return null; // Redirect is happening in useEffect
+    return null;
   }
 
   return (
-    <ArtistLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold">Artist Dashboard</h1>
-            <p className="text-muted-foreground">Manage your services and orders</p>
-          </div>
-          <Badge variant="secondary">Approved</Badge>
+    <ArtistLayoutNew>
+      <div className="space-y-8">
+        {/* Greeting */}
+        <div>
+          <h1 className="text-4xl font-bold">
+            {getGreeting()}, {user.name || "Artist"}!
+          </h1>
         </div>
 
+        {/* Key Metrics Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
-            <CardHeader>
-              <CardTitle>Active Orders</CardTitle>
-              <CardDescription>In progress</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Upcoming Bookings
+              </CardTitle>
+              <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.activeOrders}</div>
+              <div className="text-3xl font-bold">{stats.upcomingBookings}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Completed</CardTitle>
-              <CardDescription>Total completed jobs</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Pending Requests
+              </CardTitle>
+              <Loader2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{stats.completedOrders}</div>
+              <div className="text-3xl font-bold">{stats.pendingRequests}</div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Revenue</CardTitle>
-              <CardDescription>Total earnings</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Total Earnings (Month)
+              </CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold">{formatLKR(stats.revenue)}</div>
+              <div className="text-3xl font-bold">
+                {formatLKR(stats.totalEarnings)}
+              </div>
+              <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+                <TrendingUp className="h-3 w-3" />
+                +{stats.earningsChange}%
+              </p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader>
-              <CardTitle>Confirmed</CardTitle>
-              <CardDescription>Active bookings</CardDescription>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Profile Views</CardTitle>
+              <Eye className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold text-green-500">{pendingBookings.length}</div>
+              <div className="text-3xl font-bold">{stats.profileViews}</div>
+              <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+                <TrendingUp className="h-3 w-3" />
+                +{stats.profileViewsChange}%
+              </p>
             </CardContent>
           </Card>
         </div>
 
-          <Card>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Your Next Gigs */}
+          <Card className="md:col-span-2">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle>Recent Bookings</CardTitle>
-                  <CardDescription>Your confirmed bookings</CardDescription>
-                </div>
-                <Link href="/artist/bookings">
-                  <Button variant="outline" size="sm">View All</Button>
-                </Link>
-              </div>
+              <CardTitle>Your Next Gigs</CardTitle>
+              <CardDescription>Upcoming appointments</CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex items-center justify-center h-32">
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                </div>
-              ) : pendingBookings.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-8">No bookings yet</p>
+              {upcomingBookings.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-8">
+                  No upcoming bookings
+                </p>
               ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Time</TableHead>
-                    <TableHead>Amount</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {pendingBookings.slice(0, 5).map((booking) => (
-                    <TableRow key={booking._id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{booking.customer?.name || "N/A"}</div>
-                          <div className="text-xs text-muted-foreground">{booking.customer?.email}</div>
+                <div className="space-y-4">
+                  {upcomingBookings.map((booking) => (
+                    <div
+                      key={booking._id}
+                      className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="text-center min-w-[60px]">
+                          <p className="text-sm font-semibold">
+                            {formatDate(booking.bookingDate)}
+                          </p>
                         </div>
-                      </TableCell>
-                      <TableCell>{booking.service || "N/A"}</TableCell>
-                      <TableCell>{new Date(booking.bookingDate || booking.date).toLocaleDateString()}</TableCell>
-                      <TableCell>
-                        {booking.startTime && booking.endTime 
-                          ? `${booking.startTime} - ${booking.endTime}`
-                          : "N/A"}
-                      </TableCell>
-                      <TableCell>{formatLKR(booking.totalAmount)}</TableCell>
-                    </TableRow>
+                        <div>
+                          <p className="font-medium">
+                            {booking.customer?.name || "Unknown Client"}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            {booking.category?.name || "Service"}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        {getStatusBadge(booking.status)}
+                        <Link href={`/artist/bookings/${booking._id}`}>
+                          <Button variant="ghost" size="sm">
+                            View
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
                   ))}
-                </TableBody>
-              </Table>
-            )}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Your Availability */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Availability</CardTitle>
+              <CardDescription>July 2024</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Simple Calendar Widget */}
+                <div className="grid grid-cols-7 gap-1 text-center text-sm">
+                  {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+                    <div key={day} className="font-medium text-muted-foreground p-2">
+                      {day}
+                    </div>
+                  ))}
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => {
+                    const isToday = day === 24;
+                    const isBooked = day === 28;
+                    return (
+                      <div
+                        key={day}
+                        className={cn(
+                          "p-2 rounded-full cursor-pointer hover:bg-accent",
+                          isToday && "bg-purple-100 text-purple-900 font-semibold",
+                          isBooked && "bg-purple-600 text-white font-semibold"
+                        )}
+                      >
+                        {day}
+                      </div>
+                    );
+                  })}
+                </div>
+                <Button variant="outline" className="w-full" asChild>
+                  <Link href="/artist/calendar">Manage Full Calendar</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Performance Overview */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Performance Overview</CardTitle>
+                <CardDescription>Earnings (Last 30 Days)</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px] flex items-center justify-center border-2 border-dashed rounded-lg">
+              <p className="text-muted-foreground">Chart will be displayed here</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-3">
+              <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" asChild>
+                <Link href="/artist/profile">
+                  <Edit className="h-5 w-5" />
+                  <span>Edit Your Profile</span>
+                </Link>
+              </Button>
+              <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" asChild>
+                <Link href="/artist/calendar">
+                  <Calendar className="h-5 w-5" />
+                  <span>Update Your Calendar</span>
+                </Link>
+              </Button>
+              <Button variant="outline" className="h-auto py-4 flex flex-col items-center gap-2" asChild>
+                <Link href={`/artists/${user.id || ""}`}>
+                  <ViewIcon className="h-5 w-5" />
+                  <span>View Portfolio</span>
+                </Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
-    </ArtistLayout>
+    </ArtistLayoutNew>
   );
 }
-
