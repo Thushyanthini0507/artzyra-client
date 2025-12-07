@@ -322,8 +322,8 @@ export default function ArtistDashboard() {
                         key={day}
                         className={cn(
                           "p-2 rounded-full cursor-pointer hover:bg-accent",
-                          isToday && "bg-purple-100 text-purple-900 font-semibold",
-                          isBooked && "bg-purple-600 text-white font-semibold"
+                          isToday && "bg-primary/10 text-primary font-semibold",
+                          isBooked && "bg-primary text-primary-foreground font-semibold"
                         )}
                       >
                         {day}

@@ -79,27 +79,27 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-background">
-      {/* Left Sidebar - Dark Theme */}
-      <aside className="w-64 bg-[#1a1a2e] text-white flex flex-col">
+      {/* Left Sidebar */}
+      <aside className="w-64 border-r bg-background flex flex-col">
         {/* Logo */}
-        <div className="p-6 border-b border-purple-900/30">
-          <Link href="/" className="text-2xl font-bold text-white">
+        <div className="p-6 border-b">
+          <Link href="/" className="text-2xl font-bold">
             Artzyra
           </Link>
         </div>
 
         {/* User Profile Section */}
-        <div className="p-6 border-b border-purple-900/30">
+        <div className="p-6 border-b">
           <div className="flex flex-col items-center gap-3">
-            <Avatar className="h-20 w-20 border-2 border-purple-500">
+            <Avatar className="h-20 w-20 border-2">
               <AvatarImage src={artistImage} alt={artistName} />
-              <AvatarFallback className="bg-purple-600 text-white text-xl">
+              <AvatarFallback className="bg-primary text-primary-foreground text-xl">
                 {getInitials(artistName)}
               </AvatarFallback>
             </Avatar>
             <div className="text-center">
-              <p className="font-semibold text-white">{artistName}</p>
-              <p className="text-sm text-purple-300">{artistTitle}</p>
+              <p className="font-semibold">{artistName}</p>
+              <p className="text-sm text-muted-foreground">{artistTitle}</p>
             </div>
           </div>
         </div>
@@ -117,8 +117,8 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
                 className={cn(
                   "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-purple-600 text-white"
-                    : "text-purple-200 hover:bg-purple-900/30 hover:text-white"
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -129,10 +129,10 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* View Public Profile Button */}
-        <div className="p-4 border-t border-purple-900/30">
+        <div className="p-4 border-t">
           <Button
             variant="default"
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+            className="w-full"
             asChild
           >
             <Link href={`/artists/${user?.id || ""}`}>View Public Profile</Link>
@@ -158,7 +158,7 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
             <NotificationMenu />
             <Avatar className="h-10 w-10">
               <AvatarImage src={artistImage} alt={artistName} />
-              <AvatarFallback className="bg-purple-600 text-white">
+              <AvatarFallback className="bg-primary text-primary-foreground">
                 {getInitials(artistName)}
               </AvatarFallback>
             </Avatar>
