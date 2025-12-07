@@ -34,7 +34,6 @@ export function useRegisterCustomer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const { login } = useAuth();
 
   const register = async (data: any) => {
     setLoading(true);
@@ -42,9 +41,8 @@ export function useRegisterCustomer() {
     try {
       const response = await authService.registerCustomer(data);
       if (response.success) {
-        // Auto login after registration
-        await login(data.email, data.password);
-        router.push("/customer");
+        // Don't auto-login - redirect to login page instead
+        router.push("/auth/login?registered=true");
         return { success: true };
       } else {
         setError(response.error || "Registration failed");

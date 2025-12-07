@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, CalendarDays, Heart, Mail } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -33,7 +33,8 @@ const sidebarItems = [
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const getInitials = (name: string | undefined) => {
     if (!name) return "U";
@@ -95,11 +96,22 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
           </div>
         </nav>
 
-        {/* Create New Booking Button */}
-        <div className="p-4 border-t">
+        {/* Create New Booking Button and Logout */}
+        <div className="p-4 border-t space-y-2">
           <Link href="/customer/bookings/create">
             <Button className="w-full">Create New Booking</Button>
           </Link>
+          <Button 
+            variant="outline" 
+            className="w-full" 
+            onClick={async () => {
+              await logout();
+              router.push("/");
+            }}
+          >
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </Button>
         </div>
       </aside>
 

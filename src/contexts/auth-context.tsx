@@ -43,11 +43,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const normalizeUser = (raw: any): User | null => {
     if (!raw) return null;
     const user = raw.user || raw;
+    const profile = raw.profile || raw.data?.profile;
 
     // Normalize role to lowercase
     const normalizedRole = String(user.role || "")
       .toLowerCase()
       .trim();
+
+    // Get name from profile first (most accurate), then fallback to user.name, then email, then "User"
+    const userName = 
+      profile?.name || 
+      user.name || 
+      user.username || 
+      user.fullName || 
+      user.email?.split("@")[0] || 
+      "User";
 
     // CRITICAL: Spread user first, then override with normalized values
     // This ensures our normalized role is not overwritten
@@ -55,14 +65,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ...user,  // Spread first
       _id: user._id || user.id,
       email: user.email || "",
-      name:
-        user.name ||
-        user.username ||
-        user.fullName ||
-        user.email?.split("@")[0] ||
-        "User",
+      name: userName,
       role: normalizedRole as UserRole,  // Override with normalized role AFTER spread
-      status: user.status,
+      status: user.status || profile?.status,
     } as User;
   };
 
@@ -104,7 +109,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const res = await authService.getCurrentUser();
       if (res.success && res.data) {
-        const normalized = normalizeUser(res.data);
+        // Pass both user and profile to normalizeUser
+        const normalized = normalizeUser({ user: res.data.user, profile: res.data.profile });
         setUser(normalized);
       } else {
         // Fallback: try to decode from JWT token
@@ -229,6 +235,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const token = responseData.token || responseData.data?.token;
       const backendRedirectPath = responseData.redirectPath || responseData.data?.redirectPath;
       const userData = responseData.user || responseData.data?.user || responseData;
+      const profileData = responseData.profile || responseData.data?.profile;
 
       console.log("🔵 AuthContext - Extracted token:", token ? `✅ Found (${token.length} chars)` : "❌ Missing");
       console.log("🔵 AuthContext - Extracted redirectPath:", backendRedirectPath);
@@ -238,8 +245,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return { success: false, error: "No token received from server" };
       }
 
-      // Normalize user data
-      const normalizedUser = normalizeUser(userData);
+      // Normalize user data - include profile if available
+      const normalizedUser = normalizeUser({ user: userData, profile: profileData });
       if (!normalizedUser) {
         return { success: false, error: "Unable to process user data" };
       }
