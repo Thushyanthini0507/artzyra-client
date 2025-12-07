@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { PublicNavbar } from "@/components/layout/public-navbar";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, CalendarDays, Heart, Mail, User } from "lucide-react";
-import { NotificationMenu } from "@/components/NotificationMenu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { LayoutDashboard, CalendarDays, Heart, Mail } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 const sidebarItems = [
   {
@@ -30,11 +29,6 @@ const sidebarItems = [
     href: "/customer/messages",
     icon: Mail,
   },
-  {
-    title: "Profile",
-    href: "/customer/profile",
-    icon: User,
-  },
 ];
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
@@ -51,15 +45,36 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
       .slice(0, 2);
   };
 
+  const getUserFirstName = (name: string | undefined) => {
+    if (!name) return "User";
+    return name.split(" ")[0];
+  };
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <PublicNavbar />
-      <div className="flex flex-1">
-        <aside className="w-64 border-r bg-background">
-          <nav className="flex flex-col gap-2 p-4">
+    <div className="flex min-h-screen bg-background">
+      {/* Left Sidebar */}
+      <aside className="w-80 border-r bg-background flex flex-col">
+        {/* User Greeting */}
+        <div className="p-6 border-b">
+          <div className="flex items-center gap-3 mb-2">
+            <Avatar className="h-12 w-12">
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {getInitials(user?.name)}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <p className="font-medium">Hello, {getUserFirstName(user?.name)}</p>
+              <p className="text-sm text-muted-foreground">Welcome back!</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 p-4">
+          <div className="flex flex-col gap-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = pathname === item.href || (item.href === "/customer" && pathname === "/customer/dashboard");
               
               return (
                 <Link
@@ -77,20 +92,20 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
-          </nav>
-        </aside>
-        <div className="flex-1 flex flex-col">
-          {/* Header Bar with Notification Menu */}
-          <header className="h-16 border-b bg-background flex items-center justify-end px-6 gap-4">
-            <NotificationMenu />
-            <Avatar className="h-10 w-10">
-              <AvatarFallback className="bg-primary text-primary-foreground">
-                {getInitials(user?.name)}
-              </AvatarFallback>
-            </Avatar>
-          </header>
-          <main className="flex-1 p-8">{children}</main>
+          </div>
+        </nav>
+
+        {/* Create New Booking Button */}
+        <div className="p-4 border-t">
+          <Link href="/customer/bookings/create">
+            <Button className="w-full">Create New Booking</Button>
+          </Link>
         </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col">
+        {children}
       </div>
     </div>
   );
