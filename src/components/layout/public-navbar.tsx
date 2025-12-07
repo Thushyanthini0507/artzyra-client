@@ -58,7 +58,7 @@ export function PublicNavbar() {
               <Link href="/browse" className="text-sm font-medium hover:text-primary transition-colors">
                 Explore
               </Link>
-              <Link href="/browse" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link href="/category" className="text-sm font-medium hover:text-primary transition-colors">
                 Category
               </Link>
               <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
