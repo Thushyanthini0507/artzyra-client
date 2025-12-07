@@ -52,11 +52,20 @@ export function PublicNavbar() {
             </Link>
             
             <div className="hidden md:flex items-center gap-6">
+              <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
+                Home
+              </Link>
               <Link href="/browse" className="text-sm font-medium hover:text-primary transition-colors">
-                Browse Artists
+                Explore
+              </Link>
+              <Link href="/browse" className="text-sm font-medium hover:text-primary transition-colors">
+                Category
               </Link>
               <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
                 About
+              </Link>
+              <Link href="/auth/register/artist" className="text-sm font-medium hover:text-primary transition-colors">
+                For Artists
               </Link>
             </div>
           </div>
@@ -102,7 +111,7 @@ export function PublicNavbar() {
             ) : (
               <>
                 <Button variant="ghost" onClick={openLogin}>
-                  Sign In
+                  Login
                 </Button>
                 <Link href="/auth/register/customer">
                   <Button>Sign Up</Button>
