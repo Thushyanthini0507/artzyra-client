@@ -309,8 +309,8 @@ export default function ArtistDashboard() {
               <div className="space-y-4">
                 {/* Simple Calendar Widget */}
                 <div className="grid grid-cols-7 gap-1 text-center text-sm">
-                  {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
-                    <div key={day} className="font-medium text-muted-foreground p-2">
+                  {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                    <div key={`day-${index}`} className="font-medium text-muted-foreground p-2">
                       {day}
                     </div>
                   ))}

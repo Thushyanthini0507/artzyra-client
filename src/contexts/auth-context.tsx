@@ -373,12 +373,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: true, user: normalizedUser };
     } catch (error: any) {
       console.error("🔴 AuthContext - Login error:", error);
+      console.error("🔴 AuthContext - Error response:", error.response?.data);
+      console.error("🔴 AuthContext - Error status:", error.response?.status);
+      
+      // Handle rate limiting (429)
+      if (error.response?.status === 429) {
+        const rateLimitMsg =
+          error.response?.data?.message ||
+          "Too many login attempts. Please wait 15 minutes before trying again.";
+        return { success: false, error: rateLimitMsg };
+      }
+      
+      // Extract error message from response
       const msg =
         error.response?.data?.message ||
         error.response?.data?.error ||
         error.message ||
-        "Login failed";
+        "Login failed. Please check your credentials.";
 
+      console.log("🔴 AuthContext - Extracted error message:", msg);
       return { success: false, error: msg };
     }
   };
