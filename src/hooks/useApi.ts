@@ -63,6 +63,7 @@ export function useBookings(role: "artist" | "customer" | "admin") {
 
 export function useArtistPublicList(params?: any) {
   const [artists, setArtists] = useState<any[]>([]);
+  const [pagination, setPagination] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,6 +72,7 @@ export function useArtistPublicList(params?: any) {
       try {
         const data = await artistService.getAllArtists(params);
         setArtists(data.data);
+        setPagination(data.pagination || null);
       } catch (err: any) {
         setError(err.message || "Failed to fetch artists");
       } finally {
@@ -80,7 +82,7 @@ export function useArtistPublicList(params?: any) {
     fetchArtists();
   }, [JSON.stringify(params)]);
 
-  return { artists, loading, error };
+  return { artists, pagination, loading, error };
 }
 
 export function useCategories() {
