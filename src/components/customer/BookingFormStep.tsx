@@ -52,16 +52,16 @@ export function BookingFormStep({ artistId, onBack }: BookingFormStepProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <Button variant="outline" onClick={onBack}>
+    <div className="space-y-6">
+      <Button variant="outline" onClick={onBack} className="mb-2">
         ← Back to Artists
       </Button>
       <Card>
-        <CardHeader>
-          <CardTitle>Booking Details</CardTitle>
-          <CardDescription>Fill in the details for your booking</CardDescription>
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-2xl">Booking Details</CardTitle>
+          <CardDescription className="text-base">Fill in the details for your booking</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="bookingDate">Booking Date *</Label>
