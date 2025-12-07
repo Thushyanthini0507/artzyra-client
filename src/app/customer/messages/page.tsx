@@ -7,8 +7,8 @@ import { Mail } from "lucide-react";
 export default function CustomerMessagesPage() {
   return (
     <CustomerLayout>
-      <div className="space-y-6">
-        <div>
+      <div className="p-6 sm:p-8 space-y-6">
+        <div className="space-y-1">
           <h1 className="text-3xl font-bold">Messages</h1>
           <p className="text-muted-foreground">Chat with artists</p>
         </div>

@@ -80,9 +80,10 @@ export default function CreateBookingPage() {
               onBack={handleBackToCategories}
             />
           )}
-          {step === 3 && selectedArtist && (
+          {step === 3 && selectedArtist && selectedCategory && (
             <BookingFormStep
               artistId={selectedArtist}
+              categoryId={selectedCategory}
               onBack={handleBackToArtists}
             />
           )}

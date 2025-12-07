@@ -30,10 +30,11 @@ type BookingFormData = z.infer<typeof bookingSchema>;
 
 interface BookingFormStepProps {
   artistId: string;
+  categoryId: string;
   onBack: () => void;
 }
 
-export function BookingFormStep({ artistId, onBack }: BookingFormStepProps) {
+export function BookingFormStep({ artistId, categoryId, onBack }: BookingFormStepProps) {
   const { createBooking, loading } = useCreateBooking();
 
   const {
@@ -45,10 +46,18 @@ export function BookingFormStep({ artistId, onBack }: BookingFormStepProps) {
   });
 
   const onSubmit = async (data: BookingFormData) => {
-    await createBooking({
-      artist: artistId,
-      ...data,
-    });
+    const bookingData = {
+      artistId: artistId,
+      categoryId: categoryId,
+      bookingDate: data.bookingDate,
+      startTime: data.startTime,
+      endTime: data.endTime,
+      location: data.location || "",
+      specialRequests: data.specialRequests || "",
+    };
+    
+    console.log("📤 Sending booking data:", bookingData);
+    await createBooking(bookingData);
   };
 
   return (

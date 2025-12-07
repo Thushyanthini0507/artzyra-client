@@ -38,9 +38,9 @@ export default function CustomerBookingsPage() {
 
   return (
     <CustomerLayout>
-      <div className="space-y-6">
+      <div className="p-6 sm:p-8 space-y-6">
         <div className="flex items-center justify-between">
-          <div>
+          <div className="space-y-1">
             <h1 className="text-3xl font-bold">My Bookings</h1>
             <p className="text-muted-foreground">Manage your appointments and services</p>
           </div>
@@ -74,9 +74,25 @@ export default function CustomerBookingsPage() {
                         with <span className="font-medium text-foreground">{typeof booking.artist === 'object' ? booking.artist.name : 'Artist'}</span>
                       </p>
                       <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                        <span>{new Date(booking.date).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span>{new Date(booking.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        {booking.bookingDate ? (
+                          <>
+                            <span>{new Date(booking.bookingDate).toLocaleDateString()}</span>
+                            {booking.startTime && booking.endTime && (
+                              <>
+                                <span>•</span>
+                                <span>{booking.startTime} - {booking.endTime}</span>
+                              </>
+                            )}
+                          </>
+                        ) : booking.date ? (
+                          <>
+                            <span>{new Date(booking.date).toLocaleDateString()}</span>
+                            <span>•</span>
+                            <span>{new Date(booking.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </>
+                        ) : (
+                          <span className="text-muted-foreground">Date not set</span>
+                        )}
                       </div>
                       <p className="text-sm text-muted-foreground mt-1">{booking.location}</p>
                       <div className="flex items-center gap-2 mt-2">
