@@ -18,8 +18,10 @@ export function useLogin() {
       }
       return result;
     } catch (err: any) {
-      setError(err.message || "Login failed");
-      return { success: false, error: err.message };
+      // Backend returns error in 'message' field, but check both 'error' and 'message' for compatibility
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message || "Login failed";
+      setError(msg);
+      return { success: false, error: msg };
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,8 @@ export function useRegisterCustomer() {
         return { success: false, error: response.error };
       }
     } catch (err: any) {
-      const msg = err.response?.data?.error || err.message || "Registration failed";
+      // Backend returns error in 'message' field, but check both 'error' and 'message' for compatibility
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message || "Registration failed";
       setError(msg);
       return { success: false, error: msg };
     } finally {
@@ -79,7 +82,8 @@ export function useRegisterArtist() {
         return { success: false, error: response.error };
       }
     } catch (err: any) {
-      const msg = err.response?.data?.error || err.message || "Registration failed";
+      // Backend returns error in 'message' field, but check both 'error' and 'message' for compatibility
+      const msg = err.response?.data?.message || err.response?.data?.error || err.message || "Registration failed";
       setError(msg);
       return { success: false, error: msg };
     } finally {

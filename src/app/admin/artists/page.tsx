@@ -21,7 +21,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import apiClient from "@/lib/apiClient";
+import { adminService } from "@/services/admin.service";
 import { toast } from "sonner";
 import { CheckCircle, XCircle } from "lucide-react";
 
@@ -50,26 +50,21 @@ export default function AdminArtistsPage() {
     setLoading(true);
     try {
       console.log("Fetching artists...");
-      const response = await apiClient.get<any>("/api/admin/users?role=artist");
+      const response = await adminService.getUsers("artist");
       console.log("Artists response:", response);
 
-      const responseData = response.data;
-      // Handle both { success: true, data: [...] } and direct array responses
+      // Handle response from adminService
       let data: User[];
-      if (
-        responseData &&
-        typeof responseData === "object" &&
-        "success" in responseData
-      ) {
-        if (responseData.success && responseData.data) {
-          data = Array.isArray(responseData.data) ? responseData.data : [];
+      if (response && typeof response === "object" && "success" in response) {
+        if (response.success && response.data) {
+          data = Array.isArray(response.data) ? response.data : [];
         } else {
-          console.error("Failed to fetch artists:", responseData.error);
-          toast.error(responseData.error || "Failed to fetch artists");
+          console.error("Failed to fetch artists:", response.error);
+          toast.error(response.error || "Failed to fetch artists");
           return;
         }
       } else {
-        data = Array.isArray(responseData) ? responseData : [];
+        data = Array.isArray(response) ? response : [];
       }
 
       console.log("Setting artists:", data);
@@ -94,18 +89,16 @@ export default function AdminArtistsPage() {
     if (!selectedUser || !actionType) return;
 
     try {
-      const status = actionType === "approve" ? "approved" : "rejected";
-      const response = await apiClient.put("/api/admin/users", {
-        userId: selectedUser._id,
-        status,
-      });
+      const response =
+        actionType === "approve"
+          ? await adminService.approveArtist(selectedUser._id)
+          : await adminService.rejectArtist(selectedUser._id);
 
-      const responseData = response.data;
-      if (responseData.success !== false) {
-        toast.success(`Artist ${status} successfully`);
+      if (response.success !== false) {
+        toast.success(`Artist ${actionType === "approve" ? "approved" : "rejected"} successfully`);
         fetchArtists();
       } else {
-        toast.error(responseData.error || "Failed to update status");
+        toast.error(response.error || "Failed to update status");
       }
     } catch (error: any) {
       console.error("Error updating artist status:", error);

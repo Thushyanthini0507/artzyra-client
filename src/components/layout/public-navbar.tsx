@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { User, LogOut } from "lucide-react";
+import { NotificationMenu } from "@/components/NotificationMenu";
 
 export function PublicNavbar() {
   const { user, openLogin, logout } = useAuth();
@@ -62,7 +63,11 @@ export function PublicNavbar() {
 
           <div className="flex items-center gap-4">
             {user ? (
-              <DropdownMenu>
+              <>
+                {(user.role === "customer" || user.role === "artist") && (
+                  <NotificationMenu />
+                )}
+                <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar>
@@ -93,6 +98,7 @@ export function PublicNavbar() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              </>
             ) : (
               <>
                 <Button variant="ghost" onClick={openLogin}>
