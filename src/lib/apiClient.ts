@@ -26,13 +26,19 @@ apiClient.interceptors.response.use(
   (error) => {
     // Handle 401 Unauthorized (no token or invalid token)
     if (error.response?.status === 401) {
-      // Clear client-side storage (backend cookie is cleared by logout endpoint)
-      Cookies.remove("token");
-      if (typeof window !== "undefined") {
-        localStorage.removeItem("token");
-        // Only redirect if not already on login page
-        if (window.location.pathname !== "/auth/login") {
-          window.location.href = "/auth/login";
+      // Don't redirect for login/auth endpoints - let them handle their own errors
+      const isAuthEndpoint = error.config?.url?.includes("/auth/login") || 
+                             error.config?.url?.includes("/auth/register");
+      
+      if (!isAuthEndpoint) {
+        // Clear client-side storage (backend cookie is cleared by logout endpoint)
+        Cookies.remove("token");
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
+          // Only redirect if not already on login page
+          if (window.location.pathname !== "/auth/login") {
+            window.location.href = "/auth/login";
+          }
         }
       }
     }

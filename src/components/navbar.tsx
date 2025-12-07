@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { Button } from "@/components/ui/button";
-import { LoginModal } from "@/components/login-modal";
 
 import {
   DropdownMenu,
@@ -16,9 +14,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 
 export function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, openLogin } = useAuth();
   const router = useRouter();
-  const [loginOpen, setLoginOpen] = useState(false);
 
 
   const handleLogout = () => {
@@ -94,7 +91,7 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <Button variant="outline" onClick={() => setLoginOpen(true)}>
+                  <Button variant="outline" onClick={openLogin}>
                     Sign In
                   </Button>
                   <Link href="/auth/register/customer">
@@ -109,8 +106,6 @@ export function Navbar() {
           </div>
         </div>
       </nav>
-
-      <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
     </>
   );
 }
