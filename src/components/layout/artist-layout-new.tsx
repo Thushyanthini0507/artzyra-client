@@ -14,6 +14,7 @@ import {
   Star,
   Search,
   Bell,
+  Image,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,11 @@ const sidebarItems = [
     title: "Calendar",
     href: "/artist/calendar",
     icon: Calendar,
+  },
+  {
+    title: "Portfolio",
+    href: "/artist/portfolio",
+    icon: Image,
   },
   {
     title: "Profile",
