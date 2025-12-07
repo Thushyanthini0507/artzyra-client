@@ -5,6 +5,7 @@ import { useArtistPublicList, useCategories } from "@/hooks/useApi";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -400,63 +401,83 @@ export function BrowseArtists() {
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {paginatedArtists.map((artist: any) => (
-                  <Card key={artist._id} className="overflow-hidden hover:shadow-lg transition-shadow">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-16 w-16 border-2 border-background flex-shrink-0">
-                          <AvatarImage src={artist.profileImage} alt={artist.name} />
-                          <AvatarFallback>{artist.name?.charAt(0) || "A"}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex justify-between items-start gap-2">
-                            <CardTitle className="truncate text-lg">{artist.name}</CardTitle>
-                            {user?.role === "customer" && (
-                              <FavoriteButton
-                                artistId={artist._id}
-                                initialIsFavorite={favorites.includes(artist._id)}
-                              />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                            {artist.rating && (
-                              <div className="flex items-center gap-1">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <Star
-                                    key={star}
-                                    className={cn(
-                                      "h-3 w-3",
-                                      star <= Math.round(artist.rating)
-                                        ? "fill-yellow-400 text-yellow-400"
-                                        : "text-muted-foreground"
-                                    )}
-                                  />
-                                ))}
-                                <span className="text-xs text-muted-foreground ml-1">
-                                  ({artist.rating.toFixed(1)})
-                                </span>
-                              </div>
-                            )}
-                            {artist.category?.name && (
-                              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
-                                {artist.category.name}
-                              </span>
-                            )}
-                          </div>
+                  <Card 
+                    key={artist._id} 
+                    className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                  >
+                    {/* Artist Image */}
+                    <div className="relative w-full h-64 overflow-hidden">
+                      <img
+                        src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=400&background=random&color=fff&bold=true`}
+                        alt={artist.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=400&background=random&color=fff&bold=true`;
+                        }}
+                      />
+                      {user?.role === "customer" && (
+                        <div className="absolute top-2 right-2">
+                          <FavoriteButton
+                            artistId={artist._id}
+                            initialIsFavorite={favorites.includes(artist._id)}
+                          />
                         </div>
+                      )}
+                    </div>
+
+                    <CardContent className="p-6 space-y-4">
+                      {/* Name and Category */}
+                      <div className="flex items-center justify-between gap-2">
+                        <CardTitle className="text-xl font-bold">
+                          {artist.name}
+                        </CardTitle>
+                        {artist.category?.name && (
+                          <Badge variant="secondary">
+                            {artist.category.name}
+                          </Badge>
+                        )}
                       </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="line-clamp-3 mb-4 min-h-[3rem]">
+
+                      {/* Rating */}
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => {
+                            const rating = artist.rating || 0;
+                            const isHalf = star - 0.5 <= rating && rating < star;
+                            const isFull = star <= rating;
+                            
+                            return (
+                              <Star
+                                key={star}
+                                className={cn(
+                                  "h-4 w-4",
+                                  isFull
+                                    ? "fill-yellow-400 text-yellow-400"
+                                    : isHalf
+                                    ? "fill-yellow-400/50 text-yellow-400"
+                                    : "text-muted-foreground"
+                                )}
+                              />
+                            );
+                          })}
+                        </div>
+                        <span className="text-sm font-medium">
+                          ({artist.rating ? artist.rating.toFixed(1) : "0.0"})
+                        </span>
+                      </div>
+
+                      {/* Description */}
+                      <CardDescription className="text-sm line-clamp-3 min-h-[3.5rem]">
                         {artist.bio || "No bio available for this artist."}
                       </CardDescription>
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-sm">
-                          {formatHourlyRate(artist.hourlyRate)}
-                        </span>
-                        <Button size="sm" asChild>
-                          <Link href={`/artists/${artist._id}`}>View Profile</Link>
-                        </Button>
-                      </div>
+
+                      {/* View Profile Button */}
+                      <Button 
+                        className="w-full"
+                        asChild
+                      >
+                        <Link href={`/artists/${artist._id}`}>View Profile</Link>
+                      </Button>
                     </CardContent>
                   </Card>
                 ))}

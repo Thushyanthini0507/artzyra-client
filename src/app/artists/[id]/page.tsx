@@ -11,7 +11,7 @@ import { artistService } from "@/services/artist.service";
 import { reviewService } from "@/services/review.service";
 import apiClient from "@/lib/apiClient";
 import { toast } from "sonner";
-import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink } from "lucide-react";
+import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, Image as ImageIcon } from "lucide-react";
 import { formatHourlyRate } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -26,6 +26,7 @@ export default function ArtistProfilePage() {
 
   const [artist, setArtist] = useState<any>(null);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [relatedArtists, setRelatedArtists] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [portfolioFilter, setPortfolioFilter] = useState<string>("all");
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -40,7 +41,28 @@ export default function ArtistProfilePage() {
         // Fetch artist data
         const artistResponse = await artistService.getById(artistId);
         if (artistResponse.success && artistResponse.data) {
-          setArtist(artistResponse.data);
+          const artistData = artistResponse.data;
+          setArtist(artistData);
+
+          // Fetch related artists (same category, excluding current artist)
+          if (artistData.category?._id) {
+            try {
+              const relatedResponse = await artistService.getAllArtists({
+                category: artistData.category._id,
+                limit: 6,
+              });
+              if (relatedResponse.success && relatedResponse.data) {
+                // Filter out current artist and limit to 6
+                const related = relatedResponse.data
+                  .filter((a: any) => a._id !== artistId)
+                  .slice(0, 6);
+                setRelatedArtists(related);
+              }
+            } catch (error) {
+              console.error("Failed to fetch related artists", error);
+              // Don't show error, just continue without related artists
+            }
+          }
         } else {
           toast.error("Artist not found");
           router.push("/browse");
@@ -165,9 +187,16 @@ export default function ArtistProfilePage() {
               src={artist.profileImage}
               alt={artist.name}
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.src = `https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&h=600&fit=crop&q=80`;
+              }}
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/5" />
+            <img
+              src={`https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&h=600&fit=crop&q=80`}
+              alt="Artist banner"
+              className="w-full h-full object-cover"
+            />
           )}
           <div className="absolute inset-0 bg-black/40" />
           <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
@@ -186,7 +215,13 @@ export default function ArtistProfilePage() {
                 <CardHeader>
                   <div className="flex flex-col items-center text-center space-y-4">
                     <Avatar className="h-24 w-24 border-4 border-background">
-                      <AvatarImage src={artist.profileImage} alt={artist.name} />
+                      <AvatarImage 
+                        src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`} 
+                        alt={artist.name}
+                        onError={(e) => {
+                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`;
+                        }}
+                      />
                       <AvatarFallback className="text-2xl">
                         {artist.name?.charAt(0) || "A"}
                       </AvatarFallback>
@@ -325,11 +360,11 @@ export default function ArtistProfilePage() {
               </Card>
 
               {/* Portfolio Section */}
-              {portfolioImages.length > 0 && (
-                <Card>
-                  <CardHeader>
-                    <div className="flex items-center justify-between">
-                      <CardTitle>Portfolio</CardTitle>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Portfolio</CardTitle>
+                    {portfolioImages.length > 0 && (
                       <div className="flex gap-2">
                         <Button
                           variant={portfolioFilter === "all" ? "default" : "outline"}
@@ -340,9 +375,30 @@ export default function ArtistProfilePage() {
                         </Button>
                         {/* You can add more filters here based on your portfolio structure */}
                       </div>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {portfolioImages.length === 0 ? (
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {Array.from({ length: 6 }, (_, index) => (
+                        <div
+                          key={index}
+                          className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
+                        >
+                          <img
+                            src={`https://images.unsplash.com/photo-${1541961017774 + index}?w=400&h=400&fit=crop&q=80`}
+                            alt={`Portfolio placeholder ${index + 1}`}
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to a different placeholder service
+                              e.currentTarget.src = `https://picsum.photos/400/400?random=${index}`;
+                            }}
+                          />
+                        </div>
+                      ))}
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                  ) : (
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {portfolioImages.slice(0, 6).map((image: string, index: number) => (
                         <div
@@ -353,13 +409,17 @@ export default function ArtistProfilePage() {
                             src={image}
                             alt={`Portfolio ${index + 1}`}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to placeholder image
+                              e.currentTarget.src = `https://images.unsplash.com/photo-${1541961017774 + index}?w=400&h=400&fit=crop&q=80`;
+                            }}
                           />
                         </div>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-              )}
+                  )}
+                </CardContent>
+              </Card>
 
               {/* Ratings & Reviews Section */}
               <Card>
@@ -423,6 +483,57 @@ export default function ArtistProfilePage() {
               </Card>
             </div>
           </div>
+
+          {/* Related Photos Section - Full Width */}
+          {relatedArtists.length > 0 && (
+            <div className="mt-8">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Related Artists</CardTitle>
+                  <CardDescription>
+                    Discover other talented artists in the same category
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {relatedArtists.map((relatedArtist: any) => (
+                      <Link
+                        key={relatedArtist._id}
+                        href={`/artists/${relatedArtist._id}`}
+                        className="group"
+                      >
+                        <div className="space-y-2">
+                          <div className="relative aspect-square rounded-lg overflow-hidden bg-muted group-hover:opacity-90 transition-opacity">
+                            <img
+                              src={
+                                relatedArtist.profileImage ||
+                                `https://ui-avatars.com/api/?name=${encodeURIComponent(relatedArtist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`
+                              }
+                              alt={relatedArtist.name}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(relatedArtist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`;
+                              }}
+                            />
+                          </div>
+                          <div className="text-center">
+                            <p className="text-sm font-medium truncate">
+                              {relatedArtist.name}
+                            </p>
+                            {relatedArtist.category?.name && (
+                              <p className="text-xs text-muted-foreground truncate">
+                                {relatedArtist.category.name}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </PublicLayout>
