@@ -46,25 +46,41 @@ export function NotificationMenu() {
   const fetchNotifications = async () => {
     try {
       setLoading(true);
-      const response = await notificationService.getAll({ limit: 10, isRead: undefined });
+      const response = await notificationService.getAll({ limit: 10 });
       if (response.success) {
         setNotifications(response.data.notifications || []);
         setUnreadCount(response.data.unreadCount || 0);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch notifications", error);
+      // Handle timeout errors gracefully
+      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+        console.warn("Notification request timed out - this is non-critical");
+        // Don't show error to user for timeout - just use empty state
+        setNotifications([]);
+        setUnreadCount(0);
+      } else {
+        // For other errors, still set empty state to prevent UI issues
+        setNotifications([]);
+        setUnreadCount(0);
+      }
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // Initial fetch with error handling
     fetchNotifications();
     
-    // Poll for new notifications every 30 seconds
-    const interval = setInterval(fetchNotifications, 30000);
+    // Poll for new notifications every 30 seconds (only if menu is not open to reduce load)
+    const interval = setInterval(() => {
+      if (!open) {
+        fetchNotifications();
+      }
+    }, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [open]);
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {

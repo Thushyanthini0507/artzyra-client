@@ -35,55 +35,58 @@ export default function CreateBookingPage() {
 
   return (
     <CustomerLayout>
-      <div className="max-w-5xl mx-auto py-10 space-y-6">
-        <div>
+      <div className="w-[80%] mx-auto px-6 sm:px-8 lg:px-10 py-10 space-y-6">
+        {/* Page Header */}
+        <div className="space-y-1">
           <h1 className="text-3xl font-bold">Book an Artist</h1>
           <p className="text-muted-foreground">Follow the steps to create your booking</p>
         </div>
 
         {/* Progress Indicator */}
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${step >= 1 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                   1
                 </div>
-                <span className={step >= 1 ? 'font-medium' : 'text-muted-foreground'}>Category</span>
+                <span className={`text-sm ${step >= 1 ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>Category</span>
               </div>
               <div className="h-px flex-1 bg-border mx-4" />
-              <div className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${step >= 2 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                   2
                 </div>
-                <span className={step >= 2 ? 'font-medium' : 'text-muted-foreground'}>Artist</span>
+                <span className={`text-sm ${step >= 2 ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>Artist</span>
               </div>
               <div className="h-px flex-1 bg-border mx-4" />
-              <div className="flex items-center gap-2">
-                <div className={`flex h-8 w-8 items-center justify-center rounded-full ${step >= 3 ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}>
+              <div className="flex items-center gap-3">
+                <div className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${step >= 3 ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
                   3
                 </div>
-                <span className={step >= 3 ? 'font-medium' : 'text-muted-foreground'}>Details</span>
+                <span className={`text-sm ${step >= 3 ? 'font-medium text-foreground' : 'text-muted-foreground'}`}>Details</span>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Step Content */}
-        {step === 1 && <CategorySelector onSelect={handleCategorySelect} />}
-        {step === 2 && selectedCategory && (
-          <ArtistSelector
-            categoryId={selectedCategory}
-            onSelect={handleArtistSelect}
-            onBack={handleBackToCategories}
-          />
-        )}
-        {step === 3 && selectedArtist && (
-          <BookingFormStep
-            artistId={selectedArtist}
-            onBack={handleBackToArtists}
-          />
-        )}
+        <div>
+          {step === 1 && <CategorySelector onSelect={handleCategorySelect} />}
+          {step === 2 && selectedCategory && (
+            <ArtistSelector
+              categoryId={selectedCategory}
+              onSelect={handleArtistSelect}
+              onBack={handleBackToCategories}
+            />
+          )}
+          {step === 3 && selectedArtist && (
+            <BookingFormStep
+              artistId={selectedArtist}
+              onBack={handleBackToArtists}
+            />
+          )}
+        </div>
       </div>
     </CustomerLayout>
   );

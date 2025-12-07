@@ -2,7 +2,14 @@ import apiClient from "@/lib/apiClient";
 
 export const notificationService = {
   getAll: async (params?: any) => {
-    const response = await apiClient.get("/notifications", { params });
+    // Remove undefined values from params to avoid issues
+    const cleanParams = params ? Object.fromEntries(
+      Object.entries(params).filter(([_, v]) => v !== undefined)
+    ) : {};
+    const response = await apiClient.get("/notifications", { 
+      params: cleanParams,
+      timeout: 15000, // 15 second timeout for notifications specifically
+    });
     return response.data;
   },
   getById: async (id: string) => {
