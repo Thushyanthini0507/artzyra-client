@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard, CalendarDays, Heart, Mail, User } from "lucide-react";
+import { NotificationMenu } from "@/components/NotificationMenu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const sidebarItems = [
   {
@@ -36,6 +39,17 @@ const sidebarItems = [
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  const getInitials = (name: string | undefined) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -65,7 +79,18 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
             })}
           </nav>
         </aside>
-        <main className="flex-1 p-8">{children}</main>
+        <div className="flex-1 flex flex-col">
+          {/* Header Bar with Notification Menu */}
+          <header className="h-16 border-b bg-background flex items-center justify-end px-6 gap-4">
+            <NotificationMenu />
+            <Avatar className="h-10 w-10">
+              <AvatarFallback className="bg-primary text-primary-foreground">
+                {getInitials(user?.name)}
+              </AvatarFallback>
+            </Avatar>
+          </header>
+          <main className="flex-1 p-8">{children}</main>
+        </div>
       </div>
     </div>
   );
