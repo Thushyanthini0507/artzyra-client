@@ -41,29 +41,29 @@ export function buildCloudinaryUrl(
 
 /**
  * Map category names to Cloudinary public IDs
- * Update these public IDs with your actual Cloudinary image public IDs
+ * These match the public IDs used in the seed files
  */
 const CATEGORY_PUBLIC_IDS: Record<string, string> = {
-  'animator': 'categories/animator',
-  'caterer': 'categories/caterer',
-  'comedian': 'categories/comedian',
-  'dj': 'categories/dj',
-  'dancer': 'categories/dancer',
-  'decorator': 'categories/decorator',
-  'design': 'categories/design',
-  'event planner': 'categories/event-planner',
-  'florist': 'categories/florist',
-  'hair stylist': 'categories/hair-stylist',
-  'magician': 'categories/magician',
-  'makeup artist': 'categories/makeup-artist',
-  'musician': 'categories/musician',
-  'painter': 'categories/painter',
-  'photographer': 'categories/photographer',
-  'singer': 'categories/singer',
-  'tattoo artist': 'categories/tattoo-artist',
-  'videographer': 'categories/videographer',
-  'voice actor': 'categories/voice-actor',
-  'writer': 'categories/writer',
+  'animator': 'animator.jpg',
+  'caterer': 'caterer.jpg',
+  'comedian': 'comedian.jpg',
+  'dj': 'dj.jpg',
+  'dancer': 'dancer.jpg',
+  'decorator': 'decorator.jpg',
+  'design': 'design.jpg',
+  'event planner': 'event_planner.jpg',
+  'florist': 'florist.jpg',
+  'hair stylist': 'hair_stylist.jpg',
+  'magician': 'magician.jpg',
+  'makeup artist': 'makeup_artist.jpg',
+  'musician': 'musician.jpg',
+  'painter': 'painter.jpg',
+  'photographer': 'photographer.jpg',
+  'singer': 'singer.jpg',
+  'tattoo artist': 'tattoo_artist.jpg',
+  'videographer': 'videographer.jpg',
+  'voice actor': 'voice_actor.jpg',
+  'writer': 'writer.jpg',
 };
 
 /**
@@ -73,11 +73,12 @@ const CATEGORY_PUBLIC_IDS: Record<string, string> = {
 export function getCategoryImage(category: { name: string; image?: string }): string {
   // If category has a stored image, use it
   if (category.image) {
-    // If it's already a Cloudinary URL, optimize it
+    // If it's already a Cloudinary URL, optimize it for display (400x300 for cards)
     if (category.image.includes('cloudinary.com')) {
-      return optimizeCloudinaryUrl(category.image, { width: 400, height: 300 });
+      // Replace w_150,h_150 with w_400,h_300 for better card display
+      return category.image.replace(/w_\d+,h_\d+/, 'w_400,h_300');
     }
-    // If it's a public ID, build the URL
+    // If it's a public ID (like "animator.jpg"), build the URL
     if (!category.image.startsWith('http')) {
       return buildCloudinaryUrl(category.image, { width: 400, height: 300 });
     }
