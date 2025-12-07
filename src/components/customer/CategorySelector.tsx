@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useCategories } from "@/hooks/useBookingFlow";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { getCategoryImage } from "@/lib/categoryImages";
 
 interface CategorySelectorProps {
   onSelect: (categoryId: string) => void;
@@ -56,9 +57,21 @@ export function CategorySelector({ onSelect }: CategorySelectorProps) {
         {categories.map((category) => (
           <Card
             key={category._id}
-            className="cursor-pointer hover:border-primary transition-colors"
+            className="cursor-pointer hover:border-primary transition-colors overflow-hidden"
             onClick={() => onSelect(category._id)}
           >
+            {/* Category Image */}
+            <div className="relative w-full h-48 overflow-hidden">
+              <img
+                src={getCategoryImage(category)}
+                alt={category.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  // Fallback to Cloudinary sample image
+                  e.currentTarget.src = `https://res.cloudinary.com/demo/image/upload/w_400,h_300,c_fill,q_auto,f_auto/sample`;
+                }}
+              />
+            </div>
             <CardHeader>
               <CardTitle>{category.name}</CardTitle>
               <CardDescription>{category.description || "Select this category"}</CardDescription>
