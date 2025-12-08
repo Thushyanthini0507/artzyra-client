@@ -361,7 +361,7 @@ export default function ArtistDashboard() {
                   </Link>
                 </Button>
                 <Button variant="outline" className="w-full h-auto py-4 flex flex-col items-center gap-2" asChild>
-                  <Link href={`/artists/${user.id || ""}`}>
+                  <Link href={`/artists/${user._id || ""}`}>
                     <ViewIcon className="h-5 w-5" />
                     <span>View Portfolio</span>
                   </Link>
