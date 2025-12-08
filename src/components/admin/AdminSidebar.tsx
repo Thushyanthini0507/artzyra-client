@@ -10,6 +10,7 @@ import {
   Calendar,
   CreditCard,
   Tags,
+  BarChart3,
   LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,6 +46,11 @@ const sidebarItems = [
     title: "Categories",
     href: "/admin/categories",
     icon: Tags,
+  },
+  {
+    title: "Analytics",
+    href: "/admin/analytics",
+    icon: BarChart3,
   },
 ];
 
