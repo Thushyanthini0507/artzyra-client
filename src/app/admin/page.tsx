@@ -143,6 +143,9 @@ export default function AdminDashboard() {
     }
 
     const fetchData = async () => {
+      // Track if we got a successful API response (used to determine if we should use API values or fetched data)
+      let apiStatsReceived = false;
+      
       try {
         setLoading(true);
         console.log("🔵 Admin Dashboard - Fetching stats...");
@@ -152,16 +155,19 @@ export default function AdminDashboard() {
         console.log("🔵 Admin Dashboard - Response:", statsResponse);
         
         if (statsResponse.success && statsResponse.data) {
-          const statsData = statsResponse.data as DashboardStats;
+          // API returns data.stats, not data directly
+          const statsData = statsResponse.data.stats || statsResponse.data;
           console.log("🔵 Admin Dashboard - Setting stats:", statsData);
           // Ensure all values are numbers, not NaN or undefined
+          // Use the API values directly (even if 0) - these are the source of truth
           setStats({
-            totalCustomers: Number(statsData.totalCustomers) || 0,
-            totalArtists: Number(statsData.totalArtists) || 0,
-            pendingArtists: Number(statsData.pendingArtists) || 0,
-            totalBookings: Number(statsData.totalBookings) || 0,
-            pendingBookings: Number(statsData.pendingBookings) || 0,
+            totalCustomers: Number(statsData.totalCustomers) ?? 0,
+            totalArtists: Number(statsData.totalArtists) ?? 0,
+            pendingArtists: Number(statsData.pendingArtists) ?? 0, // Will be updated from pending artists fetch
+            totalBookings: Number(statsData.totalBookings) ?? 0,
+            pendingBookings: Number(statsData.pendingBookings) ?? 0,
           });
+          apiStatsReceived = true;
         } else if ('error' in statsResponse && statsResponse.error) {
           console.error("🔴 Admin Dashboard - Error:", statsResponse.error);
           // Don't show error toast - we'll calculate from fetched data instead
@@ -234,14 +240,14 @@ export default function AdminDashboard() {
               }
             }
 
-            // Update stats from fetched data if dashboard stats were not available
-            // Always update pending artists count from actual data
+            // Update stats from fetched data only if API stats were not received
+            // If API stats were received, only update pendingArtists (which comes from separate endpoint)
             setStats(prev => ({
-              totalCustomers: prev.totalCustomers || totalCustomersCount,
-              totalArtists: prev.totalArtists || totalArtistsCount,
-              pendingArtists: pendingArtistsCount > 0 ? pendingArtistsCount : (prev.pendingArtists || 0),
-              totalBookings: prev.totalBookings,
-              pendingBookings: prev.pendingBookings,
+              totalCustomers: apiStatsReceived ? prev.totalCustomers : (totalCustomersCount >= 0 ? totalCustomersCount : 0),
+              totalArtists: apiStatsReceived ? prev.totalArtists : (totalArtistsCount >= 0 ? totalArtistsCount : 0),
+              pendingArtists: pendingArtistsCount >= 0 ? pendingArtistsCount : (prev.pendingArtists ?? 0),
+              totalBookings: apiStatsReceived ? prev.totalBookings : (prev.totalBookings ?? 0),
+              pendingBookings: apiStatsReceived ? prev.pendingBookings : (prev.pendingBookings ?? 0),
             }));
 
             // Get most recent 5 users
@@ -273,13 +279,13 @@ export default function AdminDashboard() {
               
               console.log("🔵 Admin Dashboard - Bookings:", totalBookingsCount, "Pending:", pendingBookingsCount);
               
-              // Update stats from fetched data if dashboard stats were not available
+              // Update stats from fetched bookings data only if API stats were not received
               setStats(prev => ({
-                totalCustomers: prev.totalCustomers,
-                totalArtists: prev.totalArtists,
-                pendingArtists: prev.pendingArtists,
-                totalBookings: prev.totalBookings || totalBookingsCount,
-                pendingBookings: prev.pendingBookings || pendingBookingsCount,
+                totalCustomers: apiStatsReceived ? prev.totalCustomers : (prev.totalCustomers ?? 0),
+                totalArtists: apiStatsReceived ? prev.totalArtists : (prev.totalArtists ?? 0),
+                pendingArtists: prev.pendingArtists ?? 0,
+                totalBookings: apiStatsReceived ? prev.totalBookings : (totalBookingsCount >= 0 ? totalBookingsCount : 0),
+                pendingBookings: apiStatsReceived ? prev.pendingBookings : (pendingBookingsCount >= 0 ? pendingBookingsCount : 0),
               }));
 
               const recent = bookings
@@ -408,12 +414,14 @@ export default function AdminDashboard() {
   }
 
   // Ensure all values are numbers to prevent NaN
-  const totalCustomers = Number(stats.totalCustomers) || 0;
-  const totalArtists = Number(stats.totalArtists) || 0;
-  const pendingArtists = Number(stats.pendingArtists) || 0;
-  const totalBookings = Number(stats.totalBookings) || 0;
-  const pendingBookings = Number(stats.pendingBookings) || 0;
+  // Use nullish coalescing (??) instead of || to properly handle 0 values
+  const totalCustomers = Number(stats.totalCustomers ?? 0);
+  const totalArtists = Number(stats.totalArtists ?? 0);
+  const pendingArtists = Number(stats.pendingArtists ?? 0);
+  const totalBookings = Number(stats.totalBookings ?? 0);
+  const pendingBookings = Number(stats.pendingBookings ?? 0);
   
+  // Calculate total users (customers + artists, excluding admins)
   const totalUsers = totalCustomers + totalArtists;
 
   // Calculate percentages and growth

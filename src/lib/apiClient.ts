@@ -146,6 +146,17 @@ apiClient.interceptors.response.use(
         "403 Forbidden - User not approved or insufficient permissions"
       );
     }
+    // Handle 409 Conflict (usually duplicate key errors or resource conflicts)
+    // Don't redirect to login - these are business logic errors
+    if (error.response?.status === 409) {
+      console.warn(
+        "409 Conflict - Resource conflict detected:",
+        error.response?.data?.message || error.message
+      );
+      // Enhance error with user-friendly message
+      error.userMessage = error.response?.data?.message || 
+        "A conflict occurred. This may be due to a duplicate entry or concurrent request.";
+    }
     return Promise.reject(error);
   }
 );

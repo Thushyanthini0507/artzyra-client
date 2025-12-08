@@ -14,11 +14,28 @@ export const uploadService = {
     formData.append("image", file);
     formData.append("imageType", imageType);
 
-    // The apiClient interceptor will automatically remove Content-Type for FormData
-    // This allows the browser to set it with the proper boundary parameter
-    const response = await apiClient.post("/upload", formData);
-
-    return response.data;
+    try {
+      // The apiClient interceptor will automatically remove Content-Type for FormData
+      // This allows the browser to set it with the proper boundary parameter
+      const response = await apiClient.post("/upload", formData);
+      return response.data;
+    } catch (error: any) {
+      console.error("Upload service error:", error);
+      
+      // Extract error message from response
+      const errorMessage = 
+        error.response?.data?.error || 
+        error.response?.data?.message || 
+        error.message || 
+        "Failed to upload image";
+      
+      // Return error in the same format as success response
+      return {
+        success: false,
+        error: errorMessage,
+        message: errorMessage,
+      };
+    }
   },
 };
 

@@ -135,14 +135,28 @@ export default function CategoriesPage() {
       // Upload image if a new file is selected
       if (selectedFile) {
         const uploadToast = toast.loading("Uploading image...");
-        const uploadResult = await uploadService.uploadImage(selectedFile, "category");
-        toast.dismiss(uploadToast);
+        try {
+          const uploadResult = await uploadService.uploadImage(selectedFile, "category");
+          toast.dismiss(uploadToast);
 
-        if (!uploadResult.success || !uploadResult.data) {
-          toast.error(uploadResult.error || "Failed to upload image");
+          if (!uploadResult.success || !uploadResult.data) {
+            const errorMsg = uploadResult.error || uploadResult.message || "Failed to upload image";
+            console.error("Upload failed:", uploadResult);
+            toast.error(errorMsg, { duration: 5000 });
+            return;
+          }
+          imageUrl = uploadResult.data.url;
+        } catch (uploadError: any) {
+          toast.dismiss(uploadToast);
+          const errorMsg = 
+            uploadError.response?.data?.error || 
+            uploadError.response?.data?.message || 
+            uploadError.message || 
+            "Failed to upload image";
+          console.error("Upload error:", uploadError);
+          toast.error(errorMsg, { duration: 5000 });
           return;
         }
-        imageUrl = uploadResult.data.url;
       }
 
       const dataToSubmit = {
@@ -234,11 +248,13 @@ export default function CategoriesPage() {
     <AdminLayout>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div className="ml-20">
+          <div>
             <h1 className="text-3xl font-bold tracking-tight">
               Categories
             </h1>
-            <p className="text-muted-foreground">Manage artist categories.</p>
+            <p className="text-muted-foreground">
+              Manage artist categories. Total: {loading ? "..." : categories.length}
+            </p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
             <DialogTrigger asChild>
@@ -352,80 +368,97 @@ export default function CategoriesPage() {
         <div className="flex justify-center">
           <Card className="w-full max-w-6xl">
             <CardHeader>
-              <CardTitle>All Categories</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>All Categories</CardTitle>
+                {!loading && categories.length > 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    {categories.length} {categories.length === 1 ? "category" : "categories"}
+                  </span>
+                )}
+              </div>
             </CardHeader>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
                     <TableRow>
-                      <TableCell colSpan={4} className="text-center">
-                        Loading...
-                      </TableCell>
+                      <TableHead>Image</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ) : categories.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={4} className="text-center">
-                        No categories found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    categories.map((category) => (
-                      <TableRow key={category._id}>
-                        <TableCell>
-                          {category.image ? (
-                            <div className="relative w-16 h-16 rounded overflow-hidden">
-                              <Image
-                                src={category.image}
-                                alt={category.name}
-                                fill
-                                className="object-cover"
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center">
-                              <ImageIcon className="h-6 w-6 text-gray-400" />
-                            </div>
-                          )}
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          {category.name}
-                        </TableCell>
-                        <TableCell className="max-w-md truncate">
-                          {category.description || "-"}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => handleEdit(category)}
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => handleDelete(category._id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
+                  </TableHeader>
+                  <TableBody>
+                    {loading ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center">
+                          Loading...
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                    ) : categories.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="text-center">
+                          No categories found.
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      categories.map((category) => (
+                        <TableRow key={category._id}>
+                          <TableCell>
+                            {category.image ? (
+                              <div className="relative w-16 h-16 rounded overflow-hidden">
+                                <Image
+                                  src={category.image}
+                                  alt={category.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center">
+                                <ImageIcon className="h-6 w-6 text-gray-400" />
+                              </div>
+                            )}
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {category.name}
+                          </TableCell>
+                          <TableCell>
+                            <div className="max-w-md">
+                              {category.description ? (
+                                <p className="text-sm text-muted-foreground line-clamp-2">
+                                  {category.description}
+                                </p>
+                              ) : (
+                                <span className="text-muted-foreground">-</span>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex justify-end gap-2">
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleEdit(category)}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => handleDelete(category._id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
             </CardContent>
           </Card>
         </div>

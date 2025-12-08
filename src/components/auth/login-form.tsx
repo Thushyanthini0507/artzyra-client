@@ -92,9 +92,11 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         </div>
       )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Signing in..." : "Sign In"}
-      </Button>
+      <div className="pt-2">
+        <Button type="submit" className="w-full py-6" disabled={loading}>
+          {loading ? "Signing in..." : "Sign In"}
+        </Button>
+      </div>
     </form>
   );
 }

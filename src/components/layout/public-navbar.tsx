@@ -70,7 +70,7 @@ export function PublicNavbar() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             {user ? (
               <>
                 {(user.role === "customer" || user.role === "artist") && (
@@ -110,11 +110,11 @@ export function PublicNavbar() {
               </>
             ) : (
               <>
-                <Button variant="ghost" onClick={openLogin}>
+                <Button variant="ghost" onClick={openLogin} className="px-6">
                   Login
                 </Button>
                 <Link href="/auth/register/customer">
-                  <Button>Sign Up</Button>
+                  <Button className="px-6">Sign Up</Button>
                 </Link>
               </>
             )}

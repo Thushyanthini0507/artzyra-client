@@ -121,9 +121,11 @@ export function SignUpForm() {
         </div>
       )}
 
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading ? "Creating account..." : "Sign Up"}
-      </Button>
+      <div className="pt-2">
+        <Button type="submit" className="w-full py-6" disabled={loading}>
+          {loading ? "Creating account..." : "Sign Up"}
+        </Button>
+      </div>
     </form>
   );
 }
