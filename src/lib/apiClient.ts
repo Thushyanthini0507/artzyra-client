@@ -1,8 +1,20 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
+// Get API URL with fallback
+const getApiUrl = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!apiUrl) {
+    console.warn(
+      "NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
+    );
+    return "http://localhost:5000/api";
+  }
+  return apiUrl;
+};
+
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: getApiUrl(),
   timeout: 30000, // Increased to 30 seconds
   headers: {
     "Content-Type": "application/json",
@@ -24,6 +36,33 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle network errors (no response from server)
+    if (!error.response) {
+      const isNetworkError = error.code === "ERR_NETWORK" || error.message === "Network Error";
+      if (isNetworkError) {
+        console.error("Network Error:", {
+          message: error.message,
+          code: error.code,
+          config: {
+            url: error.config?.url,
+            baseURL: error.config?.baseURL,
+            method: error.config?.method,
+          },
+        });
+        // Don't throw for notification endpoints - they're non-critical
+        const isNotificationEndpoint = error.config?.url?.includes("/notifications");
+        if (isNotificationEndpoint) {
+          console.warn("Notification request failed - this is non-critical");
+          // Return a rejected promise with a specific error code
+          return Promise.reject({
+            ...error,
+            isNetworkError: true,
+            isNotificationError: true,
+          });
+        }
+      }
+    }
+
     // Handle 401 Unauthorized (no token or invalid token)
     if (error.response?.status === 401) {
       // Don't redirect for login/auth endpoints - let them handle their own errors

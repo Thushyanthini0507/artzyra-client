@@ -92,7 +92,7 @@ export default function ArtistPortfolioPage() {
 
       if (selectedFile) {
         // Upload file
-        const data = await uploadService.uploadImage(selectedFile);
+        const data = await uploadService.uploadImage(selectedFile, "artist_profile");
         if (!data.success) {
           throw new Error(data.error || "Upload failed");
         }

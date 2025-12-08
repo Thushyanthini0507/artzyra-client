@@ -53,10 +53,21 @@ export function NotificationMenu() {
       }
     } catch (error: any) {
       console.error("Failed to fetch notifications", error);
-      // Handle timeout errors gracefully
-      if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
-        console.warn("Notification request timed out - this is non-critical");
-        // Don't show error to user for timeout - just use empty state
+      
+      // Handle network errors gracefully (non-critical)
+      if (
+        error.isNetworkError ||
+        error.isNotificationError ||
+        error.code === "ERR_NETWORK" ||
+        error.message === "Network Error" ||
+        error.code === "ECONNABORTED" ||
+        error.message?.includes("timeout")
+      ) {
+        console.warn("Notification request failed - this is non-critical", {
+          error: error.message,
+          code: error.code,
+        });
+        // Don't show error to user - just use empty state
         setNotifications([]);
         setUnreadCount(0);
       } else {

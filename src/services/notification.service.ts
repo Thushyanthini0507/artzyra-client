@@ -2,15 +2,27 @@ import apiClient from "@/lib/apiClient";
 
 export const notificationService = {
   getAll: async (params?: any) => {
-    // Remove undefined values from params to avoid issues
-    const cleanParams = params ? Object.fromEntries(
-      Object.entries(params).filter(([_, v]) => v !== undefined)
-    ) : {};
-    const response = await apiClient.get("/notifications", { 
-      params: cleanParams,
-      timeout: 15000, // 15 second timeout for notifications specifically
-    });
-    return response.data;
+    try {
+      // Remove undefined values from params to avoid issues
+      const cleanParams = params ? Object.fromEntries(
+        Object.entries(params).filter(([_, v]) => v !== undefined)
+      ) : {};
+      const response = await apiClient.get("/notifications", { 
+        params: cleanParams,
+        timeout: 15000, // 15 second timeout for notifications specifically
+      });
+      return response.data;
+    } catch (error: any) {
+      // Re-throw with additional context for network errors
+      if (!error.response && (error.code === "ERR_NETWORK" || error.message === "Network Error")) {
+        throw {
+          ...error,
+          isNetworkError: true,
+          isNotificationError: true,
+        };
+      }
+      throw error;
+    }
   },
   getById: async (id: string) => {
     const response = await apiClient.get(`/notifications/${id}`);

@@ -124,7 +124,7 @@ export default function CategoriesPage() {
       // Upload image if a new file is selected
       if (selectedFile) {
         const uploadToast = toast.loading("Uploading image...");
-        const uploadResult = await uploadService.uploadImage(selectedFile);
+        const uploadResult = await uploadService.uploadImage(selectedFile, "category");
         toast.dismiss(uploadToast);
 
         if (!uploadResult.success || !uploadResult.data) {

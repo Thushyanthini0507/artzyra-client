@@ -136,7 +136,17 @@ export default function MayPage() {
     setUploading(true);
 
     try {
-      const data = await uploadService.uploadImage(selectedFile);
+      // Determine image type based on user role
+      let imageType: "category" | "admin_profile" | "customer_profile" | "artist_profile" = "category";
+      if (user.role === "admin") {
+        imageType = "admin_profile";
+      } else if (user.role === "customer") {
+        imageType = "customer_profile";
+      } else if (user.role === "artist") {
+        imageType = "artist_profile";
+      }
+
+      const data = await uploadService.uploadImage(selectedFile, imageType);
 
       if (!data.success) {
         throw new Error(data.error || "Upload failed");
