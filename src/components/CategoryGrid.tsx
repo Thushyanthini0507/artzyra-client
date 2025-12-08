@@ -55,29 +55,30 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
       {categories.slice(0, 6).map((category) => (
-        <Card key={category._id} className="h-full hover:shadow-lg transition-shadow duration-200 overflow-hidden">
+        <Card key={category._id} className="h-full border-none shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
           {/* Category Image */}
-          <div className="relative w-full h-48 overflow-hidden">
+          <div className="relative w-full h-56 overflow-hidden">
+            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
             <img
               src={getCategoryImage(category)}
               alt={category.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
               onError={(e) => {
                 // Fallback to Cloudinary sample image
                 e.currentTarget.src = `https://res.cloudinary.com/demo/image/upload/w_400,h_300,c_fill,q_auto,f_auto/sample`;
               }}
             />
           </div>
-          <CardHeader>
-            <CardTitle className="text-center">{category.name}</CardTitle>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-center text-xl text-gray-800">{category.name}</CardTitle>
           </CardHeader>
           {category.description && (
-            <CardContent className="space-y-4">
-              <p className="text-sm text-muted-foreground text-center line-clamp-2">
+            <CardContent className="space-y-4 pt-0">
+              <p className="text-sm text-muted-foreground text-center line-clamp-2 px-2">
                 {category.description}
               </p>
-              <Link href={`/browse?category=${category._id}`} className="block">
-                <Button variant="outline" className="w-full">
+              <Link href={`/browse?category=${category._id}`} className="block pt-2">
+                <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary hover:text-white transition-colors">
                   View Details
                 </Button>
               </Link>

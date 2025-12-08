@@ -21,7 +21,7 @@ const getApiUrl = () => {
 
 const apiClient = axios.create({
   baseURL: getApiUrl(),
-  timeout: 30000, // Increased to 30 seconds
+  timeout: 60000, // Increased to 60 seconds
   headers: {
     "Content-Type": "application/json",
   },
