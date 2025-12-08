@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
         pathname: "/**",
       },
     ],
+    // Disable image optimization for external images in development
+    // This prevents 404 errors when Next.js tries to optimize Unsplash images
+    unoptimized: process.env.NODE_ENV === "development",
   },
   // Security headers for production
   async headers() {

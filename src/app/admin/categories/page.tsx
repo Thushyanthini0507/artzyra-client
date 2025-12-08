@@ -52,7 +52,18 @@ export default function CategoriesPage() {
         toast.error(response.error || "Failed to load categories");
       }
     } catch (error: any) {
-      toast.error(error.message || "Failed to load categories");
+      console.error("Error fetching categories:", error);
+      
+      // Handle network errors with user-friendly messages
+      if (error.code === "ERR_NETWORK" || error.isNetworkError) {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        toast.error(
+          `Cannot connect to backend server. Please ensure the API server is running at ${apiUrl}`,
+          { duration: 5000 }
+        );
+      } else {
+        toast.error(error.userMessage || error.message || "Failed to load categories");
+      }
     } finally {
       setLoading(false);
     }

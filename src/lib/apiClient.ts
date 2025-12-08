@@ -6,9 +6,15 @@ const getApiUrl = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) {
     console.warn(
-      "NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
+      "⚠️ NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
+    );
+    console.warn(
+      "💡 To fix this, create a .env.local file in the client directory with: NEXT_PUBLIC_API_URL=http://localhost:5000/api"
     );
     return "http://localhost:5000/api";
+  }
+  if (typeof window !== "undefined") {
+    console.log(`🔗 API Client configured to use: ${apiUrl}`);
   }
   return apiUrl;
 };
@@ -29,6 +35,12 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+  
+  // If data is FormData, remove Content-Type header to let browser set it with boundary
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  
   return config;
 });
 
@@ -38,17 +50,47 @@ apiClient.interceptors.response.use(
   (error) => {
     // Handle network errors (no response from server)
     if (!error.response) {
-      const isNetworkError = error.code === "ERR_NETWORK" || error.message === "Network Error";
+      const isNetworkError = error.code === "ERR_NETWORK" || 
+                            error.message === "Network Error" ||
+                            error.code === "ECONNREFUSED" ||
+                            error.code === "ETIMEDOUT" ||
+                            error.message?.includes("Network Error");
+      
       if (isNetworkError) {
-        console.error("Network Error:", {
-          message: error.message,
-          code: error.code,
-          config: {
-            url: error.config?.url,
-            baseURL: error.config?.baseURL,
-            method: error.config?.method,
-          },
-        });
+        const apiUrl = getApiUrl();
+        const fullUrl = error.config?.baseURL 
+          ? `${error.config.baseURL}${error.config.url || ""}`
+          : `${apiUrl}${error.config?.url || ""}`;
+        
+        // Extract error details into a plain object to ensure proper serialization
+        const errorDetails = {
+          message: String(error.message || "Network request failed"),
+          code: String(error.code || "UNKNOWN"),
+          requestUrl: String(fullUrl),
+          method: String(error.config?.method?.toUpperCase() || "GET"),
+          baseURL: String(error.config?.baseURL || apiUrl),
+          endpoint: String(error.config?.url || "unknown"),
+          timeout: error.config?.timeout ? Number(error.config.timeout) : null,
+          stack: error.stack ? String(error.stack).split('\n').slice(0, 3).join('\n') : "No stack trace",
+        };
+        
+        // Log error details in a way that ensures visibility
+        console.error("🔴 Network Error Detected");
+        console.error("Error Message:", errorDetails.message);
+        console.error("Error Code:", errorDetails.code);
+        console.error("Request URL:", errorDetails.requestUrl);
+        console.error("HTTP Method:", errorDetails.method);
+        console.error("Base URL:", errorDetails.baseURL);
+        console.error("Endpoint:", errorDetails.endpoint);
+        console.error("Timeout:", errorDetails.timeout || "Not set");
+        console.error("Possible Causes:", [
+          "Backend server is not running",
+          "API URL is incorrect",
+          "CORS configuration issue",
+          "Network connectivity problem",
+        ]);
+        console.error("Full Error Object:", JSON.stringify(errorDetails, null, 2));
+        
         // Don't throw for notification endpoints - they're non-critical
         const isNotificationEndpoint = error.config?.url?.includes("/notifications");
         if (isNotificationEndpoint) {
@@ -58,8 +100,21 @@ apiClient.interceptors.response.use(
             ...error,
             isNetworkError: true,
             isNotificationError: true,
+            userMessage: "Unable to fetch notifications. Please check your connection.",
           });
         }
+        
+        // Enhance error object with additional properties while preserving original structure
+        Object.assign(error, {
+          isNetworkError: true,
+          userMessage: `Unable to connect to the server. Please ensure the backend is running at ${apiUrl}`,
+          apiUrl: apiUrl,
+          requestUrl: fullUrl,
+        });
+        
+        // Ensure message and code are set
+        if (!error.message) error.message = "Network Error";
+        if (!error.code) error.code = "ERR_NETWORK";
       }
     }
 

@@ -14,11 +14,9 @@ export const uploadService = {
     formData.append("image", file);
     formData.append("imageType", imageType);
 
-    const response = await apiClient.post("/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
+    // The apiClient interceptor will automatically remove Content-Type for FormData
+    // This allows the browser to set it with the proper boundary parameter
+    const response = await apiClient.post("/upload", formData);
 
     return response.data;
   },

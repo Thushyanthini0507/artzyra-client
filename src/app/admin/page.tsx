@@ -366,13 +366,22 @@ export default function AdminDashboard() {
           setPendingArtistsList([]);
         }
       } catch (error: any) {
-        // Don't log network errors - they're already handled by axios interceptor
-        // Only log unexpected errors (not network/connection errors)
-        if (error.code !== "ERR_NETWORK" && error.code !== "ECONNREFUSED" && !error.message?.includes("Network Error")) {
-          console.error("🔴 Admin Dashboard - Failed to fetch stats:", error);
-          toast.error(error.message || "Failed to load dashboard statistics");
-        } else {
+        // Handle network errors with user-friendly messages
+        if (error.code === "ERR_NETWORK" || 
+            error.code === "ECONNREFUSED" || 
+            error.isNetworkError ||
+            error.message?.includes("Network Error")) {
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
           console.log("🔵 Admin Dashboard - Backend appears to be down, using fallback data.");
+          console.log(`🔵 Admin Dashboard - Expected API URL: ${apiUrl}`);
+          toast.error(
+            `Cannot connect to backend server. Please ensure the API server is running at ${apiUrl}`,
+            { duration: 5000 }
+          );
+        } else {
+          // Only log unexpected errors (not network/connection errors)
+          console.error("🔴 Admin Dashboard - Failed to fetch stats:", error);
+          toast.error(error.userMessage || error.message || "Failed to load dashboard statistics");
         }
       } finally {
         setLoading(false);
