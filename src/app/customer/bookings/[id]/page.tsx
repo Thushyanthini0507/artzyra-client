@@ -59,7 +59,10 @@ export default function BookingDetailsPage() {
               </div>
               <div>
                 <h3 className="font-semibold">Date & Time</h3>
-                <p>{new Date(booking.date).toLocaleDateString()}</p>
+                <p>{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "Not set"}</p>
+                {booking.startTime && booking.endTime && (
+                  <p className="text-sm text-muted-foreground mt-1">{booking.startTime} - {booking.endTime}</p>
+                )}
               </div>
               <div>
                 <h3 className="font-semibold">Location</h3>

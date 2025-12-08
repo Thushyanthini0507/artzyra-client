@@ -87,7 +87,7 @@ export default function ArtistBookingsPage() {
                         </div>
                       </TableCell>
                       <TableCell>{booking.service || "N/A"}</TableCell>
-                      <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
+                      <TableCell>{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "N/A"}</TableCell>
                       <TableCell>{booking.location || "N/A"}</TableCell>
                       <TableCell>{formatLKR(booking.totalAmount)}</TableCell>
                       <TableCell>{getStatusBadge(booking.status)}</TableCell>

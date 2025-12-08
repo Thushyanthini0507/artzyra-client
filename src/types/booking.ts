@@ -8,7 +8,10 @@ export interface Booking {
   customer: Customer | string;
   artist: Artist | string;
   service: string;
-  date: string;
+  date?: string; // Legacy field, prefer bookingDate
+  bookingDate?: string; // Primary field from API
+  startTime?: string;
+  endTime?: string;
   status: BookingStatus;
   totalAmount: number;
   location: string;

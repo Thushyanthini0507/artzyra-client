@@ -48,7 +48,7 @@ export default function CustomerDashboard() {
                     <div>
                       <h3 className="font-semibold">{booking.service}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {new Date(booking.date).toLocaleDateString()} at {booking.location}
+                        {booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "Date not set"} at {booking.location}
                       </p>
                       <Badge variant={booking.status === "completed" ? "default" : "secondary"} className="mt-2">
                         {booking.status}

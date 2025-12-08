@@ -141,7 +141,7 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
             className="w-full"
             asChild
           >
-            <Link href={`/artists/${user?.id || ""}`}>View Public Profile</Link>
+            <Link href={`/artists/${user?._id || ""}`}>View Public Profile</Link>
           </Button>
         </div>
       </aside>

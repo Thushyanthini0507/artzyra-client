@@ -117,7 +117,7 @@ export default function ArtistEarningsPage() {
                 <TableBody>
                   {bookings.map((booking) => (
                     <TableRow key={booking._id}>
-                      <TableCell>{new Date(booking.date).toLocaleDateString()}</TableCell>
+                      <TableCell>{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "N/A"}</TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">{booking.customer?.name || "N/A"}</div>
