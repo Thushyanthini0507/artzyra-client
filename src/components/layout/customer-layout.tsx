@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
@@ -28,6 +28,11 @@ const sidebarItems = [
     title: "Messages",
     href: "/customer/messages",
     icon: Mail,
+  },
+  {
+    title: "Profile",
+    href: "/customer/profile",
+    icon: User,
   },
 ];
 

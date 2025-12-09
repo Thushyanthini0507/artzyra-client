@@ -52,6 +52,11 @@ const sidebarItems = [
     href: "/admin/analytics",
     icon: BarChart3,
   },
+  {
+    title: "Profile",
+    href: "/admin/profile",
+    icon: Users,
+  },
 ];
 
 export function AdminSidebar() {

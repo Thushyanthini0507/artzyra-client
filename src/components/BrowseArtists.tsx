@@ -466,6 +466,11 @@ export function BrowseArtists() {
                         </span>
                       </div>
 
+                      {/* Hourly Rate */}
+                      <div className="text-sm font-medium text-primary">
+                        {formatHourlyRate(artist.hourlyRate)}
+                      </div>
+
                       {/* Description */}
                       <CardDescription className="text-sm line-clamp-3 min-h-[3.5rem]">
                         {artist.bio || "No bio available for this artist."}
