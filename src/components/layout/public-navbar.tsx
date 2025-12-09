@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
 import { 
@@ -17,6 +18,8 @@ import { NotificationMenu } from "@/components/NotificationMenu";
 
 export function PublicNavbar() {
   const { user, openLogin, logout } = useAuth();
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   const getInitials = (name: string | undefined) => {
     if (!name) return "U";
@@ -42,29 +45,33 @@ export function PublicNavbar() {
     }
   };
 
+  const linkClass = isHome 
+    ? "text-sm font-medium text-white/90 hover:text-white transition-colors" 
+    : "text-sm font-medium hover:text-primary transition-colors";
+
   return (
-    <nav className="border-b bg-background">
+    <nav className={isHome ? "absolute top-0 w-full z-50 bg-transparent border-none" : "border-b bg-background"}>
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center gap-8">
-            <Link href="/" className="text-2xl font-bold">
+            <Link href="/" className={`text-2xl font-bold ${isHome ? "text-white" : ""}`}>
               Artzyra
             </Link>
             
             <div className="hidden md:flex items-center gap-6">
-              <Link href="/" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link href="/" className={linkClass}>
                 Home
               </Link>
-              <Link href="/browse" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link href="/browse" className={linkClass}>
                 Explore
               </Link>
-              <Link href="/category" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link href="/category" className={linkClass}>
                 Category
               </Link>
-              <Link href="/about" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link href="/about" className={linkClass}>
                 About
               </Link>
-              <Link href="/auth/register/artist" className="text-sm font-medium hover:text-primary transition-colors">
+              <Link href="/auth/register/artist" className={linkClass}>
                 For Artists
               </Link>
             </div>
@@ -110,11 +117,19 @@ export function PublicNavbar() {
               </>
             ) : (
               <>
-                <Button variant="ghost" onClick={openLogin} className="px-6">
+                <Button 
+                  variant={isHome ? "default" : "ghost"} 
+                  onClick={openLogin} 
+                  className={isHome ? "px-6 bg-[#2d1b4e] text-white hover:bg-[#2d1b4e]/90 rounded-full border border-white/10" : "px-6"}
+                >
                   Login
                 </Button>
                 <Link href="/auth/register/customer">
-                  <Button className="px-6">Sign Up</Button>
+                  <Button 
+                    className={isHome ? "px-6 bg-[#b39ddb] text-[#2d1b4e] hover:bg-[#b39ddb]/90 rounded-full font-semibold" : "px-6"}
+                  >
+                    SignUp
+                  </Button>
                 </Link>
               </>
             )}
