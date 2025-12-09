@@ -99,7 +99,7 @@ export default function Home() {
                 <br />
                 LIMITLESS POSSIBILITIES.
               </h1>
-              <p className="text-lg md:text-xl text-white/90 max-w-xl leading-relaxed mb-12">
+              <p className="text-lg md:text-xl text-white max-w-xl leading-relaxed mb-12">
                 Artzyra is a modern digital platform built to connect people
                 with skilled creators from various fields — all in one place
               </p>
@@ -133,12 +133,12 @@ export default function Home() {
         {/* What we can offer Section */}
         <section className="py-24 relative bg-transparent">
           <div className="container mx-auto px-4">
-            <div className="border-2 border-dashed border-white/20 rounded-3xl p-8 md:p-12 relative">
+            <div className="rounded-3xl p-8 md:p-12 relative">
               <div className="text-center mb-20">
                 <h2 className="text-3xl md:text-5xl font-bold mb-6 text-black">
                   What we can offer
                 </h2>
-                <p className="text-lg text-[#9b87f5] max-w-2xl mx-auto">
+                <p className="text-lg text-[#5e2677] max-w-2xl mx-auto">
                   At Artzyra, we provide everything a skilled person and a
                   customer needs to connect effectively and professionally.
                 </p>
@@ -360,28 +360,26 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-primary/5">
+      <section className="py-24 bg-white">
         <div className="container mx-auto px-4">
-          <div className="bg-white rounded-3xl p-12 md:p-20 shadow-xl text-center max-w-5xl mx-auto relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-secondary"></div>
-            <div className="relative z-10 space-y-8">
-              <h2 className="text-3xl md:text-5xl font-bold text-gray-900">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-8 max-w-6xl mx-auto">
+            <div className="text-left max-w-2xl">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 Ready to Share Your Talent?
               </h2>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                Join our vibrant community of artists. Reach new clients, manage
-                your bookings seamlessly, and grow your creative business with
-                Artzyra.
+              <p className="text-lg text-gray-600 leading-relaxed">
+                Join our vibrant community of artists. Reach new clients, manage your bookings seamlessly, and grow your creative business with Artzyra.
               </p>
-              <Link href="/auth/register/artist">
-                <Button
-                  size="lg"
-                  className="rounded-full px-10 py-6 text-lg bg-primary hover:bg-primary/90 shadow-lg hover:shadow-primary/25 transition-all duration-300"
-                >
-                  JOIN AS ARTIST
-                </Button>
-              </Link>
             </div>
+            
+            <Link href="/auth/register/artist">
+              <Button
+                size="lg"
+                className="rounded-full px-10 py-6 text-lg bg-[#2d1b4e] text-white hover:bg-[#2d1b4e]/90 shadow-lg transition-all duration-300"
+              >
+                Join as an Artist
+              </Button>
+            </Link>
           </div>
         </div>
       </section>

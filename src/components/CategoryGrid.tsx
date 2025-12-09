@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCategoryImage } from "@/lib/categoryImages";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRef } from "react";
 
 interface Category {
   _id: string;
@@ -17,16 +19,25 @@ interface CategoryGridProps {
 }
 
 export function CategoryGrid({ categories, loading, error }: CategoryGridProps) {
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300; // Adjust scroll amount as needed
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <Card key={i} className="h-full">
             <div className="w-full h-48 bg-gray-200 animate-pulse" />
-            <CardHeader>
-              <div className="h-6 bg-gray-200 rounded animate-pulse" />
-            </CardHeader>
-            <CardContent>
+            <CardContent className="p-4">
               <div className="h-4 bg-gray-200 rounded animate-pulse mb-2" />
               <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4" />
             </CardContent>
@@ -53,39 +64,58 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {categories.slice(0, 6).map((category) => (
-        <Card key={category._id} className="h-full border-none shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden group">
-          {/* Category Image */}
-          <div className="relative w-full h-56 overflow-hidden">
-            <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors z-10" />
-            <img
-              src={getCategoryImage(category)}
-              alt={category.name}
-              className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
-              onError={(e) => {
-                // Fallback to Cloudinary sample image
-                e.currentTarget.src = `https://res.cloudinary.com/demo/image/upload/w_400,h_300,c_fill,q_auto,f_auto/sample`;
-              }}
-            />
-          </div>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-center text-xl text-gray-800">{category.name}</CardTitle>
-          </CardHeader>
-          {category.description && (
-            <CardContent className="space-y-4 pt-0">
-              <p className="text-sm text-muted-foreground text-center line-clamp-2 px-2">
-                {category.description}
-              </p>
-              <Link href={`/browse?category=${category._id}`} className="block pt-2">
-                <Button variant="outline" className="w-full border-primary/20 text-primary hover:bg-primary hover:text-white transition-colors">
-                  View Details
-                </Button>
-              </Link>
-            </CardContent>
-          )}
-        </Card>
-      ))}
+    <div className="relative group">
+      {/* Left Arrow */}
+      <button
+        onClick={() => scroll('left')}
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 text-gray-800 hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+        aria-label="Scroll left"
+      >
+        <ChevronLeft className="h-6 w-6" />
+      </button>
+
+      {/* Carousel Container */}
+      <div
+        ref={scrollContainerRef}
+        className="flex overflow-x-auto gap-6 pb-8 scrollbar-hide snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        {categories.slice(0, 6).map((category) => (
+          <Link href={`/browse?category=${category._id}`} key={category._id} className="min-w-[280px] md:min-w-[320px] snap-center">
+            <Card className="h-full border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-gray-50/50">
+              {/* Category Image */}
+              <div className="relative w-full h-48 overflow-hidden rounded-t-xl m-2 mb-0">
+                <img
+                  src={getCategoryImage(category)}
+                  alt={category.name}
+                  className="w-full h-full object-cover rounded-lg"
+                  onError={(e) => {
+                    e.currentTarget.src = `https://res.cloudinary.com/demo/image/upload/w_400,h_300,c_fill,q_auto,f_auto/sample`;
+                  }}
+                />
+              </div>
+              
+              <CardContent className="p-6 text-left">
+                {category.description && (
+                  <p className="text-xs text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                    "{category.description}"
+                  </p>
+                )}
+                <h3 className="font-bold text-sm text-[#5e3a8c]">{category.name}</h3>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      {/* Right Arrow */}
+      <button
+        onClick={() => scroll('right')}
+        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 text-gray-800 hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+        aria-label="Scroll right"
+      >
+        <ChevronRight className="h-6 w-6" />
+      </button>
     </div>
   );
 }

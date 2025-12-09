@@ -56,7 +56,7 @@ const CATEGORY_PUBLIC_IDS: Record<string, string> = {
   'hair stylist': 'hair_stylist.jpg',
   'magician': 'magician.jpg',
   'makeup artist': 'makeup_artist.jpg',
-  'musician': 'musician.jpg',
+  'musician': 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Michael_Jackson_in_1988.jpg/800px-Michael_Jackson_in_1988.jpg',
   'painter': 'painter.jpg',
   'photographer': 'photographer.jpg',
   'singer': 'singer.jpg',
@@ -90,7 +90,11 @@ export function getCategoryImage(category: { name: string; image?: string }): st
   
   // Direct match first
   if (CATEGORY_PUBLIC_IDS[categoryName]) {
-    return buildCloudinaryUrl(CATEGORY_PUBLIC_IDS[categoryName], {
+    const imageId = CATEGORY_PUBLIC_IDS[categoryName];
+    if (imageId.startsWith('http')) {
+      return imageId;
+    }
+    return buildCloudinaryUrl(imageId, {
       width: 400,
       height: 300,
       crop: 'fill',
@@ -100,6 +104,9 @@ export function getCategoryImage(category: { name: string; image?: string }): st
   // Partial match
   for (const [key, publicId] of Object.entries(CATEGORY_PUBLIC_IDS)) {
     if (categoryName.includes(key) || key.includes(categoryName)) {
+      if (publicId.startsWith('http')) {
+        return publicId;
+      }
       return buildCloudinaryUrl(publicId, {
         width: 400,
         height: 300,
