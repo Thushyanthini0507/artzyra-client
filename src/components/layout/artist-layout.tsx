@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Calendar, User, DollarSign, Settings, CalendarDays, Star } from "lucide-react";
+import { LayoutDashboard, Calendar, User, DollarSign, Settings, CalendarDays, Star, LogOut } from "lucide-react";
 import { NotificationMenu } from "@/components/NotificationMenu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -49,7 +49,8 @@ const sidebarItems = [
 
 export function ArtistLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   const getInitials = (name: string | undefined) => {
     if (!name) return "U";
@@ -87,13 +88,29 @@ export function ArtistLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               );
             })}
+
           </nav>
+          <div className="p-4 border-t mt-auto">
+            <button
+              onClick={async () => {
+                await logout();
+                router.push("/");
+              }}
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+            >
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </div>
         </aside>
         <div className="flex-1 flex flex-col">
           {/* Header Bar with Notification Menu */}
           <header className="h-16 border-b bg-background flex items-center justify-end px-6 gap-4">
             <NotificationMenu />
             <Avatar className="h-10 w-10">
+              {user?.profileImage && (
+                <AvatarImage src={user.profileImage} alt={user.name} />
+              )}
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {getInitials(user?.name)}
               </AvatarFallback>

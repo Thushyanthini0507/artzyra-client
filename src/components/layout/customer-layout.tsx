@@ -5,7 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut, User } from "lucide-react";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 const sidebarItems = [
@@ -64,6 +64,9 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
         <div className="p-6 border-b">
           <div className="flex items-center gap-3 mb-2">
             <Avatar className="h-12 w-12">
+              {user?.profileImage && (
+                <AvatarImage src={user.profileImage} alt={user.name} />
+              )}
               <AvatarFallback className="bg-primary text-primary-foreground">
                 {getInitials(user?.name)}
               </AvatarFallback>

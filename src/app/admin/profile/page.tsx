@@ -11,6 +11,7 @@ import { adminService } from "@/services/admin.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { isValidSriLankanPhone, normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function AdminProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -141,6 +142,13 @@ export default function AdminProfilePage() {
               <CardDescription>Update your profile details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex justify-center mb-6">
+                <ImageUpload
+                  value={formData.profileImage}
+                  onChange={(url) => setFormData({ ...formData, profileImage: url })}
+                  imageType="admin_profile"
+                />
+              </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>
@@ -201,16 +209,7 @@ export default function AdminProfilePage() {
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="profileImage">Profile Image URL</Label>
-                  <Input
-                    id="profileImage"
-                    type="url"
-                    placeholder="https://example.com/image.jpg"
-                    value={formData.profileImage}
-                    onChange={(e) => setFormData({ ...formData, profileImage: e.target.value })}
-                  />
-                </div>
+
               </div>
 
               <div className="space-y-2">

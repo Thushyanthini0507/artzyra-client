@@ -12,6 +12,7 @@ import { customerService } from "@/services/customer.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { isValidSriLankanPhone, normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function CustomerProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -19,6 +20,7 @@ export default function CustomerProfilePage() {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    profileImage: "",
     email: "",
     phone: "",
     address: {
@@ -59,6 +61,7 @@ export default function CustomerProfilePage() {
           setProfile(data);
           setFormData({
             name: data.name || "",
+            profileImage: data.profileImage || "",
             email: user.email || data.email || "",
             phone: data.phone || "",
             address: {
@@ -118,6 +121,7 @@ export default function CustomerProfilePage() {
 
       const response = await customerService.updateProfile({
         name: formData.name,
+        profileImage: formData.profileImage,
         phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : "",
         address: formData.address,
         dateOfBirth: formData.dateOfBirth || undefined,
@@ -170,6 +174,13 @@ export default function CustomerProfilePage() {
               <CardDescription>Update your profile details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex justify-center mb-6">
+                <ImageUpload
+                  value={formData.profileImage}
+                  onChange={(url) => setFormData({ ...formData, profileImage: url })}
+                  imageType="customer_profile"
+                />
+              </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>

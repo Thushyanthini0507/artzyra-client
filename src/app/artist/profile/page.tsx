@@ -13,6 +13,7 @@ import { categoryService } from "@/services/category.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { isValidSriLankanPhone, normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
+import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function ArtistProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -21,6 +22,7 @@ export default function ArtistProfilePage() {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
+    profileImage: "",
     email: "",
     phone: "",
     bio: "",
@@ -66,6 +68,7 @@ export default function ArtistProfilePage() {
           setProfile(data);
           setFormData({
             name: data.name || "",
+            profileImage: data.profileImage || "",
             email: user.email || data.email || "",
             phone: data.phone || "",
             bio: data.bio || "",
@@ -117,6 +120,7 @@ export default function ArtistProfilePage() {
 
       const updateData = {
         name: formData.name,
+        profileImage: formData.profileImage,
         phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : "",
         bio: formData.bio,
         category: formData.category,
@@ -177,6 +181,13 @@ export default function ArtistProfilePage() {
               <CardDescription>Update your profile details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              <div className="flex justify-center mb-6">
+                <ImageUpload
+                  value={formData.profileImage}
+                  onChange={(url) => setFormData({ ...formData, profileImage: url })}
+                  imageType="artist_profile"
+                />
+              </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name *</Label>
