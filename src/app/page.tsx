@@ -198,16 +198,20 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8 relative z-10">
-              <div className="space-y-4">
-                <h3 className="text-primary font-semibold tracking-wide uppercase">Testimonials</h3>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900">Artzyra&apos;s<br/>Happy Customer</h2>
+              <div className="space-y-2">
+                <h2 className="text-4xl md:text-5xl font-bold text-[#3e1d56]">
+                  Artzyra&apos;s
+                </h2>
+                <h2 className="text-4xl md:text-5xl font-bold text-[#3e1d56]">
+                  Happy Customer
+                </h2>
               </div>
-              <p className="text-lg text-muted-foreground leading-relaxed">
+              <p className="text-lg text-gray-600 leading-relaxed max-w-md">
                 At Artzyra, we provide everything a skilled person and a customer needs to connect effectively and professionally.
               </p>
               <Link href="/reviews">
-                <Button variant="outline" className="rounded-full px-8 border-primary/20 text-primary hover:bg-primary hover:text-white transition-colors">
-                  Show all previous customers
+                <Button className="rounded-full px-8 py-6 bg-[#3e1d56] text-white hover:bg-[#3e1d56]/90 transition-colors text-lg">
+                  Show All Review from Customers
                 </Button>
               </Link>
             </div>
@@ -216,34 +220,88 @@ export default function Home() {
               {/* Decorative background for cards */}
               <div className="absolute -inset-4 bg-gradient-to-r from-primary/5 to-secondary/5 rounded-3xl -z-10 blur-xl"></div>
               
-              <div className="grid gap-6 relative">
-                {testimonials.map((testimonial, index) => (
-                  <Card key={index} className="border-none shadow-lg hover:shadow-xl transition-shadow duration-300">
-                    <CardContent className="p-8">
-                      <div className="flex items-start gap-4">
-                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <User className="h-6 w-6 text-primary" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 relative">
+                {/* Column 1 */}
+                <div className="space-y-6 mt-12">
+                   {[
+                     {
+                       name: "Sarah Johnson",
+                       service: "Wedding Photography",
+                       text: "Artzyra made finding a photographer so easy! The quality of work was outstanding and the booking process was seamless.",
+                       image: "https://i.pravatar.cc/150?img=5"
+                     },
+                     {
+                       name: "David Chen",
+                       service: "Digital Illustration",
+                       text: "I needed a custom logo for my startup and found the perfect artist within minutes. Highly recommended for any business owner!",
+                       image: "https://i.pravatar.cc/150?img=11"
+                     }
+                   ].map((testimonial, i) => (
+                    <div key={i} className="bg-white p-6 rounded-xl shadow-sm relative border border-gray-100">
+                      <div className="absolute -top-3 -right-3 w-8 h-8 bg-[#3e1d56] rounded-full flex items-center justify-center text-white">
+                        <span className="text-xl leading-none">&quot;</span>
+                      </div>
+                      <div className="flex gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-full border-2 border-[#3e1d56] flex items-center justify-center shrink-0 overflow-hidden">
+                           <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
                         </div>
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-start w-full">
-                            <div>
-                                <h4 className="font-bold text-lg">{testimonial.name}</h4>
-                                <p className="text-sm text-muted-foreground">{testimonial.username}</p>
-                            </div>
-                            <div className="flex gap-0.5">
-                                {[...Array(testimonial.rating)].map((_, i) => (
-                                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                                ))}
-                            </div>
-                          </div>
-                          <p className="text-gray-600 leading-relaxed pt-2">
-                            &quot;{testimonial.text}&quot;
-                          </p>
+                        <div>
+                          <h4 className="font-bold text-lg text-[#9b87f5]">{testimonial.name}</h4>
+                          <p className="text-xs text-gray-500">{testimonial.service}</p>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                        {testimonial.text}
+                      </p>
+                      <div className="flex justify-end gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                    </div>
+                   ))}
+                </div>
+
+                {/* Column 2 */}
+                <div className="space-y-6">
+                   {[
+                     {
+                       name: "Emily Davis",
+                       service: "Music Production",
+                       text: "Connected with a talented producer who helped bring my song to life. The communication tools on Artzyra are fantastic.",
+                       image: "https://i.pravatar.cc/150?img=9"
+                     },
+                     {
+                       name: "James Wilson",
+                       service: "Portrait Painting",
+                       text: "Commissioned a family portrait and the result exceeded my expectations. A truly professional platform for artists.",
+                       image: "https://i.pravatar.cc/150?img=3"
+                     }
+                   ].map((testimonial, i) => (
+                    <div key={i} className="bg-white p-6 rounded-xl shadow-sm relative border border-gray-100">
+                      <div className="absolute -top-3 -right-3 w-8 h-8 bg-[#3e1d56] rounded-full flex items-center justify-center text-white">
+                        <span className="text-xl leading-none">&quot;</span>
+                      </div>
+                      <div className="flex gap-4 mb-4">
+                        <div className="w-12 h-12 rounded-full border-2 border-[#3e1d56] flex items-center justify-center shrink-0 overflow-hidden">
+                           <img src={testimonial.image} alt={testimonial.name} className="w-full h-full object-cover" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-lg text-[#9b87f5]">{testimonial.name}</h4>
+                          <p className="text-xs text-gray-500">{testimonial.service}</p>
+                        </div>
+                      </div>
+                      <p className="text-gray-600 text-sm leading-relaxed mb-4">
+                        {testimonial.text}
+                      </p>
+                      <div className="flex justify-end gap-1">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star key={star} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        ))}
+                      </div>
+                    </div>
+                   ))}
+                </div>
               </div>
             </div>
           </div>
