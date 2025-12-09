@@ -86,7 +86,7 @@ export default function Home() {
     <PublicLayout>
       {/* Hero Section */}
       {/* Hero Section */}
-      <div className=" bg-[url('/images/hero-bg.png')] bg-cover bg-center bg-no-repeat ">
+      <div className=" bg-[url('/images/hero-bg.png')] bg-top bg-cover bg-no-repeat ">
         <section className="relative min-h-screen flex items-center ">
           <div className="container mx-auto px-4 relative z-10 pt-20">
             <div className="max-w-3xl">
@@ -368,10 +368,12 @@ export default function Home() {
                 Ready to Share Your Talent?
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed">
-                Join our vibrant community of artists. Reach new clients, manage your bookings seamlessly, and grow your creative business with Artzyra.
+                Join our vibrant community of artists. Reach new clients, manage
+                your bookings seamlessly, and grow your creative business with
+                Artzyra.
               </p>
             </div>
-            
+
             <Link href="/auth/register/artist">
               <Button
                 size="lg"

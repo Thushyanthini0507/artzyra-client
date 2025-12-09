@@ -6,10 +6,10 @@ const getApiUrl = () => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) {
     console.warn(
-      "⚠️ NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
+      "NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
     );
     console.warn(
-      "💡 To fix this, create a .env.local file in the client directory with: NEXT_PUBLIC_API_URL=http://localhost:5000/api"
+      "To fix this, create a .env.local file in the client directory with: NEXT_PUBLIC_API_URL=http://localhost:5000/api"
     );
     return "http://localhost:5000/api";
   }
