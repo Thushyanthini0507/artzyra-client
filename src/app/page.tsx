@@ -157,19 +157,38 @@ export default function Home() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-x-8 gap-y-16 max-w-6xl mx-auto">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div key={index} className="flex flex-col items-center text-center group">
-                  <div className="w-20 h-20 mb-6 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors duration-300">
-                    <Icon className="h-10 w-10 text-primary" />
+          <div className="flex flex-col gap-16 max-w-[1400px] mx-auto">
+            {/* First Row - 5 items */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+              {features.slice(0, 5).map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index} className="flex flex-col items-center text-center group">
+                    <div className="w-20 h-20 mb-6 rounded-full bg-[#b39ddb] flex items-center justify-center group-hover:bg-[#b39ddb]/80 transition-colors duration-300">
+                      <Icon className="h-10 w-10 text-[#3e1d56]" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="font-bold text-lg mb-3 text-gray-900">{feature.title}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed max-w-[200px]">{feature.description}</p>
                   </div>
-                  <h3 className="font-bold text-xl mb-3 text-gray-900">{feature.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed max-w-xs">{feature.description}</p>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
+
+            {/* Second Row - 4 items */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:w-[80%] mx-auto">
+              {features.slice(5, 9).map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={index + 5} className="flex flex-col items-center text-center group">
+                    <div className="w-20 h-20 mb-6 rounded-full bg-[#b39ddb] flex items-center justify-center group-hover:bg-[#b39ddb]/80 transition-colors duration-300">
+                      <Icon className="h-10 w-10 text-[#3e1d56]" strokeWidth={1.5} />
+                    </div>
+                    <h3 className="font-bold text-lg mb-3 text-gray-900">{feature.title}</h3>
+                    <p className="text-sm text-gray-600 leading-relaxed max-w-[200px]">{feature.description}</p>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -186,9 +205,11 @@ export default function Home() {
               <p className="text-lg text-muted-foreground leading-relaxed">
                 At Artzyra, we provide everything a skilled person and a customer needs to connect effectively and professionally.
               </p>
-              <Button className="rounded-full px-8 bg-primary text-white hover:bg-primary/90">
-                Show all reviews from customers
-              </Button>
+              <Link href="/reviews">
+                <Button variant="outline" className="rounded-full px-8 border-primary/20 text-primary hover:bg-primary hover:text-white transition-colors">
+                  Show all previous customers
+                </Button>
+              </Link>
             </div>
             
             <div className="relative">
