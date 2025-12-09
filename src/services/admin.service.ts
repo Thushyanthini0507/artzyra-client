@@ -64,7 +64,7 @@ export const adminService = {
     id: string,
     data: { name?: string; description?: string; image?: string }
   ) => {
-    const response = await apiClient.patch(`/categories/${id}`, data);
+    const response = await apiClient.put(`/categories/${id}`, data);
     return response.data;
   },
   deleteCategory: async (id: string) => {
