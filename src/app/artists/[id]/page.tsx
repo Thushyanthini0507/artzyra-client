@@ -11,7 +11,7 @@ import { artistService } from "@/services/artist.service";
 import { reviewService } from "@/services/review.service";
 import apiClient from "@/lib/apiClient";
 import { toast } from "sonner";
-import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, Image as ImageIcon, Search } from "lucide-react";
 import { formatHourlyRate } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
@@ -178,10 +178,40 @@ export default function ArtistProfilePage() {
   }
 
   return (
-    <PublicLayout>
-      <div className="min-h-screen bg-background">
-        {/* Banner Section */}
-        <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+    <div className="min-h-screen bg-[#13111c] text-white font-sans">
+      {/* Top Navbar */}
+      <nav className="absolute top-0 left-0 right-0 z-50 px-8 py-6 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="h-8 w-8 bg-[#5b21b6] rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-xl">L</span>
+          </div>
+          <span className="text-xl font-bold text-white">Artzyra</span>
+        </div>
+        
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
+          <Link href="/browse" className="hover:text-white transition-colors">Discover</Link>
+          <Link href="/categories" className="hover:text-white transition-colors">Categories</Link>
+          <Link href="/for-artists" className="hover:text-white transition-colors">For Artists</Link>
+        </div>
+
+        <div className="flex items-center gap-4">
+          {!user ? (
+            <Link href="/auth/login">
+              <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full px-6">Log In</Button>
+            </Link>
+          ) : (
+             <Avatar className="h-10 w-10 border-2 border-[#5b21b6]">
+                <AvatarFallback className="bg-[#fcd34d] text-black font-bold">
+                  {user.name?.charAt(0) || "U"}
+                </AvatarFallback>
+             </Avatar>
+          )}
+        </div>
+      </nav>
+
+      {/* Banner Section */}
+      <div className="relative w-full h-[400px] md:h-[500px] px-6 pt-24">
+        <div className="relative w-full h-full rounded-[32px] overflow-hidden">
           {artist.profileImage ? (
             <img
               src={artist.profileImage}
@@ -198,345 +228,182 @@ export default function ArtistProfilePage() {
               className="w-full h-full object-cover"
             />
           )}
-          <div className="absolute inset-0 bg-black/40" />
-          <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-white">
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          <div className="absolute bottom-0 left-0 p-10">
+            <h1 className="text-5xl font-bold text-white mb-2">
               {artist.name} - {getProfession()}
             </h1>
           </div>
         </div>
+      </div>
 
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column */}
-            <div className="lg:col-span-1 space-y-6">
-              {/* Artist Profile Card */}
-              <Card>
-                <CardHeader>
-                  <div className="flex flex-col items-center text-center space-y-4">
-                    <Avatar className="h-24 w-24 border-4 border-background">
-                      <AvatarImage 
-                        src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`} 
-                        alt={artist.name}
-                        onError={(e) => {
-                          e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`;
-                        }}
-                      />
-                      <AvatarFallback className="text-2xl">
-                        {artist.name?.charAt(0) || "A"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h2 className="text-2xl font-bold">{artist.name}</h2>
-                      <p className="text-muted-foreground">{getProfession()}</p>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{getLocation()}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {renderStars(reviewStats.averageRating || artist.rating || 0)}
-                      <span className="text-sm font-medium">
-                        {reviewStats.averageRating || artist.rating || 0} ({reviewStats.totalReviews || 0} reviews)
-                      </span>
-                    </div>
-                    {user?.role === "customer" && (
-                      <FavoriteButton
-                        artistId={artist._id}
-                        initialIsFavorite={favorites.includes(artist._id)}
-                      />
-                    )}
+      <div className="container mx-auto px-6 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+          {/* Left Column - Profile Info */}
+          <div className="lg:col-span-4 space-y-8">
+            {/* Profile Card */}
+            <div className="bg-[#1e1b29] rounded-[32px] p-8 text-center border border-white/5 relative mt-[-100px] shadow-xl">
+              <div className="relative inline-block mb-4">
+                <Avatar className="h-32 w-32 border-4 border-[#1e1b29] shadow-lg">
+                  <AvatarImage 
+                    src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`} 
+                    alt={artist.name}
+                    className="object-cover"
+                  />
+                  <AvatarFallback className="text-3xl bg-[#5b21b6] text-white">
+                    {artist.name?.charAt(0) || "A"}
+                  </AvatarFallback>
+                </Avatar>
+              </div>
+              
+              <h2 className="text-2xl font-bold text-white mb-1">{artist.name}</h2>
+              <p className="text-[#a78bfa] font-medium mb-2">{getProfession()}</p>
+              
+              <div className="flex items-center justify-center gap-2 text-gray-400 text-sm mb-4">
+                <MapPin className="h-4 w-4" />
+                <span>{getLocation()}</span>
+              </div>
+
+              <div className="flex items-center justify-center gap-2 mb-6">
+                <Star className="h-5 w-5 fill-[#fbbf24] text-[#fbbf24]" />
+                <span className="font-bold text-white">{reviewStats.averageRating || artist.rating || 0}</span>
+                <span className="text-gray-500">({reviewStats.totalReviews || 0} reviews)</span>
+              </div>
+
+              <p className="text-gray-300 text-sm leading-relaxed mb-6">
+                {artist.bio || "With a passion for vibrant colors, I specialize in creating large-scale murals and intimate portraits that capture the essence of my subjects."}
+              </p>
+
+              <div className="flex justify-center gap-4">
+                {[Facebook, Instagram, Twitter].map((Icon, i) => (
+                  <div key={i} className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer">
+                    <Icon className="h-5 w-5" />
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground text-center">
-                    {artist.bio || "No bio available."}
-                  </p>
-                  {(artist.socialLinks?.facebook || 
-                    artist.socialLinks?.instagram || 
-                    artist.socialLinks?.twitter || 
-                    artist.socialLinks?.linkedin || 
-                    artist.socialLinks?.youtube) && (
-                    <div className="flex justify-center gap-4 mt-4">
-                      {artist.socialLinks.facebook && (
-                        <a
-                          href={artist.socialLinks.facebook}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <Facebook className="h-5 w-5" />
-                        </a>
-                      )}
-                      {artist.socialLinks.instagram && (
-                        <a
-                          href={artist.socialLinks.instagram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <Instagram className="h-5 w-5" />
-                        </a>
-                      )}
-                      {artist.socialLinks.twitter && (
-                        <a
-                          href={artist.socialLinks.twitter}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <Twitter className="h-5 w-5" />
-                        </a>
-                      )}
-                      {artist.socialLinks.linkedin && (
-                        <a
-                          href={artist.socialLinks.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <Linkedin className="h-5 w-5" />
-                        </a>
-                      )}
-                      {artist.socialLinks.youtube && (
-                        <a
-                          href={artist.socialLinks.youtube}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
-                        >
-                          <Youtube className="h-5 w-5" />
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Request a Quote Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Request a Quote</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-muted-foreground">
-                    Pricing starts at {formatHourlyRate(artist.hourlyRate || 0)}. Let {artist.name} know about your project. They'll get back to you with a personalized quote.
-                  </p>
-                  <Button 
-                    className="w-full" 
-                    onClick={() => {
-                      if (user?.role === "customer") {
-                        router.push(`/bookings/create?artistId=${artistId}`);
-                      } else {
-                        router.push("/auth/login");
-                      }
-                    }}
-                  >
-                    Request a Quote
-                  </Button>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
             </div>
 
-            {/* Right Column */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Services Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Services</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Card className="bg-muted/50">
-                    <CardHeader>
-                      <CardTitle className="text-lg">Creative Professional Services</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">
-                        We provide high-quality and reliable professional services tailored to your needs. Starting at {formatHourlyRate(artist.hourlyRate || 558)}.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </CardContent>
-              </Card>
-
-              {/* Portfolio Section */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Portfolio</CardTitle>
-                    {portfolioImages.length > 0 && (
-                      <div className="flex gap-2">
-                        <Button
-                          variant={portfolioFilter === "all" ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setPortfolioFilter("all")}
-                        >
-                          All
-                        </Button>
-                        {/* You can add more filters here based on your portfolio structure */}
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {portfolioImages.length === 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {Array.from({ length: 6 }, (_, index) => (
-                        <div
-                          key={index}
-                          className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                        >
-                          <img
-                            src={`https://images.unsplash.com/photo-${1541961017774 + index}?w=400&h=400&fit=crop&q=80`}
-                            alt={`Portfolio placeholder ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              // Fallback to a different placeholder service
-                              e.currentTarget.src = `https://picsum.photos/400/400?random=${index}`;
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {portfolioImages.slice(0, 6).map((image: string, index: number) => (
-                        <div
-                          key={index}
-                          className="aspect-square rounded-lg overflow-hidden bg-muted cursor-pointer hover:opacity-90 transition-opacity"
-                        >
-                          <img
-                            src={image}
-                            alt={`Portfolio ${index + 1}`}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              // Fallback to placeholder image
-                              e.currentTarget.src = `https://images.unsplash.com/photo-${1541961017774 + index}?w=400&h=400&fit=crop&q=80`;
-                            }}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Ratings & Reviews Section */}
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Ratings & Reviews</CardTitle>
-                    {reviewStats.totalReviews > 0 && (
-                      <Link
-                        href={`/artists/${artistId}/reviews`}
-                        className="text-sm text-primary hover:underline"
-                      >
-                        {reviewStats.totalReviews} reviews
-                      </Link>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  {reviews.length === 0 ? (
-                    <p className="text-center text-muted-foreground py-8">
-                      No reviews yet. Be the first to review!
-                    </p>
-                  ) : (
-                    <div className="space-y-6">
-                      {reviews.slice(0, 5).map((review: any) => (
-                        <div key={review._id} className="flex gap-4">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage
-                              src={review.customer?.profileImage}
-                              alt={review.customer?.name}
-                            />
-                            <AvatarFallback>
-                              {review.customer?.name?.charAt(0) || "U"}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="font-medium">
-                                {review.customer?.name || "Anonymous"}
-                              </span>
-                              {renderStars(review.rating)}
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              {review.comment || "No comment provided."}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                      {reviews.length > 5 && (
-                        <div className="text-center pt-4">
-                          <Link
-                            href={`/artists/${artistId}/reviews`}
-                            className="text-sm text-primary hover:underline"
-                          >
-                            View all {reviewStats.totalReviews} reviews
-                          </Link>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {/* Request a Quote */}
+            <div className="bg-[#1e1b29] rounded-[32px] p-8 border border-white/5">
+              <h3 className="text-xl font-bold text-white mb-2">Request a Quote</h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Pricing starts at {formatHourlyRate(artist.hourlyRate || 500)}. Let {artist.name} know about your project. She'll get back to you with a personalized quote.
+              </p>
+              <Button 
+                className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12 rounded-xl font-semibold"
+                onClick={() => {
+                  if (user?.role === "customer") {
+                    router.push(`/bookings/create?artistId=${artistId}`);
+                  } else {
+                    router.push("/auth/login");
+                  }
+                }}
+              >
+                Request a Quote
+              </Button>
             </div>
           </div>
 
-          {/* Related Photos Section - Full Width */}
-          {relatedArtists.length > 0 && (
-            <div className="mt-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Related Artists</CardTitle>
-                  <CardDescription>
-                    Discover other talented artists in the same category
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                    {relatedArtists.map((relatedArtist: any) => (
-                      <Link
-                        key={relatedArtist._id}
-                        href={`/artists/${relatedArtist._id}`}
-                        className="group"
-                      >
-                        <div className="space-y-2">
-                          <div className="relative aspect-square rounded-lg overflow-hidden bg-muted group-hover:opacity-90 transition-opacity">
-                            <img
-                              src={
-                                relatedArtist.profileImage ||
-                                `https://ui-avatars.com/api/?name=${encodeURIComponent(relatedArtist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`
-                              }
-                              alt={relatedArtist.name}
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(relatedArtist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`;
-                              }}
-                            />
-                          </div>
-                          <div className="text-center">
-                            <p className="text-sm font-medium truncate">
-                              {relatedArtist.name}
-                            </p>
-                            {relatedArtist.category?.name && (
-                              <p className="text-xs text-muted-foreground truncate">
-                                {relatedArtist.category.name}
-                              </p>
-                            )}
+          {/* Right Column - Content */}
+          <div className="lg:col-span-8 space-y-10">
+            {/* Services Section */}
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Services</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {[
+                  { title: "Custom Murals", desc: "Large-scale wall art for homes, offices, and public spaces.", price: "$2,000" },
+                  { title: "Portrait Painting", desc: "Personalized portraits from photos or live sittings.", price: "$500" },
+                  { title: "Live Wedding Painting", desc: "Capture your special day with a unique, live-painted canvas.", price: "$1,500" },
+                  { title: "Canvas Commissions", desc: "Abstract or realist paintings tailored to your space.", price: "$800" }
+                ].map((service, i) => (
+                  <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5 hover:bg-[#252134] transition-colors group cursor-pointer">
+                    <h4 className="text-lg font-bold text-white mb-2">{service.title}</h4>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{service.desc}</p>
+                    <p className="text-[#a78bfa] font-semibold text-sm">Starts at {service.price}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Portfolio Section */}
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-white">Portfolio</h3>
+                <div className="flex gap-2">
+                  {["All", "Murals", "Portraits"].map((filter) => (
+                    <button 
+                      key={filter}
+                      className={cn(
+                        "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
+                        filter === "All" 
+                          ? "bg-[#5b21b6] text-white" 
+                          : "bg-[#1e1b29] text-gray-400 hover:text-white"
+                      )}
+                    >
+                      {filter}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[1, 2, 3, 4, 5, 6].map((item, i) => (
+                  <div key={i} className="aspect-square rounded-[24px] overflow-hidden relative group cursor-pointer">
+                    <img
+                      src={`https://images.unsplash.com/photo-${1541961017774 + i}?w=500&h=500&fit=crop&q=80`}
+                      alt={`Portfolio ${i}`}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Ratings & Reviews */}
+            <div>
+              <h3 className="text-2xl font-bold text-white mb-6">Ratings & Reviews</h3>
+              <div className="space-y-4">
+                {[
+                  { name: "Jane Doe", rating: 5, comment: "Elena painted a stunning mural for our office. She was professional, creative, and brought our vision to life perfectly. Highly recommend!" },
+                  { name: "John Smith", rating: 5, comment: "The portrait of my family exceeded all expectations. Elena has an incredible talent for capturing personality on canvas." }
+                ].map((review, i) => (
+                  <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={`https://ui-avatars.com/api/?name=${review.name}&background=random`} />
+                          <AvatarFallback>{review.name[0]}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <h4 className="font-bold text-white text-sm">{review.name}</h4>
+                          <div className="flex gap-0.5">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <Star key={star} className="h-3 w-3 fill-[#fbbf24] text-[#fbbf24]" />
+                            ))}
                           </div>
                         </div>
-                      </Link>
-                    ))}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-sm leading-relaxed">{review.comment}</p>
                   </div>
-                </CardContent>
-              </Card>
+                ))}
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
-    </PublicLayout>
+
+      {/* Floating Bottom Bar (Optional/Decorative based on image) */}
+      <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-[#1e1b29]/90 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 flex items-center gap-6 shadow-2xl z-50">
+         <div className="p-2 bg-[#5b21b6] rounded-lg text-white cursor-pointer">
+            <ExternalLink className="h-5 w-5" />
+         </div>
+         <div className="text-gray-400 hover:text-white cursor-pointer"><span className="text-xl">✋</span></div>
+         <div className="text-gray-400 hover:text-white cursor-pointer"><Search className="h-5 w-5" /></div>
+         <div className="text-gray-400 hover:text-white cursor-pointer"><ImageIcon className="h-5 w-5" /></div>
+      </div>
+    </div>
   );
 }
 

@@ -57,29 +57,39 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#13111c]">
       {/* Left Sidebar */}
-      <aside className="w-80 border-r bg-background flex flex-col">
+      <aside className="w-64 bg-[#13111c] border-r border-white/10 flex flex-col">
+        {/* Logo */}
+        <div className="p-6">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="h-8 w-8 bg-[#5b21b6] rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xl">L</span>
+            </div>
+            <span className="text-xl font-bold text-white">Artzyra</span>
+          </Link>
+        </div>
+
         {/* User Greeting */}
-        <div className="p-6 border-b">
-          <div className="flex items-center gap-3 mb-2">
-            <Avatar className="h-12 w-12">
+        <div className="px-4 mb-6">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#1e1b29] border border-white/5">
+            <Avatar className="h-10 w-10 border-2 border-[#5b21b6]">
               {user?.profileImage && (
                 <AvatarImage src={user.profileImage} alt={user.name} />
               )}
-              <AvatarFallback className="bg-primary text-primary-foreground">
+              <AvatarFallback className="bg-[#5b21b6] text-white">
                 {getInitials(user?.name)}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <p className="font-medium">Hello, {getUserFirstName(user?.name)}</p>
-              <p className="text-sm text-muted-foreground">Welcome back!</p>
+            <div className="overflow-hidden">
+              <p className="font-medium text-white truncate">Hello, {getUserFirstName(user?.name)}</p>
+              <p className="text-xs text-gray-400 truncate">Welcome back!</p>
             </div>
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 px-4">
           <div className="flex flex-col gap-2">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
@@ -90,13 +100,13 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                    "flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200",
                     isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                      ? "bg-[#2e1065] text-white shadow-lg shadow-purple-900/20"
+                      : "text-gray-400 hover:bg-white/5 hover:text-white"
                   )}
                 >
-                  <Icon className="h-4 w-4" />
+                  <Icon className={cn("h-5 w-5", isActive ? "text-[#a78bfa]" : "text-gray-500")} />
                   {item.title}
                 </Link>
               );
@@ -105,26 +115,28 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Create New Booking Button and Logout */}
-        <div className="p-4 border-t space-y-2">
+        <div className="p-4 mt-auto space-y-4">
           <Link href="/customer/bookings/create">
-            <Button className="w-full">Create New Booking</Button>
+            <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl py-6 shadow-lg shadow-purple-900/20">
+              Create New Booking
+            </Button>
           </Link>
           <Button 
-            variant="outline" 
-            className="w-full" 
+            variant="ghost" 
+            className="w-full text-gray-400 hover:text-white hover:bg-white/5 justify-start px-4" 
             onClick={async () => {
               await logout();
               router.push("/");
             }}
           >
-            <LogOut className="h-4 w-4 mr-2" />
+            <LogOut className="h-5 w-5 mr-3" />
             Logout
           </Button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#13111c]">
         {children}
       </div>
     </div>
