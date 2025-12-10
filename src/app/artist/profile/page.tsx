@@ -121,7 +121,7 @@ export default function ArtistProfilePage() {
       const updateData = {
         name: formData.name,
         profileImage: formData.profileImage,
-        phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : "",
+        phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : undefined,
         bio: formData.bio,
         category: formData.category,
         skills: formData.skills.split(",").map((s) => s.trim()).filter(Boolean),

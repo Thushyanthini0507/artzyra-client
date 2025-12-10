@@ -6,13 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ImageUpload } from "@/components/ui/image-upload";
 import { customerService } from "@/services/customer.service";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { isValidSriLankanPhone, normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
-import { ImageUpload } from "@/components/ui/image-upload";
 
 export default function CustomerProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -30,25 +28,12 @@ export default function CustomerProfilePage() {
       zipCode: "",
       country: "",
     },
-    dateOfBirth: "",
-    gender: "",
     preferences: {
       notifications: true,
       emailUpdates: true,
       smsUpdates: false,
       favoriteCategories: [] as string[],
     },
-    socialLinks: {
-      facebook: "",
-      instagram: "",
-      twitter: "",
-    },
-    emergencyContact: {
-      name: "",
-      phone: "",
-      relationship: "",
-    },
-    bio: "",
   });
 
   useEffect(() => {
@@ -71,25 +56,12 @@ export default function CustomerProfilePage() {
               zipCode: data.address?.zipCode || "",
               country: data.address?.country || "",
             },
-            dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString().split('T')[0] : "",
-            gender: data.gender || "",
             preferences: data.preferences || {
               notifications: true,
               emailUpdates: true,
               smsUpdates: false,
               favoriteCategories: [],
             },
-            socialLinks: data.socialLinks || {
-              facebook: "",
-              instagram: "",
-              twitter: "",
-            },
-            emergencyContact: data.emergencyContact || {
-              name: "",
-              phone: "",
-              relationship: "",
-            },
-            bio: data.bio || "",
           });
         }
       } catch (error) {
@@ -105,36 +77,19 @@ export default function CustomerProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-
     try {
-      // Validate phone numbers if provided
       if (formData.phone && !isValidSriLankanPhone(formData.phone)) {
         toast.error("Please provide a valid Sri Lankan phone number (e.g., 0712345678 or 712345678)");
         setSaving(false);
         return;
       }
-      if (formData.emergencyContact.phone && !isValidSriLankanPhone(formData.emergencyContact.phone)) {
-        toast.error("Please provide a valid Sri Lankan phone number for emergency contact (e.g., 0712345678 or 712345678)");
-        setSaving(false);
-        return;
-      }
-
       const response = await customerService.updateProfile({
         name: formData.name,
         profileImage: formData.profileImage,
-        phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : "",
+        phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : undefined,
         address: formData.address,
-        dateOfBirth: formData.dateOfBirth || undefined,
-        gender: formData.gender || undefined,
         preferences: formData.preferences,
-        socialLinks: formData.socialLinks,
-        emergencyContact: {
-          ...formData.emergencyContact,
-          phone: formData.emergencyContact.phone ? normalizeSriLankanPhone(formData.emergencyContact.phone) : "",
-        },
-        bio: formData.bio,
       });
-
       if (response.success) {
         toast.success("Profile updated successfully");
         setProfile(response.data);
@@ -166,7 +121,6 @@ export default function CustomerProfilePage() {
           <h1 className="text-3xl font-bold">Profile</h1>
           <p className="text-muted-foreground">Manage your account information</p>
         </div>
-
         <form onSubmit={handleSubmit}>
           <Card>
             <CardHeader>
@@ -191,17 +145,6 @@ export default function CustomerProfilePage() {
                     required
                   />
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    disabled
-                  />
-                </div>
-
                 <div className="space-y-2 md:col-span-2">
                   <Label htmlFor="phone">Phone</Label>
                   <Input
@@ -211,10 +154,8 @@ export default function CustomerProfilePage() {
                   />
                 </div>
               </div>
-
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Address</h3>
-                
                 <div className="space-y-2">
                   <Label htmlFor="street">Street Address</Label>
                   <Input
@@ -228,7 +169,6 @@ export default function CustomerProfilePage() {
                     }
                   />
                 </div>
-
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <Label htmlFor="city">City</Label>
@@ -243,9 +183,8 @@ export default function CustomerProfilePage() {
                       }
                     />
                   </div>
-
                   <div className="space-y-2">
-                    <Label htmlFor="state">State</Label>
+                    <Label htmlFor="state">State/Province</Label>
                     <Input
                       id="state"
                       value={formData.address.state}
@@ -257,7 +196,6 @@ export default function CustomerProfilePage() {
                       }
                     />
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="zipCode">Zip Code</Label>
                     <Input
@@ -271,7 +209,6 @@ export default function CustomerProfilePage() {
                       }
                     />
                   </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="country">Country</Label>
                     <Input
@@ -287,148 +224,6 @@ export default function CustomerProfilePage() {
                   </div>
                 </div>
               </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Additional Information</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="dateOfBirth">Date of Birth</Label>
-                    <Input
-                      id="dateOfBirth"
-                      type="date"
-                      value={formData.dateOfBirth}
-                      onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="gender">Gender</Label>
-                    <Select
-                      value={formData.gender}
-                      onValueChange={(value) => setFormData({ ...formData, gender: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select gender" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
-                        <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
-                <Textarea
-                  id="bio"
-                  rows={4}
-                  placeholder="Tell us about yourself..."
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Social Media Links</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="facebook">Facebook</Label>
-                    <Input
-                      id="facebook"
-                      type="url"
-                      placeholder="https://facebook.com/yourprofile"
-                      value={formData.socialLinks.facebook}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialLinks: { ...formData.socialLinks, facebook: e.target.value },
-                      })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="instagram">Instagram</Label>
-                    <Input
-                      id="instagram"
-                      type="url"
-                      placeholder="https://instagram.com/yourprofile"
-                      value={formData.socialLinks.instagram}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialLinks: { ...formData.socialLinks, instagram: e.target.value },
-                      })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="twitter">Twitter</Label>
-                    <Input
-                      id="twitter"
-                      type="url"
-                      placeholder="https://twitter.com/yourprofile"
-                      value={formData.socialLinks.twitter}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        socialLinks: { ...formData.socialLinks, twitter: e.target.value },
-                      })}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Emergency Contact</h3>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="emergencyName">Contact Name</Label>
-                    <Input
-                      id="emergencyName"
-                      value={formData.emergencyContact.name}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        emergencyContact: { ...formData.emergencyContact, name: e.target.value },
-                      })}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="emergencyPhone">Contact Phone (Sri Lankan format)</Label>
-                    <Input
-                      id="emergencyPhone"
-                      placeholder="0712345678 or 712345678"
-                      value={formData.emergencyContact.phone}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        emergencyContact: { ...formData.emergencyContact, phone: e.target.value },
-                      })}
-                      onBlur={(e) => {
-                        const value = e.target.value;
-                        if (value && isValidSriLankanPhone(value)) {
-                          setFormData({
-                            ...formData,
-                            emergencyContact: { ...formData.emergencyContact, phone: normalizeSriLankanPhone(value) },
-                          });
-                        }
-                      }}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Format: 0712345678 or 712345678
-                    </p>
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="emergencyRelationship">Relationship</Label>
-                    <Input
-                      id="emergencyRelationship"
-                      placeholder="e.g., Spouse, Parent, Friend"
-                      value={formData.emergencyContact.relationship}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        emergencyContact: { ...formData.emergencyContact, relationship: e.target.value },
-                      })}
-                    />
-                  </div>
-                </div>
-              </div>
-
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold">Preferences</h3>
                 <div className="space-y-2">
@@ -473,7 +268,6 @@ export default function CustomerProfilePage() {
                   </div>
                 </div>
               </div>
-
               <div className="flex justify-end gap-2">
                 <Button type="submit" disabled={saving}>
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

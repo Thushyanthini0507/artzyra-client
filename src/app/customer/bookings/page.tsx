@@ -71,7 +71,7 @@ export default function CustomerBookingsPage() {
                     <div>
                       <h3 className="font-semibold text-lg">{booking.service}</h3>
                       <p className="text-sm text-muted-foreground">
-                        with <span className="font-medium text-foreground">{typeof booking.artist === 'object' ? booking.artist.name : 'Artist'}</span>
+                        with <span className="font-medium text-foreground">{booking.artist?.name ?? "Artist"}</span>
                       </p>
                       <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
                         {booking.bookingDate ? (

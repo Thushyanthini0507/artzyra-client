@@ -208,14 +208,12 @@ export default function CustomerDashboard() {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-4">
                           <Avatar className="h-12 w-12">
-                            <AvatarImage src={typeof booking.artist === 'object' ? booking.artist.profileImage : undefined} />
-                            <AvatarFallback>
-                              {typeof booking.artist === 'object' ? booking.artist.name?.charAt(0) || "A" : "A"}
-                            </AvatarFallback>
+                            <AvatarImage src={booking.artist?.profileImage} />
+                            <AvatarFallback>{booking.artist?.name?.charAt(0) || "A"}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <h3 className="font-semibold mb-1">
-                              {booking.service || `Live ${booking.category?.name || "Service"} Session with ${typeof booking.artist === 'object' ? booking.artist.name : "Artist"}`}
+                              {booking.service || `Live ${booking.category?.name || "Service"} Session with ${booking.artist?.name ?? "Artist"}`}
                             </h3>
                             <p className="text-sm text-muted-foreground">
                               {formatDate(booking)}
@@ -249,9 +247,9 @@ export default function CustomerDashboard() {
                       <CardContent className="p-4">
                         <div className="flex items-center gap-4">
                           <Avatar className="h-12 w-12">
-                            <AvatarImage src={typeof booking.artist === 'object' ? booking.artist.profileImage : undefined} />
+                            <AvatarImage src={booking.artist?.profileImage} />
                             <AvatarFallback>
-                              {typeof booking.artist === 'object' ? booking.artist.name?.charAt(0) || "A" : "A"}
+                              {booking.artist?.name?.charAt(0) || "A"}
                             </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
