@@ -38,131 +38,137 @@ export default function CustomerBookingsPage() {
 
   return (
     <CustomerLayout>
-      <div className="p-6 sm:p-8 space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="text-3xl font-bold">My Bookings</h1>
-            <p className="text-muted-foreground">Manage your appointments and services</p>
+      <main className="flex-1 p-8 overflow-y-auto h-full">
+        <div className="max-w-5xl mx-auto space-y-8">
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h1 className="text-3xl font-bold text-white">My Bookings</h1>
+              <p className="text-gray-400">Manage your appointments and services</p>
+            </div>
+            <Link href="/customer/bookings/create">
+              <Button className="bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl px-6">Book an Artist</Button>
+            </Link>
           </div>
-          <Link href="/customer/bookings/create">
-            <Button>Book an Artist</Button>
-          </Link>
-        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>All Bookings</CardTitle>
-            <CardDescription>A list of all your scheduled and past bookings</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <p>Loading bookings...</p>
-            ) : bookings.length === 0 ? (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground mb-4">You haven't made any bookings yet.</p>
-                <Link href="/customer/bookings/create">
-                  <Button>Book Your First Artist</Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {bookings.map((booking) => (
-                  <div key={booking._id} className="flex flex-col md:flex-row md:items-center justify-between border p-4 rounded-lg gap-4">
-                    <div>
-                      <h3 className="font-semibold text-lg">{booking.service}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        with <span className="font-medium text-foreground">{booking.artist?.name ?? "Artist"}</span>
-                      </p>
-                      <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
-                        {booking.bookingDate ? (
-                          <>
-                            <span>{new Date(booking.bookingDate).toLocaleDateString()}</span>
-                            {booking.startTime && booking.endTime && (
-                              <>
-                                <span>•</span>
-                                <span>{booking.startTime} - {booking.endTime}</span>
-                              </>
-                            )}
-                          </>
-                        ) : booking.date ? (
-                          <>
-                            <span>{new Date(booking.date).toLocaleDateString()}</span>
-                            <span>•</span>
-                            <span>{new Date(booking.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                          </>
-                        ) : (
-                          <span className="text-muted-foreground">Date not set</span>
-                        )}
-                      </div>
-                      <p className="text-sm text-muted-foreground mt-1">{booking.location}</p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant={booking.status === "completed" ? "default" : booking.status === "accepted" ? "secondary" : "outline"} className="capitalize">
-                          {booking.status}
-                        </Badge>
+          <Card className="bg-[#1e1b29] border-white/5 shadow-xl">
+            <CardHeader>
+              <CardTitle className="text-white">All Bookings</CardTitle>
+              <CardDescription className="text-gray-400">A list of all your scheduled and past bookings</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <p className="text-gray-400">Loading bookings...</p>
+              ) : bookings.length === 0 ? (
+                <div className="text-center py-10">
+                  <p className="text-gray-400 mb-4">You haven't made any bookings yet.</p>
+                  <Link href="/customer/bookings/create">
+                    <Button className="bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl">Book Your First Artist</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {bookings.map((booking) => (
+                    <div key={booking._id} className="flex flex-col md:flex-row md:items-center justify-between bg-[#13111c] border border-white/5 p-6 rounded-2xl gap-6 hover:border-[#5b21b6]/30 transition-colors">
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                           <h3 className="font-bold text-lg text-white">{booking.service}</h3>
+                           <Badge variant={booking.status === "completed" ? "default" : booking.status === "accepted" ? "secondary" : "outline"} className="capitalize bg-[#2e1065] text-[#a78bfa] border-none hover:bg-[#3b157a]">
+                            {booking.status}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-gray-400 mb-2">
+                          with <span className="font-medium text-white">{(booking.artist as any)?.name ?? "Artist"}</span>
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          {booking.bookingDate ? (
+                            <>
+                              <span className="flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#5b21b6]"></span>
+                                {new Date(booking.bookingDate).toLocaleDateString()}
+                              </span>
+                              {booking.startTime && booking.endTime && (
+                                <>
+                                  <span>•</span>
+                                  <span>{booking.startTime} - {booking.endTime}</span>
+                                </>
+                              )}
+                            </>
+                          ) : booking.date ? (
+                            <>
+                              <span className="flex items-center gap-1.5">
+                                <span className="w-1.5 h-1.5 rounded-full bg-[#5b21b6]"></span>
+                                {new Date(booking.date).toLocaleDateString()}
+                              </span>
+                              <span>•</span>
+                              <span>{new Date(booking.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            </>
+                          ) : (
+                            <span className="text-gray-500">Date not set</span>
+                          )}
+                        </div>
+                        <p className="text-sm text-gray-500 mt-1">{booking.location}</p>
                         {booking.totalAmount && (
-                          <span className="text-sm font-medium ml-2">{formatLKR(booking.totalAmount)}</span>
+                           <p className="text-[#a78bfa] font-semibold mt-2">{formatLKR(booking.totalAmount)}</p>
                         )}
                       </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      {booking.status === "accepted" && (
-                        <Button size="sm" className="gap-2 bg-green-600 hover:bg-green-700" onClick={() => handlePay(booking)}>
-                          <CreditCard className="h-4 w-4" /> Pay Now
-                        </Button>
-                      )}
-                      {booking.status === "completed" && (
-                        <Button size="sm" variant="secondary" className="gap-2" onClick={() => handleReview(booking)}>
-                          <Star className="h-4 w-4" /> Review
-                        </Button>
-                      )}
-                      
-                      <div className="flex gap-2">
-                        <Link href={`/customer/bookings/${booking._id}`}>
-                          <Button variant="outline" size="sm" className="gap-2">
-                            <Eye className="h-4 w-4" /> View
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        {booking.status === "accepted" && (
+                          <Button size="sm" className="gap-2 bg-green-600 hover:bg-green-700 text-white rounded-xl" onClick={() => handlePay(booking)}>
+                            <CreditCard className="h-4 w-4" /> Pay Now
                           </Button>
-                        </Link>
-                        {booking.status === "pending" && (
-                          <>
-                            <Link href={`/customer/bookings/${booking._id}/edit`}>
-                              <Button variant="ghost" size="icon">
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                            </Link>
-                            <Button variant="ghost" size="icon" onClick={() => handleDelete(booking._id)}>
-                              <Trash2 className="h-4 w-4 text-red-500" />
-                            </Button>
-                          </>
                         )}
+                        {booking.status === "completed" && (
+                          <Button size="sm" variant="secondary" className="gap-2 bg-[#2e1065] text-white hover:bg-[#3b157a] rounded-xl" onClick={() => handleReview(booking)}>
+                            <Star className="h-4 w-4" /> Review
+                          </Button>
+                        )}
+                        
+                        <div className="flex gap-2">
+                          <Link href={`/customer/bookings/${booking._id}`}>
+                            <Button variant="outline" size="sm" className="gap-2 border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl">
+                              <Eye className="h-4 w-4" /> View
+                            </Button>
+                          </Link>
+                          {booking.status === "pending" && (
+                            <>
+                              <Link href={`/customer/bookings/${booking._id}/edit`}>
+                                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                              </Link>
+                              <Button variant="ghost" size="icon" onClick={() => handleDelete(booking._id)} className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl">
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        <PaymentDialog 
-          open={isPaymentOpen} 
-          onOpenChange={setIsPaymentOpen} 
-          booking={selectedBooking} 
-          onSuccess={() => {
-            refresh();
-            // Optional: redirect to payments page or show success toast (handled in dialog)
-          }} 
-        />
+          <PaymentDialog 
+            open={isPaymentOpen} 
+            onOpenChange={setIsPaymentOpen} 
+            booking={selectedBooking} 
+            onSuccess={() => {
+              refresh();
+            }} 
+          />
 
-        <ReviewDialog 
-          open={isReviewOpen} 
-          onOpenChange={setIsReviewOpen} 
-          booking={selectedBooking} 
-          onSuccess={() => {
-            refresh();
-            // Optional: redirect to reviews page or show success toast (handled in dialog)
-          }} 
-        />
-      </div>
+          <ReviewDialog 
+            open={isReviewOpen} 
+            onOpenChange={setIsReviewOpen} 
+            booking={selectedBooking} 
+            onSuccess={() => {
+              refresh();
+            }} 
+          />
+        </div>
+      </main>
     </CustomerLayout>
   );
 }

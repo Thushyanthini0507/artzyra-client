@@ -116,168 +116,178 @@ export default function CustomerProfilePage() {
 
   return (
     <CustomerLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold">Profile</h1>
-          <p className="text-muted-foreground">Manage your account information</p>
+      <main className="flex-1 p-8 overflow-y-auto h-full">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white">Profile</h1>
+            <p className="text-gray-400">Manage your account information</p>
+          </div>
+          <form onSubmit={handleSubmit}>
+            <Card className="bg-[#1e1b29] border-white/5 shadow-xl">
+              <CardHeader>
+                <CardTitle className="text-white">Personal Information</CardTitle>
+                <CardDescription className="text-gray-400">Update your profile details</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="flex justify-center mb-8">
+                  <ImageUpload
+                    value={formData.profileImage}
+                    onChange={(url) => setFormData({ ...formData, profileImage: url })}
+                    imageType="customer_profile"
+                  />
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-gray-300">Name *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                    />
+                  </div>
+                  <div className="space-y-2 md:col-span-2">
+                    <Label htmlFor="phone" className="text-gray-300">Phone</Label>
+                    <Input
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      placeholder="0712345678"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-4 pt-4 border-t border-white/5">
+                  <h3 className="text-lg font-semibold text-white">Address</h3>
+                  <div className="space-y-2">
+                    <Label htmlFor="street" className="text-gray-300">Street Address</Label>
+                    <Input
+                      id="street"
+                      value={formData.address.street}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          address: { ...formData.address, street: e.target.value },
+                        })
+                      }
+                      className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                    />
+                  </div>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="city" className="text-gray-300">City</Label>
+                      <Input
+                        id="city"
+                        value={formData.address.city}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            address: { ...formData.address, city: e.target.value },
+                          })
+                        }
+                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="state" className="text-gray-300">State/Province</Label>
+                      <Input
+                        id="state"
+                        value={formData.address.state}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            address: { ...formData.address, state: e.target.value },
+                          })
+                        }
+                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="zipCode" className="text-gray-300">Zip Code</Label>
+                      <Input
+                        id="zipCode"
+                        value={formData.address.zipCode}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            address: { ...formData.address, zipCode: e.target.value },
+                          })
+                        }
+                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="country" className="text-gray-300">Country</Label>
+                      <Input
+                        id="country"
+                        value={formData.address.country}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            address: { ...formData.address, country: e.target.value },
+                          })
+                        }
+                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4 pt-4 border-t border-white/5">
+                  <h3 className="text-lg font-semibold text-white">Preferences</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="notifications"
+                        checked={formData.preferences.notifications}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          preferences: { ...formData.preferences, notifications: e.target.checked },
+                        })}
+                        className="rounded border-white/20 bg-[#13111c] text-[#5b21b6] focus:ring-[#5b21b6] h-5 w-5"
+                      />
+                      <Label htmlFor="notifications" className="text-gray-300 cursor-pointer">Enable Notifications</Label>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="emailUpdates"
+                        checked={formData.preferences.emailUpdates}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          preferences: { ...formData.preferences, emailUpdates: e.target.checked },
+                        })}
+                        className="rounded border-white/20 bg-[#13111c] text-[#5b21b6] focus:ring-[#5b21b6] h-5 w-5"
+                      />
+                      <Label htmlFor="emailUpdates" className="text-gray-300 cursor-pointer">Email Updates</Label>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <input
+                        type="checkbox"
+                        id="smsUpdates"
+                        checked={formData.preferences.smsUpdates}
+                        onChange={(e) => setFormData({
+                          ...formData,
+                          preferences: { ...formData.preferences, smsUpdates: e.target.checked },
+                        })}
+                        className="rounded border-white/20 bg-[#13111c] text-[#5b21b6] focus:ring-[#5b21b6] h-5 w-5"
+                      />
+                      <Label htmlFor="smsUpdates" className="text-gray-300 cursor-pointer">SMS Updates</Label>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-6">
+                  <Button type="submit" disabled={saving} className="bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl px-8 h-12 font-semibold">
+                    {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Changes
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </form>
         </div>
-        <form onSubmit={handleSubmit}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Update your profile details</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex justify-center mb-6">
-                <ImageUpload
-                  value={formData.profileImage}
-                  onChange={(url) => setFormData({ ...formData, profileImage: url })}
-                  imageType="customer_profile"
-                />
-              </div>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2 md:col-span-2">
-                  <Label htmlFor="phone">Phone</Label>
-                  <Input
-                    id="phone"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  />
-                </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Address</h3>
-                <div className="space-y-2">
-                  <Label htmlFor="street">Street Address</Label>
-                  <Input
-                    id="street"
-                    value={formData.address.street}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        address: { ...formData.address, street: e.target.value },
-                      })
-                    }
-                  />
-                </div>
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={formData.address.city}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          address: { ...formData.address, city: e.target.value },
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State/Province</Label>
-                    <Input
-                      id="state"
-                      value={formData.address.state}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          address: { ...formData.address, state: e.target.value },
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="zipCode">Zip Code</Label>
-                    <Input
-                      id="zipCode"
-                      value={formData.address.zipCode}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          address: { ...formData.address, zipCode: e.target.value },
-                        })
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Input
-                      id="country"
-                      value={formData.address.country}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          address: { ...formData.address, country: e.target.value },
-                        })
-                      }
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Preferences</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="notifications"
-                      checked={formData.preferences.notifications}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        preferences: { ...formData.preferences, notifications: e.target.checked },
-                      })}
-                      className="rounded"
-                    />
-                    <Label htmlFor="notifications">Enable Notifications</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="emailUpdates"
-                      checked={formData.preferences.emailUpdates}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        preferences: { ...formData.preferences, emailUpdates: e.target.checked },
-                      })}
-                      className="rounded"
-                    />
-                    <Label htmlFor="emailUpdates">Email Updates</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="smsUpdates"
-                      checked={formData.preferences.smsUpdates}
-                      onChange={(e) => setFormData({
-                        ...formData,
-                        preferences: { ...formData.preferences, smsUpdates: e.target.checked },
-                      })}
-                      className="rounded"
-                    />
-                    <Label htmlFor="smsUpdates">SMS Updates</Label>
-                  </div>
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button type="submit" disabled={saving}>
-                  {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save Changes
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </form>
-      </div>
+      </main>
     </CustomerLayout>
   );
 }

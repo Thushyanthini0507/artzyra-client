@@ -98,108 +98,110 @@ export default function BookingDetailsPage() {
 
   return (
     <CustomerLayout>
-      <div className="space-y-8 p-6">
-        <BookingHeader id={booking._id} status={booking.status} />
+      <main className="flex-1 p-8 overflow-y-auto h-full">
+        <div className="max-w-6xl mx-auto space-y-8">
+          <BookingHeader id={booking._id} status={booking.status} />
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Left Column - Main Details */}
-          <div className="lg:col-span-2 space-y-6">
-            <BookingInfo 
-              service={booking.service}
-              date={booking.bookingDate || booking.date || ""}
-              startTime={booking.startTime}
-              endTime={booking.endTime}
-              duration="4 Hours" // Mock duration for now
-            />
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Left Column - Main Details */}
+            <div className="lg:col-span-2 space-y-6">
+              <BookingInfo 
+                service={booking.service}
+                date={booking.bookingDate || booking.date || ""}
+                startTime={booking.startTime}
+                endTime={booking.endTime}
+                duration="4 Hours" // Mock duration for now
+              />
 
-            <Card className="bg-card/50">
-              <CardContent className="pt-6">
-                <LocationCard address={booking.location} />
-              </CardContent>
-            </Card>
-
-            {booking.specialRequests && (
-              <Card className="bg-card/50">
-                <CardHeader>
-                  <CardTitle>Special Requests</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground italic">
-                    "{booking.specialRequests}"
-                  </p>
+              <Card className="bg-[#1e1b29] border-white/5 shadow-lg">
+                <CardContent className="pt-6">
+                  <LocationCard address={booking.location} />
                 </CardContent>
               </Card>
-            )}
 
-            <PricingSummary totalAmount={booking.totalAmount} />
+              {booking.specialRequests && (
+                <Card className="bg-[#1e1b29] border-white/5 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white">Special Requests</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-gray-400 italic">
+                      "{booking.specialRequests}"
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+
+              <PricingSummary totalAmount={booking.totalAmount} />
+            </div>
+
+            {/* Right Column - Sidebar */}
+            <div className="space-y-6">
+              <ArtistCard 
+                artist={booking.artist} 
+                bookingStatus={booking.status}
+                onContact={handleContact}
+                onCancel={handleCancel}
+              />
+
+              {booking.status === 'accepted' && (
+                <Card className="bg-[#1e1b29] border-[#5b21b6]/30 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white">Action Required</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-400 mb-4">
+                      Your booking has been accepted. Please proceed with payment to confirm.
+                    </p>
+                    <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white" onClick={() => setIsPaymentOpen(true)}>
+                      Pay Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {booking.status === 'completed' && (
+                <Card className="bg-[#1e1b29] border-white/5 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white">Feedback</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Button variant="outline" className="w-full border-white/10 text-gray-300 hover:bg-white/5 hover:text-white" onClick={() => setIsReviewOpen(true)}>
+                      Leave a Review
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              <BookingTimeline 
+                status={booking.status} 
+                createdAt={booking.createdAt} 
+                updatedAt={booking.updatedAt} 
+              />
+            </div>
           </div>
 
-          {/* Right Column - Sidebar */}
-          <div className="space-y-6">
-            <ArtistCard 
-              artist={booking.artist} 
-              bookingStatus={booking.status}
-              onContact={handleContact}
-              onCancel={handleCancel}
-            />
+          <PaymentDialog 
+            open={isPaymentOpen} 
+            onOpenChange={setIsPaymentOpen} 
+            booking={booking} 
+            onSuccess={() => {
+              fetchBooking();
+              toast.success("Payment successful!");
+            }} 
+          />
 
-            {booking.status === 'accepted' && (
-              <Card className="bg-card/50 border-primary/20">
-                <CardHeader>
-                  <CardTitle>Action Required</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Your booking has been accepted. Please proceed with payment to confirm.
-                  </p>
-                  <Button className="w-full" onClick={() => setIsPaymentOpen(true)}>
-                    Pay Now
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            {booking.status === 'completed' && (
-              <Card className="bg-card/50">
-                <CardHeader>
-                  <CardTitle>Feedback</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <Button variant="outline" className="w-full" onClick={() => setIsReviewOpen(true)}>
-                    Leave a Review
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
-
-            <BookingTimeline 
-              status={booking.status} 
-              createdAt={booking.createdAt} 
-              updatedAt={booking.updatedAt} 
-            />
-          </div>
+          <ReviewDialog 
+            open={isReviewOpen} 
+            onOpenChange={setIsReviewOpen} 
+            booking={booking} 
+            onSuccess={() => {
+              fetchBooking();
+              toast.success("Review submitted!");
+            }} 
+          />
         </div>
-
-        <PaymentDialog 
-          open={isPaymentOpen} 
-          onOpenChange={setIsPaymentOpen} 
-          booking={booking} 
-          onSuccess={() => {
-            fetchBooking();
-            toast.success("Payment successful!");
-          }} 
-        />
-
-        <ReviewDialog 
-          open={isReviewOpen} 
-          onOpenChange={setIsReviewOpen} 
-          booking={booking} 
-          onSuccess={() => {
-            fetchBooking();
-            toast.success("Review submitted!");
-          }} 
-        />
-      </div>
+      </main>
     </CustomerLayout>
   );
 }
