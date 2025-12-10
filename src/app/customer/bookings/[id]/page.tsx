@@ -2,22 +2,36 @@
 
 import { useEffect, useState } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { bookingService } from "@/services/booking.service";
-import { PaymentForm } from "@/components/customer/payment-form";
-import { ReviewForm } from "@/components/customer/review-form";
-import { Booking } from "@/types";
-import { useParams } from "next/navigation";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatLKR } from "@/lib/utils/currency";
+import { Booking } from "@/types/booking";
+import { useParams, useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { 
+  BookingHeader, 
+  BookingInfo, 
+  LocationCard, 
+  PricingSummary, 
+  ArtistCard, 
+  BookingTimeline 
+} from "@/components/customer/booking-components";
+import { PaymentDialog } from "@/components/customer/PaymentDialog";
+import { ReviewDialog } from "@/components/customer/ReviewDialog";
+import { useDeleteBooking, useUpdateBooking } from "@/hooks/useCustomerHooks";
+import { Button } from "@/components/ui/button";
 
 export default function BookingDetailsPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params.id as string;
   const [booking, setBooking] = useState<Booking | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+
+  const { deleteBooking } = useDeleteBooking();
+  const { updateBooking } = useUpdateBooking();
 
   const fetchBooking = async () => {
     try {
@@ -25,6 +39,7 @@ export default function BookingDetailsPage() {
       setBooking(data.data);
     } catch (error) {
       console.error("Failed to fetch booking", error);
+      toast.error("Failed to load booking details");
     } finally {
       setLoading(false);
     }
@@ -34,81 +49,156 @@ export default function BookingDetailsPage() {
     if (id) fetchBooking();
   }, [id]);
 
-  if (loading) return <CustomerLayout>Loading...</CustomerLayout>;
-  if (!booking) return <CustomerLayout>Booking not found</CustomerLayout>;
+  const handleCancel = async () => {
+    if (!booking) return;
+    
+    if (!confirm("Are you sure you want to cancel this booking? This action cannot be undone.")) {
+      return;
+    }
+
+    if (booking.status === 'pending') {
+      // If pending, we can delete it
+      await deleteBooking(booking._id, () => {
+        router.push('/customer/bookings');
+      });
+    } else {
+      // If accepted, we cancel it
+      await updateBooking(booking._id, { status: 'cancelled' });
+      fetchBooking();
+    }
+  };
+
+  const handleContact = () => {
+    // Placeholder for messaging
+    toast.info("Messaging feature coming soon!");
+  };
+
+  if (loading) {
+    return (
+      <CustomerLayout>
+        <div className="flex items-center justify-center h-96">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      </CustomerLayout>
+    );
+  }
+
+  if (!booking) {
+    return (
+      <CustomerLayout>
+        <div className="flex flex-col items-center justify-center h-96 gap-4">
+          <h2 className="text-2xl font-bold">Booking not found</h2>
+          <Button onClick={() => router.push('/customer/bookings')}>
+            Back to Bookings
+          </Button>
+        </div>
+      </CustomerLayout>
+    );
+  }
 
   return (
     <CustomerLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-3xl font-bold">Booking Details</h1>
-          <Badge variant={booking.status === "completed" ? "default" : "secondary"}>
-            {booking.status}
-          </Badge>
+      <div className="space-y-8 p-6">
+        <BookingHeader id={booking._id} status={booking.status} />
+
+        <div className="grid gap-6 lg:grid-cols-3">
+          {/* Left Column - Main Details */}
+          <div className="lg:col-span-2 space-y-6">
+            <BookingInfo 
+              service={booking.service}
+              date={booking.bookingDate || booking.date || ""}
+              startTime={booking.startTime}
+              endTime={booking.endTime}
+              duration="4 Hours" // Mock duration for now
+            />
+
+            <Card className="bg-card/50">
+              <CardContent className="pt-6">
+                <LocationCard address={booking.location} />
+              </CardContent>
+            </Card>
+
+            {booking.specialRequests && (
+              <Card className="bg-card/50">
+                <CardHeader>
+                  <CardTitle>Special Requests</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground italic">
+                    "{booking.specialRequests}"
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+
+            <PricingSummary totalAmount={booking.totalAmount} />
+          </div>
+
+          {/* Right Column - Sidebar */}
+          <div className="space-y-6">
+            <ArtistCard 
+              artist={booking.artist} 
+              bookingStatus={booking.status}
+              onContact={handleContact}
+              onCancel={handleCancel}
+            />
+
+            {booking.status === 'accepted' && (
+              <Card className="bg-card/50 border-primary/20">
+                <CardHeader>
+                  <CardTitle>Action Required</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Your booking has been accepted. Please proceed with payment to confirm.
+                  </p>
+                  <Button className="w-full" onClick={() => setIsPaymentOpen(true)}>
+                    Pay Now
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {booking.status === 'completed' && (
+              <Card className="bg-card/50">
+                <CardHeader>
+                  <CardTitle>Feedback</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Button variant="outline" className="w-full" onClick={() => setIsReviewOpen(true)}>
+                    Leave a Review
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            <BookingTimeline 
+              status={booking.status} 
+              createdAt={booking.createdAt} 
+              updatedAt={booking.updatedAt} 
+            />
+          </div>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Service Info</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <h3 className="font-semibold">Service</h3>
-                <p>{booking.service}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold">Date & Time</h3>
-                <p>{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "Not set"}</p>
-                {booking.startTime && booking.endTime && (
-                  <p className="text-sm text-muted-foreground mt-1">{booking.startTime} - {booking.endTime}</p>
-                )}
-              </div>
-              <div>
-                <h3 className="font-semibold">Location</h3>
-                <p>{booking.location}</p>
-              </div>
-              <div>
-                <h3 className="font-semibold">Total Amount</h3>
-                <p className="text-xl font-bold">{formatLKR(booking.totalAmount)}</p>
-              </div>
-            </CardContent>
-          </Card>
+        <PaymentDialog 
+          open={isPaymentOpen} 
+          onOpenChange={setIsPaymentOpen} 
+          booking={booking} 
+          onSuccess={() => {
+            fetchBooking();
+            toast.success("Payment successful!");
+          }} 
+        />
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Actions</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs defaultValue="payment">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="payment">Payment</TabsTrigger>
-                  <TabsTrigger value="review">Review</TabsTrigger>
-                </TabsList>
-                <TabsContent value="payment">
-                  <div className="mt-4">
-                    <h3 className="mb-4 font-semibold">Make Payment</h3>
-                    <PaymentForm 
-                      bookingId={booking._id} 
-                      amount={booking.totalAmount} 
-                      onSuccess={fetchBooking}
-                    />
-                  </div>
-                </TabsContent>
-                <TabsContent value="review">
-                  <div className="mt-4">
-                    <h3 className="mb-4 font-semibold">Leave a Review</h3>
-                    <ReviewForm 
-                      bookingId={booking._id} 
-                      artistId={typeof booking.artist === 'string' ? booking.artist : booking.artist._id}
-                      onSuccess={fetchBooking}
-                    />
-                  </div>
-                </TabsContent>
-              </Tabs>
-            </CardContent>
-          </Card>
-        </div>
+        <ReviewDialog 
+          open={isReviewOpen} 
+          onOpenChange={setIsReviewOpen} 
+          booking={booking} 
+          onSuccess={() => {
+            fetchBooking();
+            toast.success("Review submitted!");
+          }} 
+        />
       </div>
     </CustomerLayout>
   );

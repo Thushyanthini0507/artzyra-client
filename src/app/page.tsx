@@ -86,7 +86,7 @@ export default function Home() {
     <PublicLayout>
       {/* Hero Section */}
       {/* Hero Section */}
-      <div className=" bg-[url('/images/hero-bg.png')] bg-top bg-cover bg-no-repeat ">
+      <div className=" bg-[url('/images/hero-bg.png')] bg-top bg-no-repeat bg-cover">
         <section className="relative min-h-screen flex items-center ">
           <div className="container mx-auto px-4 relative z-10 pt-20">
             <div className="max-w-3xl">
