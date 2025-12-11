@@ -230,7 +230,7 @@ export function Analytics() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toLocaleString()}</div>
+            <div className="text-2xl font-bold">LKR {totalRevenue.toLocaleString()}</div>
             <p className="text-xs text-muted-foreground">
               {data.revenueOverTime.length} days tracked
             </p>
@@ -331,7 +331,7 @@ export function Analytics() {
                     height={60}
                   />
                   <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
+                  <Tooltip formatter={(value) => `LKR ${Number(value).toLocaleString()}`} />
                   <Area
                     type="monotone"
                     dataKey="revenue"
@@ -403,7 +403,7 @@ export function Analytics() {
                     height={80}
                   />
                   <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(value) => `$${Number(value).toLocaleString()}`} />
+                  <Tooltip formatter={(value) => `LKR ${Number(value).toLocaleString()}`} />
                   <Bar dataKey="revenue" fill="#8884d8" />
                 </BarChart>
               </ResponsiveContainer>
@@ -437,7 +437,7 @@ export function Analytics() {
                 <Tooltip />
                 <Legend />
                 <Bar dataKey="bookings" fill="#8884d8" name="Bookings" />
-                <Bar dataKey="revenue" fill="#82ca9d" name="Revenue ($)" />
+                <Bar dataKey="revenue" fill="#82ca9d" name="Revenue (LKR)" />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

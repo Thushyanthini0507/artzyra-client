@@ -201,7 +201,7 @@ export function BrowseArtists() {
   }
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white">
+    <div className="min-h-screen bg-[#2d1b4e] text-white">
       <div className="container mx-auto py-8 px-4">
         <div className="flex gap-8">
           {/* Left Sidebar - Filters */}

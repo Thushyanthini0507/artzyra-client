@@ -70,7 +70,7 @@ export default function ArtistProfilePage() {
             name: data.name || "",
             profileImage: data.profileImage || "",
             email: user.email || data.email || "",
-            phone: data.phone || "",
+            phone: data.phone || "+94",
             bio: data.bio || "",
             category: data.category?._id || "",
             skills: Array.isArray(data.skills) ? data.skills.join(", ") : "",

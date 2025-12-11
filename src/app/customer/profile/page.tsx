@@ -48,7 +48,7 @@ export default function CustomerProfilePage() {
             name: data.name || "",
             profileImage: data.profileImage || "",
             email: user.email || data.email || "",
-            phone: data.phone || "",
+            phone: data.phone || "+94",
             address: {
               street: data.address?.street || "",
               city: data.address?.city || "",

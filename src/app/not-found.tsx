@@ -39,9 +39,8 @@ export default function NotFound() {
           
           <Button 
             asChild 
-            variant="outline" 
             size="lg" 
-            className="border-white/20 text-white hover:bg-white/10 hover:text-white transition-all duration-300"
+            className="bg-white text-[#2d1b4e] hover:bg-white/90 font-semibold transition-all duration-300 shadow-lg hover:shadow-white/20"
           >
             <Link href="/contact">
               Contact Support

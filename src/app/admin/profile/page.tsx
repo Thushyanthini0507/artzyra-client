@@ -50,7 +50,7 @@ export default function AdminProfilePage() {
           setFormData({
             name: data.name || "",
             email: user.email || data.email || "",
-            phone: data.phone || "",
+            phone: data.phone || "+94",
             bio: data.bio || "",
             department: data.department || "",
             position: data.position || "",

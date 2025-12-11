@@ -30,6 +30,9 @@ export function SignUpForm() {
     reset,
   } = useForm<SignUpFormData>({
     resolver: zodResolver(signUpSchema),
+    defaultValues: {
+      phone: "+94",
+    },
   });
 
   const onSubmit = async (data: SignUpFormData) => {
