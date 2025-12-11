@@ -63,9 +63,9 @@ export function PublicNavbar() {
         className={
         isHome
           ? `fixed top-0 w-full z-50 transition-all duration-300 ${
-              isScrolled ? "bg-[#1E1E1E] shadow-md" : "bg-transparent border-none"
+              isScrolled ? "bg-[#2d1b4e] shadow-md" : "bg-transparent border-none"
             }`
-          : "fixed top-0 w-full z-50 border-b border-white/5 bg-[#1E1E1E] transition-all duration-300"
+          : "fixed top-0 w-full z-50 border-b border-white/5 bg-[#2d1b4e] transition-all duration-300"
       }
       >
         <div className="container mx-auto px-4">

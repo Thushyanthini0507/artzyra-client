@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CustomerLayout } from "@/components/layout/customer-layout";
+import { ArtistLayoutNew } from "@/components/layout/artist-layout-new";
 import { ChatLayout, Conversation, Message } from "@/components/shared/ChatLayout";
 
 // Mock Data
@@ -9,24 +9,23 @@ const MOCK_CONVERSATIONS: Conversation[] = [
   {
     id: "1",
     participant: {
-      id: "a1",
-      name: "Davinci Art",
+      id: "c1",
+      name: "Alice Johnson",
       status: "online",
-      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
     },
-    lastMessage: "Great! I'd like to book you for a wedding shoot.",
-    unreadCount: 0,
+    lastMessage: "Hi, I'd like to book you for a wedding shoot.",
+    unreadCount: 2,
     updatedAt: new Date(Date.now() - 1000 * 60 * 5), // 5 mins ago
   },
   {
     id: "2",
     participant: {
-      id: "a2",
-      name: "Pixel Perfect",
+      id: "c2",
+      name: "Bob Smith",
       status: "offline",
     },
-    lastMessage: "Let me know if you need any changes.",
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
+    lastMessage: "Thanks for the great work!",
+    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
   },
 ];
 
@@ -34,19 +33,19 @@ const MOCK_MESSAGES: Record<string, Message[]> = {
   "1": [
     {
       id: "m1",
-      senderId: "customer_me",
+      senderId: "c1",
       content: "Hi, are you available next Saturday?",
       timestamp: new Date(Date.now() - 1000 * 60 * 30),
     },
     {
       id: "m2",
-      senderId: "a1",
+      senderId: "artist_me",
       content: "Hello! Yes, I have a slot open in the afternoon.",
       timestamp: new Date(Date.now() - 1000 * 60 * 25),
     },
     {
       id: "m3",
-      senderId: "customer_me",
+      senderId: "c1",
       content: "Great! I'd like to book you for a wedding shoot.",
       timestamp: new Date(Date.now() - 1000 * 60 * 5),
     },
@@ -54,26 +53,20 @@ const MOCK_MESSAGES: Record<string, Message[]> = {
   "2": [
     {
       id: "m4",
-      senderId: "customer_me",
-      content: "Hi, can you send the draft?",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 50),
+      senderId: "artist_me",
+      content: "Here are the final edited photos.",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 25),
     },
     {
       id: "m5",
-      senderId: "a2",
-      content: "Sure, sending it over now.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 49),
-    },
-    {
-      id: "m6",
-      senderId: "a2",
-      content: "Let me know if you need any changes.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48),
+      senderId: "c2",
+      content: "Thanks for the great work!",
+      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
     },
   ],
 };
 
-export default function CustomerMessagesPage() {
+export default function ArtistMessagesPage() {
   const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(undefined);
   const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
   const [messages, setMessages] = useState(MOCK_MESSAGES);
@@ -83,7 +76,7 @@ export default function CustomerMessagesPage() {
 
     const newMessage: Message = {
       id: Date.now().toString(),
-      senderId: "customer_me",
+      senderId: "artist_me",
       content,
       timestamp: new Date(),
     };
@@ -104,25 +97,23 @@ export default function CustomerMessagesPage() {
   };
 
   return (
-    <CustomerLayout>
-      <div className="flex-1 p-8 h-full">
-        <div className="max-w-6xl mx-auto h-full flex flex-col">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold">Messages</h1>
-            <p className="text-muted-foreground">Chat with artists</p>
-          </div>
-          
-          <ChatLayout
-            conversations={conversations}
-            currentConversationId={currentConversationId}
-            onSelectConversation={setCurrentConversationId}
-            messages={currentConversationId ? messages[currentConversationId] || [] : []}
-            onSendMessage={handleSendMessage}
-            currentUserId="customer_me"
-            userType="customer"
-          />
+    <ArtistLayoutNew>
+      <div className="h-full">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold">Messages</h1>
+          <p className="text-muted-foreground">Chat with your clients</p>
         </div>
+        
+        <ChatLayout
+          conversations={conversations}
+          currentConversationId={currentConversationId}
+          onSelectConversation={setCurrentConversationId}
+          messages={currentConversationId ? messages[currentConversationId] || [] : []}
+          onSendMessage={handleSendMessage}
+          currentUserId="artist_me"
+          userType="artist"
+        />
       </div>
-    </CustomerLayout>
+    </ArtistLayoutNew>
   );
 }
