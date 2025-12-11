@@ -15,6 +15,7 @@ import {
   Search,
   Bell,
   Image,
+  LogOut,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,7 @@ import { NotificationMenu } from "@/components/NotificationMenu";
 const sidebarItems = [
   {
     title: "Dashboard",
-    href: "/artist",
+    href: "/artist/dashboard",
     icon: LayoutDashboard,
   },
   {
@@ -38,19 +39,9 @@ const sidebarItems = [
     icon: Calendar,
   },
   {
-    title: "Portfolio",
-    href: "/artist/portfolio",
-    icon: Image,
-  },
-  {
     title: "Profile",
     href: "/artist/profile",
     icon: User,
-  },
-  {
-    title: "Reviews",
-    href: "/artist/reviews",
-    icon: Star,
   },
   {
     title: "Earnings",
@@ -66,7 +57,7 @@ const sidebarItems = [
 
 export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const getInitials = (name: string | undefined) => {
     if (!name) return "U";
@@ -78,93 +69,105 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
       .slice(0, 2);
   };
 
-  // Get artist profile data (you'll need to fetch this from API)
   const artistName = user?.name || "Artist";
-  const artistTitle = "Painter & Illustrator"; // This should come from profile
+  const artistTitle = "Painter & Illustrator"; // This should ideally come from the profile
   const artistImage = user?.profileImage || "";
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen bg-[#13111c]">
       {/* Left Sidebar */}
-      <aside className="w-64 border-r bg-background flex flex-col">
+      <aside className="w-[280px] bg-[#2e026d] flex flex-col fixed h-full z-50">
         {/* Logo */}
-        <div className="p-6 border-b">
-          <Link href="/" className="text-2xl font-bold">
-            Artzyra
+        <div className="p-8">
+          <Link href="/" className="flex items-center gap-3">
+            <div className="h-8 w-8 bg-white rounded-lg flex items-center justify-center">
+               <div className="h-4 w-4 bg-[#2e026d] rounded-sm" />
+            </div>
+            <span className="text-2xl font-bold text-white tracking-tight">
+              Artzyra
+            </span>
           </Link>
         </div>
 
         {/* User Profile Section */}
-        <div className="p-6 border-b">
-          <div className="flex flex-col items-center gap-3">
-            <Avatar className="h-20 w-20 border-2">
+        <div className="px-8 pb-8">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12 border-2 border-white/20">
               <AvatarImage src={artistImage} alt={artistName} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-xl">
+              <AvatarFallback className="bg-[#5b21b6] text-white">
                 {getInitials(artistName)}
               </AvatarFallback>
             </Avatar>
-            <div className="text-center">
-              <p className="font-semibold">{artistName}</p>
-              <p className="text-sm text-muted-foreground">{artistTitle}</p>
+            <div className="flex flex-col">
+              <span className="font-semibold text-white text-sm">{artistName}</span>
+              <span className="text-xs text-white/60">{artistTitle}</span>
             </div>
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 px-4 space-y-2 overflow-y-auto">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
-            const isActive = pathname === item.href;
+            const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-4 rounded-xl px-6 py-4 text-sm font-medium transition-all duration-200",
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                    ? "bg-[#5b21b6] text-white shadow-lg shadow-purple-900/20"
+                    : "text-white/60 hover:bg-white/5 hover:text-white"
                 )}
               >
-                <Icon className="h-5 w-5" />
+                <Icon className={cn("h-5 w-5", isActive ? "text-white" : "text-white/60")} />
                 <span>{item.title}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* View Public Profile Button */}
-        <div className="p-4 border-t">
-          <Button
-            variant="default"
-            className="w-full"
-            asChild
+        {/* Bottom Actions */}
+        <div className="p-6 mt-auto space-y-2">
+          <Link href={`/artists/${user?._id || ""}`}>
+             <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl h-12 font-medium">
+               View Public Profile
+             </Button>
+          </Link>
+          <Button 
+            variant="ghost" 
+            className="w-full text-white/60 hover:text-white hover:bg-white/5 justify-start px-6 h-12 rounded-xl gap-4"
+            onClick={logout}
           >
-            <Link href={`/artists/${user?._id || ""}`}>View Public Profile</Link>
+            <LogOut className="h-5 w-5" />
+            <span>Log Out</span>
           </Button>
         </div>
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col ml-[280px]">
         {/* Top Header Bar */}
-        <header className="h-16 border-b bg-background flex items-center justify-between px-6">
-          <div className="flex-1 max-w-md">
+        <header className="h-24 flex items-center justify-between px-8 bg-[#13111c] sticky top-0 z-40">
+          <div className="flex-1 max-w-xl">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
               <Input
                 type="search"
                 placeholder="Search bookings, clients..."
-                className="pl-10 w-full"
+                className="pl-12 w-full bg-[#1e1b29] border-none text-white placeholder:text-gray-500 h-12 rounded-2xl focus-visible:ring-1 focus-visible:ring-[#5b21b6]"
               />
             </div>
           </div>
-          <div className="flex items-center gap-4">
-            <NotificationMenu />
-            <Avatar className="h-10 w-10">
+          <div className="flex items-center gap-6">
+            <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full h-10 w-10">
+              <Bell className="h-5 w-5" />
+            </Button>
+            <Avatar className="h-10 w-10 border border-white/10 cursor-pointer">
               <AvatarImage src={artistImage} alt={artistName} />
-              <AvatarFallback className="bg-primary text-primary-foreground">
+              <AvatarFallback className="bg-[#5b21b6] text-white">
                 {getInitials(artistName)}
               </AvatarFallback>
             </Avatar>
@@ -172,7 +175,9 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 p-8 bg-background overflow-auto">{children}</main>
+        <main className="flex-1 p-8 pt-0 overflow-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
