@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ type SignUpFormData = z.infer<typeof signUpSchema>;
 export function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>("");
+  const router = useRouter();
 
   const {
     register,
@@ -48,6 +50,7 @@ export function SignUpForm() {
       // Handle both { success: true, ... } and direct response formats
       if (response.success !== false) {
         toast.success("Account created successfully! Please sign in.");
+        router.push("/auth/login");
         reset();
       } else {
         setError(response.error || "Registration failed");

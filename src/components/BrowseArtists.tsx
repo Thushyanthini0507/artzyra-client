@@ -183,7 +183,7 @@ export function BrowseArtists() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-[50vh] bg-[#121212]">
+      <div className="flex justify-center items-center min-h-[50vh] bg-white">
         <Loader2 className="h-8 w-8 animate-spin text-[#9b87f5]" />
       </div>
     );
@@ -191,7 +191,7 @@ export function BrowseArtists() {
 
   if (error) {
     return (
-      <div className="text-center py-10 bg-[#121212] min-h-screen">
+      <div className="text-center py-10 bg-white min-h-screen">
         <p className="text-red-500">Error loading artists: {error}</p>
         <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
           Try Again
@@ -201,22 +201,22 @@ export function BrowseArtists() {
   }
 
   return (
-    <div className="min-h-screen bg-[#2d1b4e] text-white">
+    <div className="min-h-screen bg-white text-gray-900">
       <div className="container mx-auto py-8 px-4">
         <div className="flex gap-8">
           {/* Left Sidebar - Filters */}
           <aside className="w-72 flex-shrink-0 hidden lg:block">
-            <div className="bg-[#221a27] rounded-xl p-6 sticky top-24 border border-white/5">
+            <div className="bg-white rounded-xl p-6 sticky top-24 border border-gray-200 shadow-sm">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-white">Filter Artists</h2>
+                <h2 className="text-xl font-bold text-gray-900">Filter Artists</h2>
               </div>
               
               <div className="space-y-6">
                 {/* Artist Category */}
-                <div className="border-b border-white/10 pb-6">
+                <div className="border-b border-gray-200 pb-6">
                   <button
                     onClick={() => toggleSection("category")}
-                    className="flex items-center justify-between w-full mb-4 font-medium text-white hover:text-[#9b87f5] transition-colors"
+                    className="flex items-center justify-between w-full mb-4 font-medium text-gray-900 hover:text-[#9b87f5] transition-colors"
                   >
                     <span>Artist Category</span>
                     {expandedSections.category ? (
@@ -232,15 +232,15 @@ export function BrowseArtists() {
                       className="space-y-3"
                     >
                       <div className="flex items-center space-x-3">
-                        <RadioGroupItem value="" id="category-all" className="border-white/20 text-[#9b87f5]" />
-                        <Label htmlFor="category-all" className="cursor-pointer text-gray-300 hover:text-white">
+                        <RadioGroupItem value="" id="category-all" className="border-gray-300 text-[#9b87f5]" />
+                        <Label htmlFor="category-all" className="cursor-pointer text-gray-600 hover:text-gray-900">
                           All Categories
                         </Label>
                       </div>
                       {categories.map((category: any) => (
                         <div key={category._id} className="flex items-center space-x-3">
-                          <RadioGroupItem value={category._id} id={`category-${category._id}`} className="border-white/20 text-[#9b87f5]" />
-                          <Label htmlFor={`category-${category._id}`} className="cursor-pointer text-gray-300 hover:text-white">
+                          <RadioGroupItem value={category._id} id={`category-${category._id}`} className="border-gray-300 text-[#9b87f5]" />
+                          <Label htmlFor={`category-${category._id}`} className="cursor-pointer text-gray-600 hover:text-gray-900">
                             {category.name}
                           </Label>
                         </div>
@@ -250,10 +250,10 @@ export function BrowseArtists() {
                 </div>
 
                 {/* Location */}
-                <div className="border-b border-white/10 pb-6">
+                <div className="border-b border-gray-200 pb-6">
                   <button
                     onClick={() => toggleSection("location")}
-                    className="flex items-center justify-between w-full mb-4 font-medium text-white hover:text-[#9b87f5] transition-colors"
+                    className="flex items-center justify-between w-full mb-4 font-medium text-gray-900 hover:text-[#9b87f5] transition-colors"
                   >
                     <span>Location</span>
                     {expandedSections.location ? (
@@ -268,17 +268,17 @@ export function BrowseArtists() {
                         placeholder="Enter location"
                         value={selectedLocation}
                         onChange={(e) => setSelectedLocation(e.target.value)}
-                        className="bg-[#2A2A2A] border-white/10 text-white placeholder:text-gray-500 focus:border-[#9b87f5]"
+                        className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-[#9b87f5]"
                       />
                     </div>
                   )}
                 </div>
 
                 {/* Price Range */}
-                <div className="border-b border-white/10 pb-6">
+                <div className="border-b border-gray-200 pb-6">
                   <button
                     onClick={() => toggleSection("price")}
-                    className="flex items-center justify-between w-full mb-4 font-medium text-white hover:text-[#9b87f5] transition-colors"
+                    className="flex items-center justify-between w-full mb-4 font-medium text-gray-900 hover:text-[#9b87f5] transition-colors"
                   >
                     <span>Price Range</span>
                     {expandedSections.price ? (
@@ -294,7 +294,7 @@ export function BrowseArtists() {
                         placeholder="Max hourly rate"
                         value={priceRange}
                         onChange={(e) => setPriceRange(e.target.value)}
-                        className="bg-[#2A2A2A] border-white/10 text-white placeholder:text-gray-500 focus:border-[#9b87f5]"
+                        className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-[#9b87f5]"
                       />
                     </div>
                   )}
@@ -304,7 +304,7 @@ export function BrowseArtists() {
                 <div className="pb-6">
                   <button
                     onClick={() => toggleSection("rating")}
-                    className="flex items-center justify-between w-full mb-4 font-medium text-white hover:text-[#9b87f5] transition-colors"
+                    className="flex items-center justify-between w-full mb-4 font-medium text-gray-900 hover:text-[#9b87f5] transition-colors"
                   >
                     <span>Rating</span>
                     {expandedSections.rating ? (
@@ -320,15 +320,15 @@ export function BrowseArtists() {
                       className="space-y-3"
                     >
                       <div className="flex items-center space-x-3">
-                        <RadioGroupItem value="" id="rating-all" className="border-white/20 text-[#9b87f5]" />
-                        <Label htmlFor="rating-all" className="cursor-pointer text-gray-300 hover:text-white">
+                        <RadioGroupItem value="" id="rating-all" className="border-gray-300 text-[#9b87f5]" />
+                        <Label htmlFor="rating-all" className="cursor-pointer text-gray-600 hover:text-gray-900">
                           All Ratings
                         </Label>
                       </div>
                       {[4.5, 4.0, 3.5, 3.0].map((rating) => (
                         <div key={rating} className="flex items-center space-x-3">
-                          <RadioGroupItem value={rating.toString()} id={`rating-${rating}`} className="border-white/20 text-[#9b87f5]" />
-                          <Label htmlFor={`rating-${rating}`} className="cursor-pointer flex items-center gap-2 text-gray-300 hover:text-white">
+                          <RadioGroupItem value={rating.toString()} id={`rating-${rating}`} className="border-gray-300 text-[#9b87f5]" />
+                          <Label htmlFor={`rating-${rating}`} className="cursor-pointer flex items-center gap-2 text-gray-600 hover:text-gray-900">
                             <div className="flex">
                               {[...Array(5)].map((_, i) => (
                                 <Star 
@@ -359,7 +359,7 @@ export function BrowseArtists() {
                   <Button
                     variant="ghost"
                     onClick={handleResetFilters}
-                    className="w-full text-gray-400 hover:text-white hover:bg-white/5 h-11 rounded-lg"
+                    className="w-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 h-11 rounded-lg"
                   >
                     Reset
                   </Button>
@@ -373,22 +373,22 @@ export function BrowseArtists() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Find Your Artist</h1>
-                <p className="text-gray-400">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Your Artist</h1>
+                <p className="text-gray-600">
                   Showing {totalItems} {totalItems === 1 ? "artist" : "artists"}
                 </p>
               </div>
               
               <div className="flex items-center gap-3 w-full md:w-auto">
                  <Select value={sortBy} onValueChange={handleSortChange}>
-                  <SelectTrigger className="w-full md:w-[180px] bg-[#221a27] border-white/10 text-white focus:ring-[#9b87f5]">
+                  <SelectTrigger className="w-full md:w-[180px] bg-white border-gray-200 text-gray-900 focus:ring-[#9b87f5]">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
-                  <SelectContent className="bg-[#221a27] border-white/10 text-white">
-                    <SelectItem value="rating" className="focus:bg-white/10 focus:text-white">Sort by: Rating</SelectItem>
-                    <SelectItem value="price-low" className="focus:bg-white/10 focus:text-white">Price: Low to High</SelectItem>
-                    <SelectItem value="price-high" className="focus:bg-white/10 focus:text-white">Price: High to Low</SelectItem>
-                    <SelectItem value="name" className="focus:bg-white/10 focus:text-white">Sort by: Name</SelectItem>
+                  <SelectContent className="bg-white border-gray-200 text-gray-900">
+                    <SelectItem value="rating" className="focus:bg-gray-100 focus:text-gray-900">Sort by: Rating</SelectItem>
+                    <SelectItem value="price-low" className="focus:bg-gray-100 focus:text-gray-900">Price: Low to High</SelectItem>
+                    <SelectItem value="price-high" className="focus:bg-gray-100 focus:text-gray-900">Price: High to Low</SelectItem>
+                    <SelectItem value="name" className="focus:bg-gray-100 focus:text-gray-900">Sort by: Name</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -403,16 +403,16 @@ export function BrowseArtists() {
                   placeholder="Search artists..."
                   value={localSearch}
                   onChange={(e) => setLocalSearch(e.target.value)}
-                  className="pl-12 h-12 bg-[#221a27] border-white/10 text-white placeholder:text-gray-500 focus:border-[#9b87f5] rounded-xl w-full md:max-w-md"
+                  className="pl-12 h-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-[#9b87f5] rounded-xl w-full md:max-w-md"
                 />
               </form>
             </div>
 
             {/* Artist Grid */}
             {paginatedArtists.length === 0 ? (
-              <div className="text-center py-20 bg-[#221a27] rounded-xl border border-white/5">
-                <h3 className="text-xl font-semibold mb-2 text-white">No artists found</h3>
-                <p className="text-gray-400 mb-6">
+              <div className="text-center py-20 bg-white rounded-xl border border-gray-200">
+                <h3 className="text-xl font-semibold mb-2 text-gray-900">No artists found</h3>
+                <p className="text-gray-600 mb-6">
                   We couldn't find any artists matching your criteria.
                 </p>
                 <Button onClick={handleResetFilters} className="bg-[#9b87f5] hover:bg-[#8a76d6] text-white">
@@ -425,7 +425,7 @@ export function BrowseArtists() {
                   {paginatedArtists.map((artist: any) => (
                     <Card 
                       key={artist._id} 
-                      className="bg-[#221a27] border-white/5 overflow-hidden hover:shadow-2xl hover:shadow-[#9b87f5]/10 transition-all duration-300 group"
+                      className="bg-white border-gray-200 overflow-hidden hover:shadow-2xl hover:shadow-[#9b87f5]/10 transition-all duration-300 group shadow-sm"
                     >
                       {/* Artist Image */}
                       <div className="relative w-full aspect-[4/3] overflow-hidden">
@@ -452,7 +452,7 @@ export function BrowseArtists() {
                         {/* Name and Category */}
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <CardTitle className="text-xl font-bold text-white mb-1">
+                            <CardTitle className="text-xl font-bold text-gray-900 mb-1">
                               {artist.name}
                             </CardTitle>
                             <div className="flex items-center gap-2">
@@ -464,25 +464,25 @@ export function BrowseArtists() {
                                       "h-3.5 w-3.5",
                                       i < Math.floor(artist.rating || 0)
                                         ? "fill-[#9b87f5] text-[#9b87f5]"
-                                        : "text-gray-600"
+                                        : "text-gray-300"
                                     )}
                                   />
                                 ))}
                               </div>
-                              <span className="text-xs text-gray-400">
+                              <span className="text-xs text-gray-500">
                                 ({artist.rating ? artist.rating.toFixed(1) : "0.0"})
                               </span>
                             </div>
                           </div>
                           {artist.category?.name && (
-                            <Badge className="bg-[#2A2A2A] hover:bg-[#333] text-[#9b87f5] border-white/5 px-3 py-1">
+                            <Badge className="bg-gray-100 hover:bg-gray-200 text-[#9b87f5] border-gray-200 px-3 py-1">
                               {artist.category.name}
                             </Badge>
                           )}
                         </div>
 
                         {/* Description */}
-                        <CardDescription className="text-sm text-gray-400 line-clamp-2 min-h-[2.5rem]">
+                        <CardDescription className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
                           {artist.bio || "No bio available for this artist."}
                         </CardDescription>
 
@@ -504,7 +504,7 @@ export function BrowseArtists() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="bg-[#221a27] border-white/10 text-white hover:bg-white/10 h-10 w-10"
+                      className="bg-white border-gray-200 text-gray-900 hover:bg-gray-100 h-10 w-10"
                       onClick={() => {
                         const params = new URLSearchParams(searchParams.toString());
                         if (currentPage > 1) {
@@ -542,7 +542,7 @@ export function BrowseArtists() {
                                 "h-10 w-10",
                                 currentPage === 1 
                                   ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
-                                  : "bg-[#221a27] border-white/10 text-white hover:bg-white/10"
+                                  : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                               )}
                               onClick={() => {
                                 const params = new URLSearchParams(searchParams.toString());
@@ -566,7 +566,7 @@ export function BrowseArtists() {
                                 "h-10 w-10",
                                 currentPage === pageNum 
                                   ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
-                                  : "bg-[#221a27] border-white/10 text-white hover:bg-white/10"
+                                  : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                               )}
                               onClick={() => {
                                 const params = new URLSearchParams(searchParams.toString());
@@ -583,7 +583,7 @@ export function BrowseArtists() {
                                 "h-10 w-10",
                                 currentPage === totalPagesCalc 
                                   ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
-                                  : "bg-[#221a27] border-white/10 text-white hover:bg-white/10"
+                                  : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                               )}
                               onClick={() => {
                                 const params = new URLSearchParams(searchParams.toString());
@@ -605,7 +605,7 @@ export function BrowseArtists() {
                             "h-10 w-10",
                             currentPage === pageNum 
                               ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
-                              : "bg-[#221a27] border-white/10 text-white hover:bg-white/10"
+                              : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                           )}
                           onClick={() => {
                             const params = new URLSearchParams(searchParams.toString());
@@ -621,7 +621,7 @@ export function BrowseArtists() {
                     <Button
                       variant="outline"
                       size="icon"
-                      className="bg-[#221a27] border-white/10 text-white hover:bg-white/10 h-10 w-10"
+                      className="bg-white border-gray-200 text-gray-900 hover:bg-gray-100 h-10 w-10"
                       onClick={() => {
                         const params = new URLSearchParams(searchParams.toString());
                         params.set("page", (currentPage + 1).toString());
