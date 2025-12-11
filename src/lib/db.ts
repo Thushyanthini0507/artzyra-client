@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 // Support both MONGO_URI and MONGODB_URI for compatibility
-const MONGODB_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
+const MONGODB_URI = process.env.NEXT_PUBLIC_API_URL ||"http://localhost:5000/api" ;
 
 if (!MONGODB_URI) {
   throw new Error(
