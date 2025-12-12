@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import apiClient from "@/lib/apiClient";
 import { toast } from "sonner";
 import Link from "next/link";
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -20,34 +20,42 @@ export default function PaymentSuccessPage() {
   
   const [loading, setLoading] = useState(true);
   const [verified, setVerified] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const verifyPayment = async () => {
-      if (!paymentIntentId) return;
+      if (!paymentIntentId) {
+        setError("No payment intent found in URL");
+        setLoading(false);
+        return;
+      }
 
       try {
-        await apiClient.post("/payments/verify", {
+        const response = await apiClient.post("/payments/verify", {
           paymentIntentId,
         });
-        setVerified(true);
-        toast.success("Payment verified successfully!");
-      } catch (error) {
+        
+        if (response.data.success) {
+          setVerified(true);
+          toast.success("Payment verified successfully!");
+          // Auto-redirect to messages after 3 seconds
+          setTimeout(() => {
+            router.push("/customer/messages");
+          }, 3000);
+        } else {
+          setError(response.data.message || "Payment verification failed");
+        }
+      } catch (error: any) {
         console.error("Verification error:", error);
-        toast.error("Failed to verify payment, but don't worry - we're checking it.");
+        const errorMsg = error.response?.data?.message || error.message || "Failed to verify payment";
+        setError(errorMsg);
+        toast.error(errorMsg);
       } finally {
         setLoading(false);
-        // Auto-redirect to messages
-        setTimeout(() => {
-          router.push("/customer/messages");
-        }, 3000);
       }
     };
 
-    if (paymentIntentId) {
-      verifyPayment();
-    } else {
-      setLoading(false);
-    }
+    verifyPayment();
   }, [bookingId, paymentIntentId, router]);
 
   return (
@@ -61,6 +69,21 @@ export default function PaymentSuccessPage() {
                   <Loader2 className="h-16 w-16 text-[#5b21b6] animate-spin mb-6" />
                   <h2 className="text-2xl font-bold text-white mb-2">Verifying Payment...</h2>
                   <p className="text-gray-400">Please wait while we confirm your booking.</p>
+                </div>
+              ) : error ? (
+                <div className="flex flex-col items-center">
+                  <div className="h-20 w-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
+                    <span className="text-4xl">⚠️</span>
+                  </div>
+                  <h1 className="text-3xl font-bold text-white mb-4">Verification Issue</h1>
+                  <p className="text-gray-300 mb-8 leading-relaxed">{error}</p>
+                  <div className="flex flex-col sm:flex-row gap-4 w-full">
+                    <Link href="/customer" className="flex-1">
+                      <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12">
+                        Go to Dashboard
+                      </Button>
+                    </Link>
+                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col items-center animate-in fade-in zoom-in duration-500">
@@ -93,5 +116,21 @@ export default function PaymentSuccessPage() {
         </div>
       </div>
     </PublicLayout>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={
+      <PublicLayout>
+        <div className="container mx-auto py-20 px-4">
+          <div className="max-w-lg mx-auto text-center">
+            <Loader2 className="h-16 w-16 text-[#5b21b6] animate-spin mx-auto" />
+          </div>
+        </div>
+      </PublicLayout>
+    }>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

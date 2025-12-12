@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { bookingService } from "@/services/booking.service";
+import { categoryService } from "@/services/category.service";
 import { artistService } from "@/services/artist.service";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +34,7 @@ export default function CustomerDashboard() {
   const router = useRouter();
   const [featuredArtists, setFeaturedArtists] = useState<any[]>([]);
   const [bookings, setBookings] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -49,6 +51,12 @@ export default function CustomerDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        // Fetch categories
+        const categoriesResponse = await categoryService.getAll();
+        if (categoriesResponse.success && categoriesResponse.data) {
+          setCategories(categoriesResponse.data);
+        }
+
         // Fetch featured artists (top rated)
         const artistsResponse = await artistService.getAllArtists({ limit: 8, sort: "rating" });
         if (artistsResponse.success && artistsResponse.data) {
@@ -132,6 +140,51 @@ export default function CustomerDashboard() {
         </div>
 
         <div className="space-y-10 max-w-7xl">
+          {/* Browse Categories Section */}
+          <div>
+            <h2 className="text-2xl font-bold mb-6 text-white/90">Browse by Category</h2>
+            {loading ? (
+              <div className="text-gray-500">Loading categories...</div>
+            ) : categories.length === 0 ? (
+              <div className="text-gray-500">No categories available.</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                {categories.map((category) => (
+                  <Link
+                    key={category._id}
+                    href={`/browse?category=${category._id}`}
+                    className="group"
+                  >
+                    <Card className="bg-[#181524] border-none rounded-2xl overflow-hidden hover:bg-[#201d2e] transition-all duration-300 shadow-lg shadow-black/20">
+                      <CardContent className="p-4 text-center">
+                        {category.image ? (
+                          <div className="relative w-full aspect-square mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-purple-500/20 to-pink-500/20">
+                            <Image
+                              src={category.image}
+                              alt={category.name}
+                              fill
+                              className="object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full aspect-square mb-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
+                            <span className="text-4xl">🎨</span>
+                          </div>
+                        )}
+                        <h3 className="font-semibold text-sm text-white group-hover:text-[#a78bfa] transition-colors">
+                          {category.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {category.artistCount || 0} artists
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Featured Artists Section */}
           <div>
             <h2 className="text-2xl font-bold mb-6 text-white/90">Featured Artists</h2>
