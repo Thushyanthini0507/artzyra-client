@@ -20,6 +20,34 @@ import { formatHourlyRate } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
+const SRI_LANKA_DISTRICTS = [
+  "Ampara",
+  "Anuradhapura",
+  "Badulla",
+  "Batticaloa",
+  "Colombo",
+  "Galle",
+  "Gampaha",
+  "Hambantota",
+  "Jaffna",
+  "Kalutara",
+  "Kandy",
+  "Kegalle",
+  "Kilinochchi",
+  "Kurunegala",
+  "Mannar",
+  "Matale",
+  "Matara",
+  "Monaragala",
+  "Mullaitivu",
+  "Nuwara Eliya",
+  "Polonnaruwa",
+  "Puttalam",
+  "Ratnapura",
+  "Trincomalee",
+  "Vavuniya"
+];
+
 export function BrowseArtists() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -127,7 +155,21 @@ export function BrowseArtists() {
     setSelectedRating("");
     setPriceRange("");
     setSelectedLocation("");
+    setSelectedLocation("");
     router.push("/browse");
+  };
+
+  const handleLocationChange = (value: string) => {
+    setSelectedLocation(value);
+    const params = new URLSearchParams(searchParams.toString());
+    if (value && value !== "all") {
+      params.set("location", value);
+    } else {
+      params.delete("location");
+      setSelectedLocation("");
+    }
+    params.delete("page");
+    router.push(`/browse?${params.toString()}`);
   };
 
   const handleSortChange = (value: string) => {
@@ -264,12 +306,22 @@ export function BrowseArtists() {
                   </button>
                   {expandedSections.location && (
                     <div className="space-y-2">
-                      <Input
-                        placeholder="Enter location"
-                        value={selectedLocation}
-                        onChange={(e) => setSelectedLocation(e.target.value)}
-                        className="bg-white border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-[#9b87f5]"
-                      />
+                      <Select 
+                        value={selectedLocation || "all"} 
+                        onValueChange={handleLocationChange}
+                      >
+                        <SelectTrigger className="w-full bg-white border-gray-200 text-gray-900 focus:ring-[#9b87f5]">
+                          <SelectValue placeholder="Select District" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 text-gray-900 max-h-[300px]">
+                          <SelectItem value="all" className="focus:bg-gray-100 focus:text-gray-900">All Locations</SelectItem>
+                          {SRI_LANKA_DISTRICTS.map((district) => (
+                            <SelectItem key={district} value={district} className="focus:bg-gray-100 focus:text-gray-900">
+                              {district}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   )}
                 </div>
