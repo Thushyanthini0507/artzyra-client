@@ -10,7 +10,7 @@ export default function CustomerSettingsPage() {
   return (
     <CustomerLayout>
       <div className="flex-1 p-8 overflow-y-auto bg-[#13111c]">
-        <div className="max-w-4xl">
+        <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-white mb-2">Settings</h1>
           <p className="text-gray-400 mb-8">Manage your account preferences</p>
 

@@ -22,7 +22,6 @@ const sidebarItems = [
   { title: "My Bookings", href: "/customer/bookings", icon: CalendarDays },
   { title: "Favorites", href: "/customer/favorites", icon: Heart },
   { title: "Messages", href: "/customer/messages", icon: Mail },
-  { title: "Profile", href: "/customer/profile", icon: User },
 ];
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
