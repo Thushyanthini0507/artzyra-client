@@ -1,0 +1,76 @@
+
+> my-app@0.1.0 build
+> next build
+
+   ▲ Next.js 16.0.7 (Turbopack)
+   - Environments: .env.local
+
+ ⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 6.2s
+   Running TypeScript ...
+   Collecting page data using 15 workers ...
+   Generating static pages using 15 workers (0/45) ...
+   Generating static pages using 15 workers (11/45) 
+   Generating static pages using 15 workers (22/45) 
+   Generating static pages using 15 workers (33/45) 
+ ✓ Generating static pages using 15 workers (45/45) in 3.8s
+   Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /admin
+├ ○ /admin/analytics
+├ ○ /admin/artists
+├ ○ /admin/bookings
+├ ○ /admin/categories
+├ ○ /admin/customers
+├ ○ /admin/payments
+├ ○ /admin/pending-artists
+├ ○ /admin/profile
+├ ○ /admin/users
+├ ○ /artist
+├ ○ /artist/bookings
+├ ○ /artist/calendar
+├ ○ /artist/dashboard
+├ ○ /artist/earnings
+├ ○ /artist/messages
+├ ○ /artist/portfolio
+├ ○ /artist/profile
+├ ○ /artist/reviews
+├ ○ /artist/settings
+├ ƒ /artists/[id]
+├ ○ /auth/login
+├ ○ /auth/register/artist
+├ ○ /auth/register/customer
+├ ƒ /bookings/[id]
+├ ƒ /bookings/[id]/payment
+├ ƒ /bookings/[id]/payment/success
+├ ○ /bookings/create
+├ ○ /browse
+├ ○ /category
+├ ○ /chat
+├ ○ /contact
+├ ○ /customer
+├ ○ /customer/bookings
+├ ƒ /customer/bookings/[id]
+├ ƒ /customer/bookings/[id]/edit
+├ ○ /customer/bookings/create
+├ ○ /customer/dashboard
+├ ○ /customer/favorites
+├ ○ /customer/messages
+├ ○ /customer/payments
+├ ○ /customer/profile
+├ ○ /customer/reviews
+├ ○ /faq
+├ ○ /reviews
+└ ○ /terms
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

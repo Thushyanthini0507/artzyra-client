@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { ChatLayout, Conversation, Message } from "@/components/shared/ChatLayout";
 import apiClient from "@/lib/apiClient";
@@ -8,7 +8,7 @@ import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 import { useSearchParams } from "next/navigation";
 
-export default function CustomerMessagesPage() {
+function MessagesContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const initialChatId = searchParams.get("chatId");
@@ -145,5 +145,21 @@ export default function CustomerMessagesPage() {
         </div>
       </div>
     </CustomerLayout>
+  );
+}
+
+export default function CustomerMessagesPage() {
+  return (
+    <Suspense fallback={
+      <CustomerLayout>
+        <div className="flex-1 p-8 h-full">
+          <div className="max-w-6xl mx-auto h-full flex items-center justify-center">
+            <div className="text-gray-400">Loading...</div>
+          </div>
+        </div>
+      </CustomerLayout>
+    }>
+      <MessagesContent />
+    </Suspense>
   );
 }

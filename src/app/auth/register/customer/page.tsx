@@ -11,7 +11,7 @@ import { PublicLayout } from "@/components/layout/public-layout";
 import { useRegisterCustomer } from "@/hooks/useAuthActions";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 
 const customerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -22,7 +22,7 @@ const customerSchema = z.object({
 
 type CustomerFormData = z.infer<typeof customerSchema>;
 
-export default function CustomerRegisterPage() {
+function CustomerRegisterForm() {
   const { register: registerCustomer, loading, error } = useRegisterCustomer();
   const [showPassword, setShowPassword] = useState(false);
   
@@ -149,5 +149,19 @@ export default function CustomerRegisterPage() {
         </Card>
       </div>
     </PublicLayout>
+  );
+}
+
+export default function CustomerRegisterPage() {
+  return (
+    <Suspense fallback={
+      <PublicLayout showFooter={false}>
+        <div className="relative flex items-center justify-center min-h-screen w-full overflow-hidden bg-[#0f0518]">
+          <div className="text-white">Loading...</div>
+        </div>
+      </PublicLayout>
+    }>
+      <CustomerRegisterForm />
+    </Suspense>
   );
 }

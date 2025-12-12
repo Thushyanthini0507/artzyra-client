@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useLogin } from "@/hooks/useAuthActions";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+function LoginForm() {
   const { login, loading, error } = useLogin();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -185,5 +185,19 @@ export default function LoginPage() {
         </Card>
       </div>
     </PublicLayout>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <PublicLayout showFooter={false}>
+        <div className="relative flex items-center justify-center min-h-screen w-full overflow-hidden bg-[#0f0518]">
+          <div className="text-white">Loading...</div>
+        </div>
+      </PublicLayout>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
