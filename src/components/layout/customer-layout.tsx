@@ -7,59 +7,18 @@ import { cn } from "@/lib/utils";
 import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { NotificationCenter } from "@/components/shared/NotificationCenter";
 
-const sidebarItems = [
-  {
-    title: "Dashboard",
-    href: "/customer",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "My Bookings",
-    href: "/customer/bookings",
-    icon: CalendarDays,
-  },
-  {
-    title: "My Favorites",
-    href: "/customer/favorites",
-    icon: Heart,
-  },
-  {
-    title: "Messages",
-    href: "/customer/messages",
-    icon: Mail,
-  },
-  {
-    title: "Profile",
-    href: "/customer/profile",
-    icon: User,
-  },
-];
+// ... (existing imports)
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { user, logout } = useAuth();
-
-  const getInitials = (name: string | undefined) => {
-    if (!name) return "U";
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-  };
-
-  const getUserFirstName = (name: string | undefined) => {
-    if (!name) return "User";
-    return name.split(" ")[0];
-  };
+  // ... (existing code)
 
   return (
     <div className="flex min-h-screen bg-[#13111c]">
       {/* Left Sidebar */}
       <aside className="w-64 bg-[#13111c] border-r border-white/10 flex flex-col">
+        {/* ... (existing sidebar content) ... */}
         {/* Logo */}
         <div className="p-6">
           <Link href="/" className="flex items-center gap-2">
@@ -137,7 +96,15 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden bg-[#13111c]">
-        {children}
+        {/* Top Header with Notification Center */}
+        <header className="h-16 border-b border-white/10 flex items-center justify-end px-6 bg-[#13111c]">
+          <NotificationCenter />
+        </header>
+        
+        {/* Page Content */}
+        <main className="flex-1 overflow-auto">
+          {children}
+        </main>
       </div>
     </div>
   );

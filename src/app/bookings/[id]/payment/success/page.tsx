@@ -31,10 +31,15 @@ export default function PaymentSuccessPage() {
     const timer = setTimeout(() => {
       setLoading(false);
       setVerified(true);
+      
+      // Auto-redirect to messages after showing success for a moment
+      setTimeout(() => {
+        router.push("/customer/messages");
+      }, 2000);
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [bookingId, paymentIntentId]);
+  }, [bookingId, paymentIntentId, router]);
 
   return (
     <PublicLayout>
@@ -56,7 +61,7 @@ export default function PaymentSuccessPage() {
                   
                   <h1 className="text-3xl font-bold text-white mb-4">Payment Successful!</h1>
                   <p className="text-gray-300 mb-8 leading-relaxed">
-                    Your booking has been confirmed. You can now chat with the artist to discuss further details.
+                    Your booking has been confirmed. Redirecting you to the chat...
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-4 w-full">
@@ -65,7 +70,7 @@ export default function PaymentSuccessPage() {
                         View Booking
                       </Button>
                     </Link>
-                    <Link href="/chat" className="flex-1">
+                    <Link href="/customer/messages" className="flex-1">
                       <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12">
                         <MessageSquare className="mr-2 h-4 w-4" />
                         Chat with Artist

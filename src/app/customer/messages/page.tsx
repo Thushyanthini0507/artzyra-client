@@ -1,106 +1,121 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CustomerLayout } from "@/components/layout/customer-layout";
 import { ChatLayout, Conversation, Message } from "@/components/shared/ChatLayout";
-
-// Mock Data
-const MOCK_CONVERSATIONS: Conversation[] = [
-  {
-    id: "1",
-    participant: {
-      id: "a1",
-      name: "Davinci Art",
-      status: "online",
-      avatar: "https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
-    },
-    lastMessage: "Great! I'd like to book you for a wedding shoot.",
-    unreadCount: 0,
-    updatedAt: new Date(Date.now() - 1000 * 60 * 5), // 5 mins ago
-  },
-  {
-    id: "2",
-    participant: {
-      id: "a2",
-      name: "Pixel Perfect",
-      status: "offline",
-    },
-    lastMessage: "Let me know if you need any changes.",
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
-  },
-];
-
-const MOCK_MESSAGES: Record<string, Message[]> = {
-  "1": [
-    {
-      id: "m1",
-      senderId: "customer_me",
-      content: "Hi, are you available next Saturday?",
-      timestamp: new Date(Date.now() - 1000 * 60 * 30),
-    },
-    {
-      id: "m2",
-      senderId: "a1",
-      content: "Hello! Yes, I have a slot open in the afternoon.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 25),
-    },
-    {
-      id: "m3",
-      senderId: "customer_me",
-      content: "Great! I'd like to book you for a wedding shoot.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 5),
-    },
-  ],
-  "2": [
-    {
-      id: "m4",
-      senderId: "customer_me",
-      content: "Hi, can you send the draft?",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 50),
-    },
-    {
-      id: "m5",
-      senderId: "a2",
-      content: "Sure, sending it over now.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 49),
-    },
-    {
-      id: "m6",
-      senderId: "a2",
-      content: "Let me know if you need any changes.",
-      timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48),
-    },
-  ],
-};
+import apiClient from "@/lib/apiClient";
+import { useAuth } from "@/contexts/auth-context";
+import { toast } from "sonner";
+import { useSearchParams } from "next/navigation";
 
 export default function CustomerMessagesPage() {
-  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(undefined);
-  const [conversations, setConversations] = useState(MOCK_CONVERSATIONS);
-  const [messages, setMessages] = useState(MOCK_MESSAGES);
+  const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const initialChatId = searchParams.get("chatId");
+  
+  const [currentConversationId, setCurrentConversationId] = useState<string | undefined>(initialChatId || undefined);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSendMessage = (content: string) => {
-    if (!currentConversationId) return;
-
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      senderId: "customer_me",
-      content,
-      timestamp: new Date(),
+  // Fetch conversations
+  useEffect(() => {
+    const fetchConversations = async () => {
+      try {
+        const response = await apiClient.get("/chats");
+        if (response.data.success) {
+          const formattedConversations = response.data.data.map((chat: any) => {
+            // Find the other participant (Artist)
+            const otherParticipant = chat.participants.find((p: any) => p._id !== user?._id);
+            return {
+              id: chat._id,
+              participant: {
+                id: otherParticipant?._id || "unknown",
+                name: otherParticipant?.name || "Unknown User",
+                status: "offline", // TODO: Implement online status
+                avatar: otherParticipant?.profileImage,
+              },
+              lastMessage: chat.lastMessage,
+              unreadCount: 0, // TODO: Implement unread count
+              updatedAt: new Date(chat.updatedAt),
+            };
+          });
+          setConversations(formattedConversations);
+        }
+      } catch (error) {
+        console.error("Failed to fetch conversations", error);
+        toast.error("Failed to load chats");
+      } finally {
+        setLoading(false);
+      }
     };
 
-    setMessages((prev) => ({
-      ...prev,
-      [currentConversationId]: [...(prev[currentConversationId] || []), newMessage],
-    }));
+    if (user) {
+      fetchConversations();
+    }
+  }, [user]);
 
-    // Update last message in conversation list
-    setConversations((prev) =>
-      prev.map((c) =>
-        c.id === currentConversationId
-          ? { ...c, lastMessage: content, updatedAt: new Date() }
-          : c
-      )
-    );
+  // Fetch messages for current conversation
+  useEffect(() => {
+    const fetchMessages = async () => {
+      if (!currentConversationId) return;
+
+      try {
+        const response = await apiClient.get(`/chats/${currentConversationId}`);
+        if (response.data.success) {
+          const formattedMessages = response.data.data.messages.map((msg: any) => ({
+            id: msg._id,
+            senderId: msg.sender,
+            content: msg.content,
+            timestamp: new Date(msg.timestamp),
+          }));
+          setMessages(formattedMessages);
+        }
+      } catch (error) {
+        console.error("Failed to fetch messages", error);
+        toast.error("Failed to load messages");
+      }
+    };
+
+    fetchMessages();
+    
+    // Poll for new messages every 5 seconds
+    const interval = setInterval(fetchMessages, 5000);
+    return () => clearInterval(interval);
+  }, [currentConversationId]);
+
+  const handleSendMessage = async (content: string) => {
+    if (!currentConversationId) return;
+
+    try {
+      const response = await apiClient.post(`/chats/${currentConversationId}/messages`, {
+        content,
+      });
+
+      if (response.data.success) {
+        const newMsg = response.data.data;
+        const formattedMsg: Message = {
+          id: newMsg._id,
+          senderId: newMsg.sender,
+          content: newMsg.content,
+          timestamp: new Date(newMsg.timestamp),
+        };
+
+        setMessages((prev) => [...prev, formattedMsg]);
+
+        // Update conversation list
+        setConversations((prev) =>
+          prev.map((c) =>
+            c.id === currentConversationId
+              ? { ...c, lastMessage: content, updatedAt: new Date() }
+              : c
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Failed to send message", error);
+      toast.error("Failed to send message");
+    }
   };
 
   return (
@@ -108,19 +123,25 @@ export default function CustomerMessagesPage() {
       <div className="flex-1 p-8 h-full">
         <div className="max-w-6xl mx-auto h-full flex flex-col">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold">Messages</h1>
-            <p className="text-muted-foreground">Chat with artists</p>
+            <h1 className="text-3xl font-bold text-white">Messages</h1>
+            <p className="text-gray-400">Chat with artists</p>
           </div>
           
-          <ChatLayout
-            conversations={conversations}
-            currentConversationId={currentConversationId}
-            onSelectConversation={setCurrentConversationId}
-            messages={currentConversationId ? messages[currentConversationId] || [] : []}
-            onSendMessage={handleSendMessage}
-            currentUserId="customer_me"
-            userType="customer"
-          />
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center text-gray-400">
+              Loading chats...
+            </div>
+          ) : (
+            <ChatLayout
+              conversations={conversations}
+              currentConversationId={currentConversationId}
+              onSelectConversation={setCurrentConversationId}
+              messages={messages}
+              onSendMessage={handleSendMessage}
+              currentUserId={user?._id || ""}
+              userType="customer"
+            />
+          )}
         </div>
       </div>
     </CustomerLayout>
