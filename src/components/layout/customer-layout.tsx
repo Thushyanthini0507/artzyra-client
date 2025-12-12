@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { cn, getInitials, getUserFirstName } from "@/lib/utils";
-import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut, User } from "lucide-react";
+import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut, User, Settings } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { NotificationCenter } from "@/components/shared/NotificationCenter";
@@ -104,9 +104,20 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden bg-[#13111c]">
-        {/* Top Header with Notification Center */}
-        <header className="h-16 border-b border-white/10 flex items-center justify-end px-6 bg-[#13111c]">
+        {/* Top Header with Actions */}
+        <header className="h-16 border-b border-white/10 flex items-center justify-end px-6 bg-[#13111c] gap-3">
           <NotificationCenter />
+          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full h-10 w-10">
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Avatar className="h-10 w-10 border-2 border-[#5b21b6]">
+            {user?.profileImage && (
+              <AvatarImage src={user.profileImage} alt={user.name} />
+            )}
+            <AvatarFallback className="bg-[#fcd34d] text-black font-bold">
+              {getInitials(user?.name)}
+            </AvatarFallback>
+          </Avatar>
         </header>
         
         {/* Page Content */}

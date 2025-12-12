@@ -10,12 +10,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { NotificationMenu } from "@/components/NotificationMenu";
-import { Star, Search, Settings, Bell } from "lucide-react";
+import { Star, Search } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+
+// Colorful background palette for artist cards
+const cardColors = [
+  "bg-gradient-to-br from-emerald-400 to-teal-500",
+  "bg-gradient-to-br from-cyan-400 to-emerald-400",
+  "bg-gradient-to-br from-amber-300 to-yellow-400",
+  "bg-gradient-to-br from-fuchsia-500 to-purple-600",
+  "bg-gradient-to-br from-orange-300 to-rose-400",
+  "bg-gradient-to-br from-lime-400 to-green-500",
+  "bg-gradient-to-br from-pink-400 to-rose-500",
+  "bg-gradient-to-br from-violet-400 to-indigo-500",
+];
 
 export default function CustomerDashboard() {
   const { user } = useAuth();
@@ -102,10 +113,10 @@ export default function CustomerDashboard() {
 
   return (
     <CustomerLayout>
-      {/* Header Bar */}
-      <header className="h-20 border-b border-white/5 bg-[#13111c] flex items-center justify-between px-8">
+      {/* Main Content */}
+      <div className="flex-1 p-8 overflow-y-auto bg-[#13111c]">
         {/* Search Bar */}
-        <div className="flex-1 max-w-2xl">
+        <div className="max-w-2xl mb-8">
           <form onSubmit={handleSearch}>
             <div className="relative">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
@@ -120,25 +131,7 @@ export default function CustomerDashboard() {
           </form>
         </div>
 
-        {/* Right Actions */}
-        <div className="flex items-center gap-4 ml-4">
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full h-10 w-10">
-            <Bell className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full h-10 w-10">
-            <Settings className="h-5 w-5" />
-          </Button>
-          <Avatar className="h-10 w-10 border-2 border-[#5b21b6]">
-            <AvatarFallback className="bg-[#fcd34d] text-black font-bold">
-              {getInitials(user?.name)}
-            </AvatarFallback>
-          </Avatar>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="flex-1 p-8 overflow-y-auto bg-[#13111c]">
-        <div className="space-y-10 max-w-7xl mx-auto">
+        <div className="space-y-10 max-w-7xl">
           {/* Featured Artists Section */}
           <div>
             <h2 className="text-2xl font-bold mb-6 text-white/90">Featured Artists</h2>
@@ -148,32 +141,43 @@ export default function CustomerDashboard() {
               <div className="text-gray-500">No featured artists available.</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredArtists.map((artist) => (
-                  <Card key={artist._id} className="bg-[#181524] border-none rounded-[32px] overflow-hidden hover:bg-[#201d2e] transition-all duration-300 group shadow-lg shadow-black/20">
+                {featuredArtists.map((artist, index) => (
+                  <Card key={artist._id} className="bg-[#181524] border-none rounded-[24px] overflow-hidden hover:bg-[#201d2e] transition-all duration-300 group shadow-lg shadow-black/20">
                     <CardContent className="p-5">
-                      <div className="relative w-full aspect-[1.1/1] overflow-hidden rounded-[24px] mb-5">
-                        <Image
-                          src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || "Artist")}&size=400&background=random`}
-                          alt={artist.name}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
+                      {/* Colorful Avatar Container */}
+                      <div className={`relative w-full aspect-square overflow-hidden rounded-[20px] mb-4 ${cardColors[index % cardColors.length]} flex items-center justify-center`}>
+                        {artist.profileImage ? (
+                          <Image
+                            src={artist.profileImage}
+                            alt={artist.name}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        ) : (
+                          <span className="text-6xl font-bold text-black/70">
+                            {getInitials(artist.name)}
+                          </span>
+                        )}
                       </div>
+                      
                       <div className="space-y-2">
                         <div>
-                          <h3 className="font-bold text-[19px] text-white leading-tight">{artist.name}</h3>
-                          <p className="text-[15px] text-gray-500 font-medium mt-1">
+                          <h3 className="font-bold text-lg text-white leading-tight">{artist.name}</h3>
+                          <p className="text-sm text-gray-500 font-medium mt-0.5">
                             {artist.category?.name || "Artist"}
                           </p>
                         </div>
-                        <div className="flex items-center gap-1.5 py-1">
-                          <Star className="h-[18px] w-[18px] fill-[#a78bfa] text-[#a78bfa]" />
-                          <span className="text-[15px] font-medium text-gray-300">
-                            {artist.rating?.toFixed(1) || "0.0"} <span className="text-gray-500 ml-1">({artist.reviewCount || 0} reviews)</span>
+                        <div className="flex items-center gap-1.5">
+                          <Star className="h-4 w-4 fill-[#fbbf24] text-[#fbbf24]" />
+                          <span className="text-sm font-medium text-[#fbbf24]">
+                            {artist.rating?.toFixed(1) || "0.0"}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            ({artist.reviewCount || 0} reviews)
                           </span>
                         </div>
-                        <Link href={`/artists/${artist._id}`} className="block mt-4">
-                          <Button className="w-full bg-[#2a2636] hover:bg-[#353144] text-white font-semibold h-[52px] rounded-[20px] text-[15px] tracking-wide transition-colors">
+                        <Link href={`/artists/${artist._id}`} className="block mt-3">
+                          <Button className="w-full bg-[#2a2636] hover:bg-[#353144] text-white font-medium h-11 rounded-2xl text-sm transition-colors">
                             View Profile
                           </Button>
                         </Link>
@@ -189,37 +193,28 @@ export default function CustomerDashboard() {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-white/90">My Bookings</h2>
-              <Tabs defaultValue="upcoming" className="w-auto">
-                <TabsList className="bg-[#1e1b29] text-gray-400 border border-white/5">
-                  <TabsTrigger value="upcoming" className="data-[state=active]:bg-[#5b21b6] data-[state=active]:text-white">Upcoming</TabsTrigger>
-                  <TabsTrigger value="past" className="data-[state=active]:bg-[#5b21b6] data-[state=active]:text-white">Past</TabsTrigger>
-                </TabsList>
-                
-                <div className="hidden">
-                  <TabsContent value="upcoming"></TabsContent>
-                  <TabsContent value="past"></TabsContent>
-                </div>
-              </Tabs>
             </div>
             
             <Tabs defaultValue="upcoming" className="w-full">
-               {/* Hidden list to control state, but we render content below manually based on state if we wanted, 
-                   but here we need to restructure to match the design where tabs control the view. 
-                   I will keep the structure simple and just use the TabsContent properly.
-               */}
-               <TabsList className="hidden">
-                  <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                  <TabsTrigger value="past">Past</TabsTrigger>
-               </TabsList>
+              <TabsList className="bg-[#1e1b29] text-gray-400 border border-white/5 mb-6">
+                <TabsTrigger value="upcoming" className="data-[state=active]:bg-[#5b21b6] data-[state=active]:text-white">
+                  Upcoming
+                </TabsTrigger>
+                <TabsTrigger value="past" className="data-[state=active]:bg-[#5b21b6] data-[state=active]:text-white">
+                  Past
+                </TabsTrigger>
+              </TabsList>
 
               <TabsContent value="upcoming" className="space-y-4 mt-0">
                 {loading ? (
                   <div className="text-gray-500">Loading bookings...</div>
                 ) : upcomingBookings.length === 0 ? (
-                  <div className="text-gray-500">No upcoming bookings.</div>
+                  <div className="text-gray-500 bg-[#1e1b29] rounded-xl p-8 text-center">
+                    No upcoming bookings. <Link href="/browse" className="text-[#a78bfa] hover:underline">Browse artists</Link> to make a booking.
+                  </div>
                 ) : (
                   upcomingBookings.map((booking) => (
-                    <Card key={booking._id} className="bg-[#1e1b29] border-none hover:bg-[#252134] transition-colors">
+                    <Card key={booking._id} className="bg-[#1e1b29] border-none hover:bg-[#252134] transition-colors rounded-xl">
                       <CardContent className="p-4 flex items-center gap-6">
                         <Avatar className="h-16 w-16 rounded-xl border-2 border-white/5">
                           <AvatarImage src={booking.artist?.profileImage} className="rounded-xl object-cover" />
@@ -266,10 +261,12 @@ export default function CustomerDashboard() {
                 {loading ? (
                   <div className="text-gray-500">Loading bookings...</div>
                 ) : pastBookings.length === 0 ? (
-                  <div className="text-gray-500">No past bookings.</div>
+                  <div className="text-gray-500 bg-[#1e1b29] rounded-xl p-8 text-center">
+                    No past bookings yet.
+                  </div>
                 ) : (
                   pastBookings.map((booking) => (
-                    <Card key={booking._id} className="bg-[#1e1b29] border-none hover:bg-[#252134] transition-colors">
+                    <Card key={booking._id} className="bg-[#1e1b29] border-none hover:bg-[#252134] transition-colors rounded-xl">
                       <CardContent className="p-4 flex items-center gap-6">
                         <Avatar className="h-16 w-16 rounded-xl border-2 border-white/5">
                           <AvatarImage src={booking.artist?.profileImage} className="rounded-xl object-cover" />
@@ -314,7 +311,7 @@ export default function CustomerDashboard() {
             </Tabs>
           </div>
         </div>
-      </main>
+      </div>
     </CustomerLayout>
   );
 }
