@@ -56,7 +56,7 @@ export default function CategoriesPage() {
       
       // Handle network errors with user-friendly messages
       if (error.code === "ERR_NETWORK" || error.isNetworkError) {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL
         toast.error(
           `Cannot connect to backend server. Please ensure the API server is running at ${apiUrl}`,
           { duration: 5000 }

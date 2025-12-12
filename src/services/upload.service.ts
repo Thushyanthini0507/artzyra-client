@@ -16,7 +16,7 @@ export const uploadService = {
 
     try {
       // Use native fetch instead of axios to avoid boundary issues with FormData
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       
       // Try to get token from cookies first, then localStorage
       const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);

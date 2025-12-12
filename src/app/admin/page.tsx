@@ -377,7 +377,7 @@ export default function AdminDashboard() {
             error.code === "ECONNREFUSED" || 
             error.isNetworkError ||
             error.message?.includes("Network Error")) {
-          const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL
           console.log("🔵 Admin Dashboard - Backend appears to be down, using fallback data.");
           console.log(`🔵 Admin Dashboard - Expected API URL: ${apiUrl}`);
           toast.error(

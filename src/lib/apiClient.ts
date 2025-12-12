@@ -1,26 +1,10 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-// Get API URL with fallback
-const getApiUrl = () => {
-  // Check if running on client-side and on localhost
-  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
-    console.warn("⚠️ Running on localhost - Forcing API URL to http://localhost:5000/api");
-    return "http://localhost:5000/api";
-  }
-
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!apiUrl) {
-    console.warn(
-      "NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
-    );
-    return "http://localhost:5000/api";
-  }
-  return apiUrl;
-};
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 const apiClient = axios.create({
-  baseURL: getApiUrl(),
+  baseURL: apiUrl,
   timeout: 60000, // Increased to 60 seconds
   headers: {
     "Content-Type": "application/json",
@@ -35,12 +19,12 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-  
+
   // If data is FormData, remove Content-Type header to let browser set it with boundary
   if (config.data instanceof FormData) {
     delete config.headers["Content-Type"];
   }
-  
+
   return config;
 });
 
@@ -50,18 +34,18 @@ apiClient.interceptors.response.use(
   (error) => {
     // Handle network errors (no response from server)
     if (!error.response) {
-      const isNetworkError = error.code === "ERR_NETWORK" || 
-                            error.message === "Network Error" ||
-                            error.code === "ECONNREFUSED" ||
-                            error.code === "ETIMEDOUT" ||
-                            error.message?.includes("Network Error");
-      
+      const isNetworkError =
+        error.code === "ERR_NETWORK" ||
+        error.message === "Network Error" ||
+        error.code === "ECONNREFUSED" ||
+        error.code === "ETIMEDOUT" ||
+        error.message?.includes("Network Error");
+
       if (isNetworkError) {
-        const apiUrl = getApiUrl();
-        const fullUrl = error.config?.baseURL 
+        const fullUrl = error.config?.baseURL
           ? `${error.config.baseURL}${error.config.url || ""}`
           : `${apiUrl}${error.config?.url || ""}`;
-        
+
         // Extract error details into a plain object to ensure proper serialization
         const errorDetails = {
           message: String(error.message || "Network request failed"),
@@ -71,9 +55,11 @@ apiClient.interceptors.response.use(
           baseURL: String(error.config?.baseURL || apiUrl),
           endpoint: String(error.config?.url || "unknown"),
           timeout: error.config?.timeout ? Number(error.config.timeout) : null,
-          stack: error.stack ? String(error.stack).split('\n').slice(0, 3).join('\n') : "No stack trace",
+          stack: error.stack
+            ? String(error.stack).split("\n").slice(0, 3).join("\n")
+            : "No stack trace",
         };
-        
+
         // Log error details in a way that ensures visibility
         console.error("🔴 Network Error Detected");
         console.error("Error Message:", errorDetails.message);
@@ -89,10 +75,14 @@ apiClient.interceptors.response.use(
           "CORS configuration issue",
           "Network connectivity problem",
         ]);
-        console.error("Full Error Object:", JSON.stringify(errorDetails, null, 2));
-        
+        console.error(
+          "Full Error Object:",
+          JSON.stringify(errorDetails, null, 2)
+        );
+
         // Don't throw for notification endpoints - they're non-critical
-        const isNotificationEndpoint = error.config?.url?.includes("/notifications");
+        const isNotificationEndpoint =
+          error.config?.url?.includes("/notifications");
         if (isNotificationEndpoint) {
           console.warn("Notification request failed - this is non-critical");
           // Return a rejected promise with a specific error code
@@ -100,10 +90,11 @@ apiClient.interceptors.response.use(
             ...error,
             isNetworkError: true,
             isNotificationError: true,
-            userMessage: "Unable to fetch notifications. Please check your connection.",
+            userMessage:
+              "Unable to fetch notifications. Please check your connection.",
           });
         }
-        
+
         // Enhance error object with additional properties while preserving original structure
         Object.assign(error, {
           isNetworkError: true,
@@ -111,7 +102,7 @@ apiClient.interceptors.response.use(
           apiUrl: apiUrl,
           requestUrl: fullUrl,
         });
-        
+
         // Ensure message and code are set
         if (!error.message) error.message = "Network Error";
         if (!error.code) error.code = "ERR_NETWORK";
@@ -121,9 +112,10 @@ apiClient.interceptors.response.use(
     // Handle 401 Unauthorized (no token or invalid token)
     if (error.response?.status === 401) {
       // Don't redirect for login/auth endpoints - let them handle their own errors
-      const isAuthEndpoint = error.config?.url?.includes("/auth/login") || 
-                             error.config?.url?.includes("/auth/register");
-      
+      const isAuthEndpoint =
+        error.config?.url?.includes("/auth/login") ||
+        error.config?.url?.includes("/auth/register");
+
       if (!isAuthEndpoint) {
         // Clear client-side storage (backend cookie is cleared by logout endpoint)
         Cookies.remove("token");
@@ -154,7 +146,8 @@ apiClient.interceptors.response.use(
         error.response?.data?.message || error.message
       );
       // Enhance error with user-friendly message
-      error.userMessage = error.response?.data?.message || 
+      error.userMessage =
+        error.response?.data?.message ||
         "A conflict occurred. This may be due to a duplicate entry or concurrent request.";
     }
     return Promise.reject(error);
