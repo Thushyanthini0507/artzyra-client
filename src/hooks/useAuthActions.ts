@@ -73,7 +73,7 @@ export function useRegisterArtist() {
       const response = await authService.registerArtist(data);
       if (response.success) {
         // Artist needs approval, so just redirect to login or success page
-        router.push("/?registered=true");
+        router.push("/auth/login?registered=true");
         return { success: true };
       } else {
         setError(response.error || "Registration failed");

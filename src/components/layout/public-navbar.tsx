@@ -150,17 +150,18 @@ export function PublicNavbar() {
                 </>
               ) : (
                 <>
-                  <Button
-                    variant={isHome ? "default" : "ghost"}
-                    onClick={openLogin}
-                    className={
-                    isHome && !isScrolled
-                      ? "px-6 bg-[#2d1b4e] text-white hover:bg-[#2d1b4e]/90 rounded-full border border-white/10"
-                      : "px-6 text-white hover:text-white/90"
-                  }
-                  >
-                    Login
-                  </Button>
+                  <Link href="/auth/login">
+                    <Button
+                      variant={isHome ? "default" : "ghost"}
+                      className={
+                      isHome && !isScrolled
+                        ? "px-6 bg-[#2d1b4e] text-white hover:bg-[#2d1b4e]/90 rounded-full border border-white/10"
+                        : "px-6 text-white hover:text-white/90"
+                    }
+                    >
+                      Login
+                    </Button>
+                  </Link>
                   <Link href="/auth/register/customer">
                     <Button
                       className="px-6 bg-[#b39ddb] text-[#2d1b4e] hover:bg-[#b39ddb]/90 rounded-full font-semibold"
