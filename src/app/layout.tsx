@@ -5,6 +5,8 @@ import { AuthProvider } from "@/contexts/auth-context";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthModal } from "@/components/auth/auth-modal";
 
+import TawkTo from "@/components/TawkTo";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -35,6 +37,7 @@ export default function RootLayout({
           {children}
           <AuthModal />
           <Toaster />
+          <TawkTo />
         </AuthProvider>
       </body>
     </html>

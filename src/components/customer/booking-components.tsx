@@ -181,7 +181,7 @@ export function ArtistCard({ artist, onContact, onCancel, bookingStatus }: Artis
           <Button className="w-full gap-2 bg-[#5b21b6] hover:bg-[#4c1d95] text-white" onClick={onContact}>
             <MessageSquare className="h-4 w-4" /> Contact Artist
           </Button>
-          {bookingStatus === 'pending' || bookingStatus === 'accepted' ? (
+          {bookingStatus === 'pending' || bookingStatus === 'confirmed' ? (
              <Button variant="destructive" className="w-full gap-2 bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20 border" onClick={onCancel}>
              <XCircle className="h-4 w-4" /> Cancel Booking
            </Button>
@@ -202,7 +202,7 @@ export function BookingTimeline({ status, createdAt, updatedAt }: BookingTimelin
   // Mock timeline steps based on status
   const steps = [
     { label: "Booking Requested", date: createdAt, completed: true },
-    { label: "Booking Confirmed", date: status !== 'pending' ? updatedAt : null, completed: status !== 'pending' && status !== 'cancelled' && status !== 'rejected' },
+    { label: "Booking Confirmed", date: status !== 'pending' ? updatedAt : null, completed: status !== 'pending' && status !== 'cancelled' && status !== 'declined' },
     // { label: "Payment Received", date: null, completed: false }, // We don't have payment date yet
     { label: "Service Completed", date: null, completed: status === 'completed' },
   ];

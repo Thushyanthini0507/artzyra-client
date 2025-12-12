@@ -3,18 +3,18 @@ import Cookies from "js-cookie";
 
 // Get API URL with fallback
 const getApiUrl = () => {
+  // Check if running on client-side and on localhost
+  if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    console.warn("⚠️ Running on localhost - Forcing API URL to http://localhost:5000/api");
+    return "http://localhost:5000/api";
+  }
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   if (!apiUrl) {
     console.warn(
       "NEXT_PUBLIC_API_URL is not set. Using default: http://localhost:5000/api"
     );
-    console.warn(
-      "To fix this, create a .env.local file in the client directory with: NEXT_PUBLIC_API_URL=http://localhost:5000/api"
-    );
     return "http://localhost:5000/api";
-  }
-  if (typeof window !== "undefined") {
-    console.log(`🔗 API Client configured to use: ${apiUrl}`);
   }
   return apiUrl;
 };

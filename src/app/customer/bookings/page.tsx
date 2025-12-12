@@ -72,7 +72,7 @@ export default function CustomerBookingsPage() {
                       <div>
                         <div className="flex items-center gap-3 mb-2">
                            <h3 className="font-bold text-lg text-white">{booking.service}</h3>
-                           <Badge variant={booking.status === "completed" ? "default" : booking.status === "accepted" ? "secondary" : "outline"} className="capitalize bg-[#2e1065] text-[#a78bfa] border-none hover:bg-[#3b157a]">
+                           <Badge variant={booking.status === "completed" ? "default" : booking.status === "confirmed" ? "secondary" : "outline"} className="capitalize bg-[#2e1065] text-[#a78bfa] border-none hover:bg-[#3b157a]">
                             {booking.status}
                           </Badge>
                         </div>
@@ -112,7 +112,7 @@ export default function CustomerBookingsPage() {
                         )}
                       </div>
                       <div className="flex flex-col sm:flex-row gap-3">
-                        {booking.status === "accepted" && (
+                        {booking.status === "confirmed" && (
                           <Button size="sm" className="gap-2 bg-green-600 hover:bg-green-700 text-white rounded-xl" onClick={() => handlePay(booking)}>
                             <CreditCard className="h-4 w-4" /> Pay Now
                           </Button>

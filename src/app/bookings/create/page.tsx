@@ -102,9 +102,15 @@ function BookingForm() {
 
     setSubmitting(true);
 
+    if (!artist.userId) {
+      toast.error("Cannot book this artist: Invalid profile data (missing User ID)");
+      setSubmitting(false);
+      return;
+    }
+
     try {
       const bookingData = {
-        artistId: artist._id,
+        artistId: artist.userId,
         service: formData.service,
         bookingDate: formData.date,
         startTime: formData.startTime,

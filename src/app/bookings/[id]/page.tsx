@@ -14,6 +14,8 @@ import { formatHourlyRate } from "@/lib/utils/currency";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Link from "next/link";
 
+import { BookingStatus } from "@/types/booking";
+
 export default function BookingDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -47,7 +49,7 @@ export default function BookingDetailsPage() {
     }
   }, [bookingId]);
 
-  const handleStatusUpdate = async (status: string) => {
+  const handleStatusUpdate = async (status: BookingStatus) => {
     setActionLoading(true);
     try {
       const response = await bookingService.update(bookingId, { status });

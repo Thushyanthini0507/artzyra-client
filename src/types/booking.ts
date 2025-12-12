@@ -1,7 +1,7 @@
 import { Customer } from "./customer";
 import { Artist } from "./artist";
 
-export type BookingStatus = "pending" | "accepted" | "rejected" | "completed" | "cancelled";
+export type BookingStatus = "pending" | "confirmed" | "declined" | "completed" | "cancelled";
 
 export interface Booking {
   _id: string;

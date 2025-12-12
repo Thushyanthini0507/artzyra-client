@@ -62,7 +62,7 @@ export default function BookingDetailsPage() {
         router.push('/customer/bookings');
       });
     } else {
-      // If accepted, we cancel it
+      // If confirmed, we cancel it
       await updateBooking(booking._id, { status: 'cancelled' });
       fetchBooking();
     }
@@ -144,7 +144,7 @@ export default function BookingDetailsPage() {
                 onCancel={handleCancel}
               />
 
-              {booking.status === 'accepted' && (
+              {booking.status === 'confirmed' && (
                 <Card className="bg-[#1e1b29] border-[#5b21b6]/30 shadow-lg">
                   <CardHeader>
                     <CardTitle className="text-white">Action Required</CardTitle>
