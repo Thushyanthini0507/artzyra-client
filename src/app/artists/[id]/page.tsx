@@ -299,7 +299,7 @@ export default function ArtistProfilePage() {
                   }
                 }}
               >
-                Request a Quote
+                Book Now
               </Button>
             </div>
           </div>
