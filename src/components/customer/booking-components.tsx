@@ -160,14 +160,22 @@ interface ArtistCardProps {
 }
 
 export function ArtistCard({ artist, onContact, onCancel, bookingStatus }: ArtistCardProps) {
-  const artistData = typeof artist === 'object' ? artist : { name: "Unknown Artist", category: "Artist", profileImage: "", _id: artist };
+  // Handle both populated object and ID string, with fallbacks for missing fields
+  const artistData = typeof artist === 'object' && artist !== null
+    ? {
+        name: artist.name || "Unknown Artist",
+        category: artist.category || "Artist",
+        profileImage: artist.profileImage || "",
+        _id: artist._id || ""
+      }
+    : { name: "Unknown Artist", category: "Artist", profileImage: "", _id: artist || "" };
 
   return (
     <Card className="bg-[#1e1b29] border-white/5 shadow-lg h-fit">
       <CardContent className="pt-6 flex flex-col items-center text-center space-y-4">
         <Avatar className="h-24 w-24 border-4 border-[#13111c]">
           <AvatarImage src={artistData.profileImage} alt={artistData.name} />
-          <AvatarFallback className="bg-[#5b21b6] text-white">{artistData.name.charAt(0)}</AvatarFallback>
+          <AvatarFallback className="bg-[#5b21b6] text-white">{artistData.name?.charAt(0) || "?"}</AvatarFallback>
         </Avatar>
         <div className="space-y-1">
           <h3 className="font-bold text-xl text-white">{artistData.name}</h3>

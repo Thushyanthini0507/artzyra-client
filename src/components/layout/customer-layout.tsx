@@ -3,16 +3,24 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { cn } from "@/lib/utils";
+import { cn, getInitials, getUserFirstName } from "@/lib/utils";
 import { LayoutDashboard, CalendarDays, Heart, Mail, LogOut, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { NotificationCenter } from "@/components/shared/NotificationCenter";
 
-// ... (existing imports)
+const sidebarItems = [
+  { title: "Dashboard", href: "/customer", icon: LayoutDashboard },
+  { title: "My Bookings", href: "/customer/bookings", icon: CalendarDays },
+  { title: "Favorites", href: "/customer/favorites", icon: Heart },
+  { title: "Messages", href: "/customer/messages", icon: Mail },
+  { title: "Profile", href: "/customer/profile", icon: User },
+];
 
 export function CustomerLayout({ children }: { children: React.ReactNode }) {
-  // ... (existing code)
+  const pathname = usePathname();
+  const router = useRouter();
+  const { user, logout } = useAuth();
 
   return (
     <div className="flex min-h-screen bg-[#13111c]">

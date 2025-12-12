@@ -38,8 +38,9 @@ export function NotificationCenter() {
     try {
       const response = await apiClient.get("/notifications");
       if (response.data.success) {
-        setNotifications(response.data.data);
-        setUnreadCount(response.data.data.filter((n: Notification) => !n.isRead).length);
+        const notificationsData = response.data.data.notifications || [];
+        setNotifications(notificationsData);
+        setUnreadCount(response.data.data.unreadCount || notificationsData.filter((n: Notification) => !n.isRead).length);
       }
     } catch (error) {
       console.error("Failed to fetch notifications", error);

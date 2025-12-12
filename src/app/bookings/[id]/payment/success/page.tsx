@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Loader2, MessageSquare } from "lucide-react";
 import { bookingService } from "@/services/booking.service";
+import apiClient from "@/lib/apiClient";
+import { toast } from "sonner";
 import Link from "next/link";
 
 export default function PaymentSuccessPage() {
@@ -20,25 +22,32 @@ export default function PaymentSuccessPage() {
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    // In a real app, we might want to verify the payment status with the backend here
-    // or rely on the webhook. For better UX, we can poll or check status.
-    // Since we don't have a dedicated verify endpoint exposed easily without auth sometimes,
-    // we can just fetch the booking and see if it's paid, or assume success if redirected here with payment_intent.
-    
-    // However, the webhook might take a second.
-    // Let's just show success message and provide links.
-    
-    const timer = setTimeout(() => {
-      setLoading(false);
-      setVerified(true);
-      
-      // Auto-redirect to messages after showing success for a moment
-      setTimeout(() => {
-        router.push("/customer/messages");
-      }, 2000);
-    }, 1500);
+    const verifyPayment = async () => {
+      if (!paymentIntentId) return;
 
-    return () => clearTimeout(timer);
+      try {
+        await apiClient.post("/payments/verify", {
+          paymentIntentId,
+        });
+        setVerified(true);
+        toast.success("Payment verified successfully!");
+      } catch (error) {
+        console.error("Verification error:", error);
+        toast.error("Failed to verify payment, but don't worry - we're checking it.");
+      } finally {
+        setLoading(false);
+        // Auto-redirect to messages
+        setTimeout(() => {
+          router.push("/customer/messages");
+        }, 3000);
+      }
+    };
+
+    if (paymentIntentId) {
+      verifyPayment();
+    } else {
+      setLoading(false);
+    }
   }, [bookingId, paymentIntentId, router]);
 
   return (
