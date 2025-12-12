@@ -20,7 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 function BookingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const artistId = searchParams.get("artistId");
 
   const [artist, setArtist] = useState<any>(null);
@@ -117,15 +117,8 @@ function BookingForm() {
       const response = await bookingService.create(bookingData);
 
       if (response.success) {
-        toast.success("Booking created successfully!");
-        // Redirect to payment page (to be implemented)
-        // For now, redirect to booking details or dashboard
-        // router.push(`/bookings/${response.data._id}/payment`); 
-        // Since payment page isn't ready, we'll go to dashboard or show success
-        toast.info("Redirecting to payment...");
-        // router.push(`/bookings/${response.data._id}/payment`);
-        // Temporary redirect until payment page is built
-        router.push("/customer"); 
+        toast.success("Booking created! Proceeding to payment...");
+        router.push(`/bookings/${response.data._id}/payment`); 
       } else {
         toast.error(response.message || "Failed to create booking");
       }

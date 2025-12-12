@@ -116,9 +116,9 @@ export function CustomerLayout({ children }: { children: React.ReactNode }) {
 
         {/* Create New Booking Button and Logout */}
         <div className="p-4 mt-auto space-y-4">
-          <Link href="/customer/bookings/create">
+          <Link href="/browse">
             <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl py-6 shadow-lg shadow-purple-900/20">
-              Create New Booking
+              Browse Artists
             </Button>
           </Link>
           <Button 

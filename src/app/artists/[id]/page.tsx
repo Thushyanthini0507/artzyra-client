@@ -295,7 +295,8 @@ export default function ArtistProfilePage() {
                   if (user?.role === "customer") {
                     router.push(`/bookings/create?artistId=${artistId}`);
                   } else {
-                    router.push("/auth/login");
+                    const redirectUrl = encodeURIComponent(`/bookings/create?artistId=${artistId}`);
+                    router.push(`/auth/login?redirect=${redirectUrl}`);
                   }
                 }}
               >

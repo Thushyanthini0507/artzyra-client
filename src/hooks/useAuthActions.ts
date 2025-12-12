@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "@/contexts/auth-context";
 import { authService } from "@/services/auth.service";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function useLogin() {
   const { login } = useAuth();
@@ -34,6 +34,8 @@ export function useRegisterCustomer() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
 
   const register = async (data: any) => {
     setLoading(true);
@@ -42,7 +44,11 @@ export function useRegisterCustomer() {
       const response = await authService.registerCustomer(data);
       if (response.success) {
         // Don't auto-login - redirect to login page instead
-        router.push("/auth/login?registered=true");
+        let loginUrl = "/auth/login?registered=true";
+        if (redirect) {
+          loginUrl += `&redirect=${encodeURIComponent(redirect)}`;
+        }
+        router.push(loginUrl);
         return { success: true };
       } else {
         setError(response.error || "Registration failed");
