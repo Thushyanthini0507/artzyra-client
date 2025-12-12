@@ -10,6 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { PublicLayout } from "@/components/layout/public-layout";
 import { useRegisterCustomer } from "@/hooks/useAuthActions";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
+import { useState } from "react";
 
 const customerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -22,6 +24,7 @@ type CustomerFormData = z.infer<typeof customerSchema>;
 
 export default function CustomerRegisterPage() {
   const { register: registerCustomer, loading, error } = useRegisterCustomer();
+  const [showPassword, setShowPassword] = useState(false);
   
   const {
     register,
@@ -39,74 +42,111 @@ export default function CustomerRegisterPage() {
   };
 
   return (
-    <PublicLayout>
-      <div className="relative min-h-[calc(100vh-80px)] py-10 overflow-hidden">
-        {/* Background Effects */}
+    <PublicLayout showFooter={false}>
+      <div className="relative flex items-center justify-center min-h-screen w-full overflow-hidden bg-[#0f0518] py-10">
+        {/* Abstract Background */}
         <div className="absolute inset-0 z-0">
-          <div className="absolute top-[10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/20 blur-[100px]" />
-          <div className="absolute bottom-[10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/20 blur-[100px]" />
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('/images/login.png')] bg-cover bg-center opacity-40 mix-blend-overlay" />
+          <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] rounded-full bg-purple-600/30 blur-[120px]" />
+          <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] rounded-full bg-pink-600/30 blur-[120px]" />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10">
-          <Card className="max-w-2xl mx-auto border-white/10 bg-[#2d1b4e] backdrop-blur-xl shadow-2xl">
-            <CardHeader className="space-y-1 text-center pb-8">
-              <CardTitle className="text-3xl font-bold tracking-tight text-white">Create Account</CardTitle>
-              <CardDescription className="text-gray-300 text-base">
-                Join Artzyra to discover and hire amazing artists
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 pb-2 border-b border-white/10">
-                    <div className="h-6 w-1 bg-primary rounded-full" />
-                    <h3 className="text-lg font-semibold text-white">Personal Information</h3>
+        <Card className="relative z-10 w-full max-w-2xl border-white/10 bg-white/5 backdrop-blur-2xl shadow-2xl rounded-3xl overflow-hidden">
+          <CardHeader className="space-y-2 text-center pt-10 pb-6">
+            <CardTitle className="text-4xl font-bold tracking-tight text-white">
+              Create Account
+            </CardTitle>
+            <CardDescription className="text-gray-300 text-base">
+              Join Artzyra to discover and hire amazing artists
+            </CardDescription>
+          </CardHeader>
+          
+          <CardContent className="px-8 pb-10">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 pb-2 border-b border-white/10">
+                  <div className="h-6 w-1 bg-purple-500 rounded-full" />
+                  <h3 className="text-lg font-semibold text-white">Personal Information</h3>
+                </div>
+                
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-white font-medium ml-1">Full Name</Label>
+                    <Input 
+                      id="name" 
+                      {...register("name")} 
+                      className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                      placeholder="John Doe"
+                    />
+                    {errors.name && <p className="text-sm text-red-300 ml-1">{errors.name.message}</p>}
                   </div>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="text-white">Full Name</Label>
-                      <Input id="name" {...register("name")} className="bg-white/5 border-white/10 focus:border-primary/50 text-white placeholder:text-gray-400" />
-                      {errors.name && <p className="text-sm text-red-400">{errors.name.message}</p>}
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-white font-medium ml-1">Email</Label>
+                    <Input 
+                      id="email" 
+                      type="email" 
+                      {...register("email")} 
+                      className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                      placeholder="john@example.com"
+                    />
+                    {errors.email && <p className="text-sm text-red-300 ml-1">{errors.email.message}</p>}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="phone" className="text-white font-medium ml-1">Phone</Label>
+                    <Input 
+                      id="phone" 
+                      type="tel" 
+                      {...register("phone")} 
+                      className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                    />
+                    {errors.phone && <p className="text-sm text-red-300 ml-1">{errors.phone.message}</p>}
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="password" className="text-white font-medium ml-1">Password</Label>
+                    <div className="relative">
+                      <Input 
+                        id="password" 
+                        type={showPassword ? "text" : "password"} 
+                        {...register("password")} 
+                        className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl pr-10 transition-all" 
+                        placeholder="••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/60 hover:text-white transition-colors"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="text-white">Email</Label>
-                      <Input id="email" type="email" {...register("email")} className="bg-white/5 border-white/10 focus:border-primary/50 text-white placeholder:text-gray-400" />
-                      {errors.email && <p className="text-sm text-red-400">{errors.email.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-white">Phone</Label>
-                      <Input id="phone" type="tel" {...register("phone")} className="bg-white/5 border-white/10 focus:border-primary/50 text-white placeholder:text-gray-400" />
-                      {errors.phone && <p className="text-sm text-red-400">{errors.phone.message}</p>}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="password" className="text-white">Password</Label>
-                      <Input id="password" type="password" {...register("password")} className="bg-white/5 border-white/10 focus:border-primary/50 text-white placeholder:text-gray-400" />
-                      {errors.password && <p className="text-sm text-red-400">{errors.password.message}</p>}
-                    </div>
+                    {errors.password && <p className="text-sm text-red-300 ml-1">{errors.password.message}</p>}
                   </div>
                 </div>
+              </div>
 
-                {error && (
-                  <div className="p-3 rounded-md bg-red-500/10 text-red-400 text-sm text-center border border-red-500/20">
-                    {error}
-                  </div>
-                )}
+              {error && (
+                <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200 text-sm text-center">
+                  {error}
+                </div>
+              )}
 
-                <Button 
-                  type="submit" 
-                  className="w-full py-6 text-base font-semibold shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all text-white" 
-                  disabled={loading}
-                >
-                  {loading ? "Creating Account..." : "Create Account"}
-                </Button>
-                
-                <p className="text-center text-sm text-gray-400">
-                  Already have an account? <Link href="/auth/login" className="text-primary hover:underline font-medium hover:text-primary/80">Sign in</Link>
-                </p>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
+              <Button 
+                type="submit" 
+                className="w-full h-12 text-base font-bold bg-[#3b0764] hover:bg-[#581c87] text-white rounded-xl shadow-lg shadow-purple-900/20 transition-all duration-300 mt-4" 
+                disabled={loading}
+              >
+                {loading ? "Creating Account..." : "Create Account"}
+              </Button>
+              
+              <p className="text-center text-sm text-gray-300 mt-4">
+                Already have an account? <Link href="/auth/login" className="font-bold text-white hover:underline">Sign in</Link>
+              </p>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </PublicLayout>
   );

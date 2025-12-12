@@ -22,7 +22,7 @@ export default function LoginPage() {
   };
 
   return (
-    <PublicLayout>
+    <PublicLayout showFooter={false}>
       <div className="relative flex items-center justify-center min-h-screen w-full overflow-hidden bg-[#0f0518]">
         {/* Abstract Background */}
         <div className="absolute inset-0 z-0">
