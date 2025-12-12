@@ -1,4 +1,4 @@
-import apiClient from "@/lib/apiClient";
+import Cookies from "js-cookie";
 
 export type ImageType = "category" | "admin_profile" | "customer_profile" | "artist_profile";
 
@@ -15,25 +15,41 @@ export const uploadService = {
     formData.append("imageType", imageType);
 
     try {
-      // The apiClient interceptor will automatically remove Content-Type for FormData
-      // This allows the browser to set it with the proper boundary parameter
-      const response = await apiClient.post("/upload", formData);
-      return response.data;
+      // Use native fetch instead of axios to avoid boundary issues with FormData
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+      
+      // Try to get token from cookies first, then localStorage
+      const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
+
+      const headers: HeadersInit = {};
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
+      // Note: We intentionally do NOT set Content-Type here.
+      // The browser will automatically set it to multipart/form-data with the correct boundary.
+
+      const response = await fetch(`${apiUrl}/upload`, {
+        method: "POST",
+        headers,
+        body: formData,
+        credentials: "include", // CRITICAL: Send cookies (including HttpOnly ones)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || "Failed to upload image");
+      }
+
+      return data;
     } catch (error: any) {
       console.error("Upload service error:", error);
-      
-      // Extract error message from response
-      const errorMessage = 
-        error.response?.data?.error || 
-        error.response?.data?.message || 
-        error.message || 
-        "Failed to upload image";
       
       // Return error in the same format as success response
       return {
         success: false,
-        error: errorMessage,
-        message: errorMessage,
+        error: error.message || "Failed to upload image",
+        message: error.message || "Failed to upload image",
       };
     }
   },
