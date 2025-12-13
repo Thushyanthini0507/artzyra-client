@@ -1,19 +1,19 @@
 "use client";
 
-import { ArtistLayout } from "@/components/layout/artist-layout";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Settings as SettingsIcon } from "lucide-react";
 
 export default function ArtistSettingsPage() {
   return (
-    <ArtistLayout>
-      <div className="space-y-6">
+
+      <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold">Settings</h1>
           <p className="text-muted-foreground">Manage your account preferences</p>
         </div>
 
-        <Card>
+        <Card className="border-none bg-[#1e1b29]">
           <CardHeader>
             <CardTitle>Account Settings</CardTitle>
             <CardDescription>Configure your artist account</CardDescription>
@@ -27,6 +27,6 @@ export default function ArtistSettingsPage() {
           </CardContent>
         </Card>
       </div>
-    </ArtistLayout>
+
   );
 }

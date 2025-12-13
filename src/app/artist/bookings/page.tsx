@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArtistLayout } from "@/components/layout/artist-layout";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -46,14 +46,14 @@ export default function ArtistBookingsPage() {
   };
 
   return (
-    <ArtistLayout>
-      <div className="space-y-6">
+
+      <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold">Bookings</h1>
           <p className="text-muted-foreground">Manage your customer bookings</p>
         </div>
 
-        <Card>
+        <Card className="border-none bg-[#1e1b29]">
           <CardHeader>
             <CardTitle>All Bookings</CardTitle>
           </CardHeader>
@@ -67,7 +67,7 @@ export default function ArtistBookingsPage() {
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="hover:bg-transparent border-white/10">
                     <TableHead>Customer</TableHead>
                     <TableHead>Service</TableHead>
                     <TableHead>Date</TableHead>
@@ -79,7 +79,7 @@ export default function ArtistBookingsPage() {
                 </TableHeader>
                 <TableBody>
                   {bookings.map((booking) => (
-                    <TableRow key={booking._id}>
+                    <TableRow key={booking._id} className="hover:bg-white/5 border-white/10">
                       <TableCell>
                         <div>
                           <div className="font-medium">{booking.customer?.name || "N/A"}</div>
@@ -104,6 +104,6 @@ export default function ArtistBookingsPage() {
           </CardContent>
         </Card>
       </div>
-    </ArtistLayout>
+
   );
 }

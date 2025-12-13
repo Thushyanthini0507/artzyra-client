@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArtistLayout } from "@/components/layout/artist-layout";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -49,15 +49,15 @@ export default function ArtistEarningsPage() {
   }, []);
 
   return (
-    <ArtistLayout>
-      <div className="space-y-6">
+
+      <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold">Earnings</h1>
           <p className="text-muted-foreground">Track your income and payments</p>
         </div>
 
         <div className="grid gap-4 md:grid-cols-3">
-          <Card>
+          <Card className="border-none bg-[#1e1b29]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
               <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -68,7 +68,7 @@ export default function ArtistEarningsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-none bg-[#1e1b29]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending Earnings</CardTitle>
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
@@ -79,7 +79,7 @@ export default function ArtistEarningsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-none bg-[#1e1b29]">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Completed Jobs</CardTitle>
               <Badge variant="default">{stats.completedBookings}</Badge>
@@ -91,7 +91,7 @@ export default function ArtistEarningsPage() {
           </Card>
         </div>
 
-        <Card>
+        <Card className="border-none bg-[#1e1b29]">
           <CardHeader>
             <CardTitle>Payment History</CardTitle>
             <CardDescription>All completed and paid bookings</CardDescription>
@@ -106,7 +106,7 @@ export default function ArtistEarningsPage() {
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="hover:bg-transparent border-white/10">
                     <TableHead>Date</TableHead>
                     <TableHead>Customer</TableHead>
                     <TableHead>Service</TableHead>
@@ -116,7 +116,7 @@ export default function ArtistEarningsPage() {
                 </TableHeader>
                 <TableBody>
                   {bookings.map((booking) => (
-                    <TableRow key={booking._id}>
+                    <TableRow key={booking._id} className="hover:bg-white/5 border-white/10">
                       <TableCell>{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "N/A"}</TableCell>
                       <TableCell>
                         <div>
@@ -137,6 +137,6 @@ export default function ArtistEarningsPage() {
           </CardContent>
         </Card>
       </div>
-    </ArtistLayout>
+
   );
 }

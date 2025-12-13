@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
-import { ArtistLayoutNew } from "@/components/layout/artist-layout-new";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -249,14 +249,12 @@ export default function ArtistDashboard() {
 
   if (authLoading || loading) {
     return (
-      <ArtistLayoutNew>
-        <div className="flex items-center justify-center h-screen bg-[#13111c]">
-          <div className="text-center">
-            <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-[#a78bfa]" />
-            <p className="text-gray-400">Loading dashboard...</p>
-          </div>
+      <div className="flex items-center justify-center h-screen bg-[#13111c]">
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-[#a78bfa]" />
+          <p className="text-gray-400">Loading dashboard...</p>
         </div>
-      </ArtistLayoutNew>
+      </div>
     );
   }
 
@@ -265,7 +263,6 @@ export default function ArtistDashboard() {
   }
 
   return (
-    <ArtistLayoutNew>
       <div className="flex-1 overflow-y-auto bg-[#13111c]">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="space-y-8">
@@ -548,6 +545,5 @@ export default function ArtistDashboard() {
           </div>
         </div>
       </div>
-    </ArtistLayoutNew>
   );
 }

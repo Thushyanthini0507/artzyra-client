@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArtistLayout } from "@/components/layout/artist-layout";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -159,24 +159,22 @@ export default function ArtistProfilePage() {
 
   if (loading) {
     return (
-      <ArtistLayout>
-        <div className="flex items-center justify-center h-96">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      </ArtistLayout>
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
     );
   }
 
   return (
-    <ArtistLayout>
-      <div className="space-y-6">
+
+      <div className="max-w-4xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold">Profile</h1>
           <p className="text-muted-foreground">Manage your artist profile information</p>
         </div>
 
         <form onSubmit={handleSubmit}>
-          <Card>
+          <Card className="border-none bg-[#1e1b29]">
             <CardHeader>
               <CardTitle>Personal Information</CardTitle>
               <CardDescription>Update your profile details</CardDescription>
@@ -197,6 +195,7 @@ export default function ArtistProfilePage() {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
+                    className="bg-white/5 border-white/10"
                   />
                 </div>
 
@@ -207,6 +206,7 @@ export default function ArtistProfilePage() {
                     type="email"
                     value={formData.email}
                     disabled
+                    className="bg-white/5 border-white/10 opacity-50"
                   />
                 </div>
 
@@ -225,10 +225,10 @@ export default function ArtistProfilePage() {
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-white/5 border-white/10">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="bg-[#1e1b29] border-white/10">
                       {categories.map((cat) => (
                         <SelectItem key={cat._id} value={cat._id}>
                           {cat.name}
@@ -247,6 +247,7 @@ export default function ArtistProfilePage() {
                     step="0.01"
                     value={formData.hourlyRate}
                     onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
+                    className="bg-white/5 border-white/10"
                   />
                 </div>
 
@@ -257,6 +258,7 @@ export default function ArtistProfilePage() {
                     placeholder="e.g., Mon-Fri, 9AM-5PM"
                     value={formData.availability}
                     onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
+                    className="bg-white/5 border-white/10"
                   />
                 </div>
               </div>
@@ -269,6 +271,7 @@ export default function ArtistProfilePage() {
                   placeholder="Tell customers about yourself..."
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                  className="bg-white/5 border-white/10"
                 />
               </div>
 
@@ -279,6 +282,7 @@ export default function ArtistProfilePage() {
                   placeholder="e.g., Portrait, Landscape, Digital Art"
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
+                  className="bg-white/5 border-white/10"
                 />
               </div>
 
@@ -289,6 +293,7 @@ export default function ArtistProfilePage() {
                   placeholder="e.g., https://example.com/work1, https://example.com/work2"
                   value={formData.portfolio}
                   onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
+                  className="bg-white/5 border-white/10"
                 />
               </div>
 
@@ -300,6 +305,7 @@ export default function ArtistProfilePage() {
                   placeholder="https://yourwebsite.com"
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  className="bg-white/5 border-white/10"
                 />
               </div>
 
@@ -317,6 +323,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, facebook: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -330,6 +337,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, instagram: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -343,6 +351,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, twitter: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -356,6 +365,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, linkedin: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -369,6 +379,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, youtube: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                 </div>
@@ -388,6 +399,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         experience: { ...formData.experience, years: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
@@ -401,6 +413,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         experience: { ...formData.experience, description: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                 </div>
@@ -413,6 +426,7 @@ export default function ArtistProfilePage() {
                   placeholder="e.g., English, Sinhala, Tamil"
                   value={formData.languages}
                   onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
+                  className="bg-white/5 border-white/10"
                 />
               </div>
 
@@ -428,6 +442,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, city: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -439,6 +454,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, state: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -450,6 +466,7 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, country: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                   <div className="space-y-2">
@@ -461,13 +478,14 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, zipCode: e.target.value },
                       })}
+                      className="bg-white/5 border-white/10"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button type="submit" disabled={saving}>
+                <Button type="submit" disabled={saving} className="bg-[#5b21b6] hover:bg-[#4c1d95]">
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Changes
                 </Button>
@@ -476,6 +494,6 @@ export default function ArtistProfilePage() {
           </Card>
         </form>
       </div>
-    </ArtistLayout>
+
   );
 }

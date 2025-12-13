@@ -1,7 +1,9 @@
+import { ArtistLayoutNew } from "@/components/layout/artist-layout-new";
+
 export default function ArtistLayoutWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <ArtistLayoutNew>{children}</ArtistLayoutNew>;
 }

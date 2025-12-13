@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { ArtistLayoutNew } from "@/components/layout/artist-layout-new";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,16 +160,14 @@ export default function ArtistPortfolioPage() {
 
   if (loading) {
     return (
-      <ArtistLayoutNew>
-        <div className="flex justify-center items-center min-h-[50vh]">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        </div>
-      </ArtistLayoutNew>
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
     );
   }
 
   return (
-    <ArtistLayoutNew>
+
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold">Portfolio Management</h1>
@@ -332,7 +330,7 @@ export default function ArtistPortfolioPage() {
           </CardContent>
         </Card>
       </div>
-    </ArtistLayoutNew>
+
   );
 }
 

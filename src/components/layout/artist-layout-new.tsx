@@ -73,6 +73,8 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
   const artistTitle = "Painter & Illustrator"; // This should ideally come from the profile
   const artistImage = user?.profileImage || "";
 
+
+
   return (
     <div className="flex min-h-screen bg-[#13111c]">
       {/* Left Sidebar */}
@@ -150,17 +152,7 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col ml-[280px]">
         {/* Top Header Bar */}
-        <header className="h-24 flex items-center justify-between px-8 bg-[#13111c] sticky top-0 z-40">
-          <div className="flex-1 max-w-xl">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-500" />
-              <Input
-                type="search"
-                placeholder="Search bookings, clients..."
-                className="pl-12 w-full bg-[#1e1b29] border-none text-white placeholder:text-gray-500 h-12 rounded-2xl focus-visible:ring-1 focus-visible:ring-[#5b21b6]"
-              />
-            </div>
-          </div>
+        <header className="h-24 flex items-center justify-end px-8 bg-[#13111c] sticky top-0 z-40">
           <div className="flex items-center gap-6">
             <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full h-10 w-10">
               <Bell className="h-5 w-5" />

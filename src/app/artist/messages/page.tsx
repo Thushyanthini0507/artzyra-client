@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArtistLayoutNew } from "@/components/layout/artist-layout-new";
+
 import { ChatLayout, Conversation, Message } from "@/components/shared/ChatLayout";
 
 // Mock Data
@@ -97,7 +97,7 @@ export default function ArtistMessagesPage() {
   };
 
   return (
-    <ArtistLayoutNew>
+
       <div className="h-full">
         <div className="mb-6">
           <h1 className="text-3xl font-bold">Messages</h1>
@@ -114,6 +114,6 @@ export default function ArtistMessagesPage() {
           userType="artist"
         />
       </div>
-    </ArtistLayoutNew>
+
   );
 }

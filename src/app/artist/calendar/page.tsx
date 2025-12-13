@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArtistLayout } from "@/components/layout/artist-layout";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -155,8 +155,8 @@ export default function ArtistCalendarPage() {
   const selectedDateBookings = selectedDate ? getBookingsForDate(selectedDate) : [];
 
   return (
-    <ArtistLayout>
-      <div className="space-y-6">
+
+      <div className="max-w-6xl mx-auto space-y-8">
         <div>
           <h1 className="text-3xl font-bold">Calendar</h1>
           <p className="text-muted-foreground">View your booking schedule</p>
@@ -164,20 +164,20 @@ export default function ArtistCalendarPage() {
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* Calendar */}
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 border-none bg-[#1e1b29]">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>
                   {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                 </CardTitle>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={goToToday}>
+                  <Button variant="outline" size="sm" onClick={goToToday} className="border-white/10 hover:bg-white/5">
                     Today
                   </Button>
-                  <Button variant="outline" size="icon" onClick={previousMonth}>
+                  <Button variant="outline" size="icon" onClick={previousMonth} className="border-white/10 hover:bg-white/5">
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" onClick={nextMonth}>
+                  <Button variant="outline" size="icon" onClick={nextMonth} className="border-white/10 hover:bg-white/5">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -218,9 +218,9 @@ export default function ArtistCalendarPage() {
                         onClick={() => setSelectedDate(date)}
                         className={`
                           aspect-square p-2 rounded-lg border-2 transition-all
-                          ${isSelected ? "border-primary bg-primary/10" : "border-transparent hover:border-gray-200"}
-                          ${isToday ? "bg-blue-50 font-bold" : ""}
-                          ${hasBookings ? "bg-green-50" : ""}
+                          ${isSelected ? "border-primary bg-primary/10" : "border-transparent hover:border-white/10"}
+                          ${isToday ? "bg-white/5 font-bold" : ""}
+                          ${hasBookings ? "bg-[#5b21b6]/20" : ""}
                           relative
                         `}
                       >
@@ -245,7 +245,7 @@ export default function ArtistCalendarPage() {
               )}
 
               {/* Legend */}
-              <div className="mt-6 pt-6 border-t">
+              <div className="mt-6 pt-6 border-t border-white/10">
                 <p className="text-sm font-semibold mb-3">Status Legend:</p>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex items-center gap-2">
@@ -270,7 +270,7 @@ export default function ArtistCalendarPage() {
           </Card>
 
           {/* Selected Date Details */}
-          <Card>
+          <Card className="border-none bg-[#1e1b29]">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <CalendarIcon className="h-5 w-5" />
@@ -300,7 +300,7 @@ export default function ArtistCalendarPage() {
                     selectedDateBookings.map((booking) => (
                       <div
                         key={booking._id}
-                        className="p-4 border rounded-lg space-y-3 hover:bg-gray-50 transition-colors"
+                        className="p-4 border border-white/10 rounded-lg space-y-3 hover:bg-white/5 transition-colors"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
@@ -343,7 +343,7 @@ export default function ArtistCalendarPage() {
         </div>
 
         {/* Upcoming Bookings Summary */}
-        <Card>
+        <Card className="border-none bg-[#1e1b29]">
           <CardHeader>
             <CardTitle>Upcoming Bookings</CardTitle>
             <CardDescription>Your next scheduled appointments</CardDescription>
@@ -367,7 +367,7 @@ export default function ArtistCalendarPage() {
                   .map((booking) => (
                     <div
                       key={booking._id}
-                      className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50 transition-colors"
+                      className="flex items-center justify-between p-3 border border-white/10 rounded-lg hover:bg-white/5 transition-colors"
                     >
                       <div className="flex-1">
                         <div className="flex items-center gap-3">
@@ -402,6 +402,6 @@ export default function ArtistCalendarPage() {
           </CardContent>
         </Card>
       </div>
-    </ArtistLayout>
+
   );
 }
