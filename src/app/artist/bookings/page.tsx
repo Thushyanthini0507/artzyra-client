@@ -49,32 +49,32 @@ export default function ArtistBookingsPage() {
 
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Bookings</h1>
-          <p className="text-muted-foreground">Manage your customer bookings</p>
+          <h1 className="text-3xl font-bold text-white">Bookings</h1>
+          <p className="text-gray-400">Manage your customer bookings</p>
         </div>
 
         <Card className="border-none bg-[#1e1b29]">
           <CardHeader>
-            <CardTitle>All Bookings</CardTitle>
+            <CardTitle className="text-white">All Bookings</CardTitle>
           </CardHeader>
           <CardContent>
             {loading ? (
               <div className="flex items-center justify-center h-48">
-                <Loader2 className="h-8 w-8 animate-spin" />
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
               </div>
             ) : bookings.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No bookings found</p>
+              <p className="text-center text-gray-400 py-8">No bookings found</p>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-white/10">
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Service</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Location</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>Time</TableHead>
+                    <TableHead className="text-gray-400">Customer</TableHead>
+                    <TableHead className="text-gray-400">Service</TableHead>
+                    <TableHead className="text-gray-400">Date</TableHead>
+                    <TableHead className="text-gray-400">Location</TableHead>
+                    <TableHead className="text-gray-400">Amount</TableHead>
+                    <TableHead className="text-gray-400">Status</TableHead>
+                    <TableHead className="text-gray-400">Time</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -82,16 +82,16 @@ export default function ArtistBookingsPage() {
                     <TableRow key={booking._id} className="hover:bg-white/5 border-white/10">
                       <TableCell>
                         <div>
-                          <div className="font-medium">{booking.customer?.name || "N/A"}</div>
-                          <div className="text-sm text-muted-foreground">{booking.customer?.email}</div>
+                          <div className="font-medium text-gray-200">{booking.customer?.name || "N/A"}</div>
+                          <div className="text-sm text-gray-400">{booking.customer?.email}</div>
                         </div>
                       </TableCell>
-                      <TableCell>{booking.service || "N/A"}</TableCell>
-                      <TableCell>{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "N/A"}</TableCell>
-                      <TableCell>{booking.location || "N/A"}</TableCell>
-                      <TableCell>{formatLKR(booking.totalAmount)}</TableCell>
+                      <TableCell className="text-gray-300">{booking.service || "N/A"}</TableCell>
+                      <TableCell className="text-gray-300">{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "N/A"}</TableCell>
+                      <TableCell className="text-gray-300">{booking.location || "N/A"}</TableCell>
+                      <TableCell className="text-gray-300">{formatLKR(booking.totalAmount)}</TableCell>
                       <TableCell>{getStatusBadge(booking.status)}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-gray-300">
                         {booking.startTime && booking.endTime 
                           ? `${booking.startTime} - ${booking.endTime}`
                           : "N/A"}

@@ -169,15 +169,15 @@ export default function ArtistProfilePage() {
 
       <div className="max-w-4xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Profile</h1>
-          <p className="text-muted-foreground">Manage your artist profile information</p>
+          <h1 className="text-3xl font-bold text-white">Profile</h1>
+          <p className="text-gray-400">Manage your artist profile information</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <Card className="border-none bg-[#1e1b29]">
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Update your profile details</CardDescription>
+              <CardTitle className="text-white">Personal Information</CardTitle>
+              <CardDescription className="text-gray-400">Update your profile details</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex justify-center mb-6">
@@ -189,29 +189,29 @@ export default function ArtistProfilePage() {
               </div>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
+                  <Label htmlFor="name" className="text-gray-300">Name *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
-                    className="bg-white/5 border-white/10"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className="text-gray-300">Email</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     disabled
-                    className="bg-white/5 border-white/10 opacity-50"
+                    className="bg-white/5 border-white/10 opacity-50 text-white"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone</Label>
+                  <Label htmlFor="phone" className="text-gray-300">Phone</Label>
                   <PhoneInput
                     id="phone"
                     value={formData.phone}
@@ -220,17 +220,17 @@ export default function ArtistProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
+                  <Label htmlFor="category" className="text-gray-300">Category *</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
-                    <SelectTrigger className="bg-white/5 border-white/10">
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
-                    <SelectContent className="bg-[#1e1b29] border-white/10">
+                    <SelectContent className="bg-[#1e1b29] border-white/10 text-white">
                       {categories.map((cat) => (
-                        <SelectItem key={cat._id} value={cat._id}>
+                        <SelectItem key={cat._id} value={cat._id} className="focus:bg-white/10 focus:text-white">
                           {cat.name}
                         </SelectItem>
                       ))}
@@ -239,7 +239,7 @@ export default function ArtistProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="hourlyRate">Hourly Rate (LKR)</Label>
+                  <Label htmlFor="hourlyRate" className="text-gray-300">Hourly Rate (LKR)</Label>
                   <Input
                     id="hourlyRate"
                     type="number"
@@ -247,73 +247,73 @@ export default function ArtistProfilePage() {
                     step="0.01"
                     value={formData.hourlyRate}
                     onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
-                    className="bg-white/5 border-white/10"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="availability">Availability</Label>
+                  <Label htmlFor="availability" className="text-gray-300">Availability</Label>
                   <Input
                     id="availability"
                     placeholder="e.g., Mon-Fri, 9AM-5PM"
                     value={formData.availability}
                     onChange={(e) => setFormData({ ...formData, availability: e.target.value })}
-                    className="bg-white/5 border-white/10"
+                    className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="bio">Bio</Label>
+                <Label htmlFor="bio" className="text-gray-300">Bio</Label>
                 <Textarea
                   id="bio"
                   rows={4}
                   placeholder="Tell customers about yourself..."
                   value={formData.bio}
                   onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="bg-white/5 border-white/10"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="skills">Skills (comma-separated)</Label>
+                <Label htmlFor="skills" className="text-gray-300">Skills (comma-separated)</Label>
                 <Input
                   id="skills"
                   placeholder="e.g., Portrait, Landscape, Digital Art"
                   value={formData.skills}
                   onChange={(e) => setFormData({ ...formData, skills: e.target.value })}
-                  className="bg-white/5 border-white/10"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="portfolio">Portfolio URLs (comma-separated)</Label>
+                <Label htmlFor="portfolio" className="text-gray-300">Portfolio URLs (comma-separated)</Label>
                 <Input
                   id="portfolio"
                   placeholder="e.g., https://example.com/work1, https://example.com/work2"
                   value={formData.portfolio}
                   onChange={(e) => setFormData({ ...formData, portfolio: e.target.value })}
-                  className="bg-white/5 border-white/10"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
+                <Label htmlFor="website" className="text-gray-300">Website</Label>
                 <Input
                   id="website"
                   type="url"
                   placeholder="https://yourwebsite.com"
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  className="bg-white/5 border-white/10"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                 />
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Social Media Links</h3>
+                <h3 className="text-lg font-semibold text-white">Social Media Links</h3>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="facebook">Facebook</Label>
+                    <Label htmlFor="facebook" className="text-gray-300">Facebook</Label>
                     <Input
                       id="facebook"
                       type="url"
@@ -323,11 +323,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, facebook: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="instagram">Instagram</Label>
+                    <Label htmlFor="instagram" className="text-gray-300">Instagram</Label>
                     <Input
                       id="instagram"
                       type="url"
@@ -337,11 +337,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, instagram: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="twitter">Twitter</Label>
+                    <Label htmlFor="twitter" className="text-gray-300">Twitter</Label>
                     <Input
                       id="twitter"
                       type="url"
@@ -351,11 +351,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, twitter: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="linkedin">LinkedIn</Label>
+                    <Label htmlFor="linkedin" className="text-gray-300">LinkedIn</Label>
                     <Input
                       id="linkedin"
                       type="url"
@@ -365,11 +365,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, linkedin: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="youtube">YouTube</Label>
+                    <Label htmlFor="youtube" className="text-gray-300">YouTube</Label>
                     <Input
                       id="youtube"
                       type="url"
@@ -379,17 +379,17 @@ export default function ArtistProfilePage() {
                         ...formData,
                         socialLinks: { ...formData.socialLinks, youtube: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Experience</h3>
+                <h3 className="text-lg font-semibold text-white">Experience</h3>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="experienceYears">Years of Experience</Label>
+                    <Label htmlFor="experienceYears" className="text-gray-300">Years of Experience</Label>
                     <Input
                       id="experienceYears"
                       type="number"
@@ -399,11 +399,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         experience: { ...formData.experience, years: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="experienceDesc">Experience Description</Label>
+                    <Label htmlFor="experienceDesc" className="text-gray-300">Experience Description</Label>
                     <Textarea
                       id="experienceDesc"
                       rows={3}
@@ -413,28 +413,28 @@ export default function ArtistProfilePage() {
                         ...formData,
                         experience: { ...formData.experience, description: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="languages">Languages (comma-separated)</Label>
+                <Label htmlFor="languages" className="text-gray-300">Languages (comma-separated)</Label>
                 <Input
                   id="languages"
                   placeholder="e.g., English, Sinhala, Tamil"
                   value={formData.languages}
                   onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-                  className="bg-white/5 border-white/10"
+                  className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                 />
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Location</h3>
+                <h3 className="text-lg font-semibold text-white">Location</h3>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
+                    <Label htmlFor="city" className="text-gray-300">City</Label>
                     <Input
                       id="city"
                       value={formData.location.city}
@@ -442,11 +442,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, city: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="state">State/Province</Label>
+                    <Label htmlFor="state" className="text-gray-300">State/Province</Label>
                     <Input
                       id="state"
                       value={formData.location.state}
@@ -454,11 +454,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, state: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
+                    <Label htmlFor="country" className="text-gray-300">Country</Label>
                     <Input
                       id="country"
                       value={formData.location.country}
@@ -466,11 +466,11 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, country: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="zipCode">Zip Code</Label>
+                    <Label htmlFor="zipCode" className="text-gray-300">Zip Code</Label>
                     <Input
                       id="zipCode"
                       value={formData.location.zipCode}
@@ -478,14 +478,14 @@ export default function ArtistProfilePage() {
                         ...formData,
                         location: { ...formData.location, zipCode: e.target.value },
                       })}
-                      className="bg-white/5 border-white/10"
+                      className="bg-white/5 border-white/10 text-white placeholder:text-gray-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div className="flex justify-end gap-2">
-                <Button type="submit" disabled={saving} className="bg-[#5b21b6] hover:bg-[#4c1d95]">
+                <Button type="submit" disabled={saving} className="bg-[#5b21b6] hover:bg-[#4c1d95] text-white">
                   {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Changes
                 </Button>

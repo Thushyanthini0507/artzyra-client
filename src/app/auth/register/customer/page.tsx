@@ -88,7 +88,7 @@ function CustomerRegisterForm() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-white font-medium ml-1">Phone</Label>
+                    <Label htmlFor="phone" className="text-white font-medium ml-1">Mobile Number</Label>
                     <PhoneInput 
                       id="phone" 
                       {...register("phone")} 

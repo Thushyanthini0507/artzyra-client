@@ -158,8 +158,8 @@ export default function ArtistCalendarPage() {
 
       <div className="max-w-6xl mx-auto space-y-8">
         <div>
-          <h1 className="text-3xl font-bold">Calendar</h1>
-          <p className="text-muted-foreground">View your booking schedule</p>
+          <h1 className="text-3xl font-bold text-white">Calendar</h1>
+          <p className="text-gray-400">View your booking schedule</p>
         </div>
 
         <div className="grid gap-6 lg:grid-cols-3">
@@ -167,17 +167,17 @@ export default function ArtistCalendarPage() {
           <Card className="lg:col-span-2 border-none bg-[#1e1b29]">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle>
+                <CardTitle className="text-white">
                   {monthNames[currentDate.getMonth()]} {currentDate.getFullYear()}
                 </CardTitle>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={goToToday} className="border-white/10 hover:bg-white/5">
+                  <Button variant="outline" size="sm" onClick={goToToday} className="border-white/10 hover:bg-white/5 text-gray-300 hover:text-white">
                     Today
                   </Button>
-                  <Button variant="outline" size="icon" onClick={previousMonth} className="border-white/10 hover:bg-white/5">
+                  <Button variant="outline" size="icon" onClick={previousMonth} className="border-white/10 hover:bg-white/5 text-gray-300 hover:text-white">
                     <ChevronLeft className="h-4 w-4" />
                   </Button>
-                  <Button variant="outline" size="icon" onClick={nextMonth} className="border-white/10 hover:bg-white/5">
+                  <Button variant="outline" size="icon" onClick={nextMonth} className="border-white/10 hover:bg-white/5 text-gray-300 hover:text-white">
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                 </div>
@@ -186,7 +186,7 @@ export default function ArtistCalendarPage() {
             <CardContent>
               {loading ? (
                 <div className="flex items-center justify-center py-12">
-                  <p className="text-muted-foreground">Loading calendar...</p>
+                  <p className="text-gray-400">Loading calendar...</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-7 gap-2">
@@ -194,7 +194,7 @@ export default function ArtistCalendarPage() {
                   {dayNames.map((day) => (
                     <div
                       key={day}
-                      className="text-center text-sm font-semibold text-muted-foreground py-2"
+                      className="text-center text-sm font-semibold text-gray-400 py-2"
                     >
                       {day}
                     </div>
@@ -219,7 +219,7 @@ export default function ArtistCalendarPage() {
                         className={`
                           aspect-square p-2 rounded-lg border-2 transition-all
                           ${isSelected ? "border-primary bg-primary/10" : "border-transparent hover:border-white/10"}
-                          ${isToday ? "bg-white/5 font-bold" : ""}
+                          ${isToday ? "bg-white/5 font-bold text-white" : "text-gray-300"}
                           ${hasBookings ? "bg-[#5b21b6]/20" : ""}
                           relative
                         `}
@@ -234,7 +234,7 @@ export default function ArtistCalendarPage() {
                               />
                             ))}
                             {dayBookings.length > 3 && (
-                              <div className="text-[8px] ml-0.5">+{dayBookings.length - 3}</div>
+                              <div className="text-[8px] ml-0.5 text-gray-400">+{dayBookings.length - 3}</div>
                             )}
                           </div>
                         )}
@@ -246,23 +246,23 @@ export default function ArtistCalendarPage() {
 
               {/* Legend */}
               <div className="mt-6 pt-6 border-t border-white/10">
-                <p className="text-sm font-semibold mb-3">Status Legend:</p>
+                <p className="text-sm font-semibold mb-3 text-gray-300">Status Legend:</p>
                 <div className="flex flex-wrap gap-3">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                    <span className="text-xs">Pending</span>
+                    <span className="text-xs text-gray-400">Pending</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-blue-500" />
-                    <span className="text-xs">Confirmed</span>
+                    <span className="text-xs text-gray-400">Confirmed</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-green-500" />
-                    <span className="text-xs">Completed</span>
+                    <span className="text-xs text-gray-400">Completed</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 rounded-full bg-red-500" />
-                    <span className="text-xs">Cancelled</span>
+                    <span className="text-xs text-gray-400">Cancelled</span>
                   </div>
                 </div>
               </div>
@@ -272,8 +272,8 @@ export default function ArtistCalendarPage() {
           {/* Selected Date Details */}
           <Card className="border-none bg-[#1e1b29]">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarIcon className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 text-white">
+                <CalendarIcon className="h-5 w-5 text-gray-400" />
                 {selectedDate
                   ? selectedDate.toLocaleDateString("en-US", {
                       weekday: "long",
@@ -282,7 +282,7 @@ export default function ArtistCalendarPage() {
                     })
                   : "Select a date"}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-gray-400">
                 {selectedDateBookings.length > 0
                   ? `${selectedDateBookings.length} booking${selectedDateBookings.length > 1 ? "s" : ""}`
                   : "No bookings"}
@@ -292,7 +292,7 @@ export default function ArtistCalendarPage() {
               {selectedDate ? (
                 <div className="space-y-4">
                   {selectedDateBookings.length === 0 ? (
-                    <div className="text-center py-8 text-muted-foreground">
+                    <div className="text-center py-8 text-gray-400">
                       <CalendarIcon className="h-12 w-12 mx-auto mb-2 opacity-20" />
                       <p className="text-sm">No bookings on this date</p>
                     </div>
@@ -304,8 +304,8 @@ export default function ArtistCalendarPage() {
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h4 className="font-semibold">{booking.service}</h4>
-                            <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                            <h4 className="font-semibold text-gray-200">{booking.service}</h4>
+                            <div className="flex items-center gap-2 mt-1 text-sm text-gray-400">
                               <User className="h-3 w-3" />
                               <span>{booking.customer?.name || "N/A"}</span>
                             </div>
@@ -316,7 +316,7 @@ export default function ArtistCalendarPage() {
                         </div>
 
                         {booking.startTime && booking.endTime && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-sm text-gray-400">
                             <Clock className="h-3 w-3" />
                             <span>
                               {booking.startTime} - {booking.endTime}
@@ -325,15 +325,15 @@ export default function ArtistCalendarPage() {
                         )}
 
                         <div className="text-sm">
-                          <p className="text-muted-foreground">{booking.location}</p>
-                          <p className="font-semibold mt-1">{formatLKR(booking.totalAmount)}</p>
+                          <p className="text-gray-400">{booking.location}</p>
+                          <p className="font-semibold mt-1 text-gray-200">{formatLKR(booking.totalAmount)}</p>
                         </div>
                       </div>
                     ))
                   )}
                 </div>
               ) : (
-                <div className="text-center py-12 text-muted-foreground">
+                <div className="text-center py-12 text-gray-400">
                   <CalendarIcon className="h-16 w-16 mx-auto mb-4 opacity-20" />
                   <p>Click on a date to view bookings</p>
                 </div>
@@ -345,12 +345,12 @@ export default function ArtistCalendarPage() {
         {/* Upcoming Bookings Summary */}
         <Card className="border-none bg-[#1e1b29]">
           <CardHeader>
-            <CardTitle>Upcoming Bookings</CardTitle>
-            <CardDescription>Your next scheduled appointments</CardDescription>
+            <CardTitle className="text-white">Upcoming Bookings</CardTitle>
+            <CardDescription className="text-gray-400">Your next scheduled appointments</CardDescription>
           </CardHeader>
           <CardContent>
             {loading ? (
-              <p className="text-center text-muted-foreground py-4">Loading...</p>
+              <p className="text-center text-gray-400 py-4">Loading...</p>
             ) : (
               <div className="space-y-3">
                 {bookings
@@ -373,20 +373,20 @@ export default function ArtistCalendarPage() {
                         <div className="flex items-center gap-3">
                           <div className={`w-2 h-2 rounded-full ${getStatusColor(booking.status)}`} />
                           <div>
-                            <p className="font-medium">{booking.service}</p>
-                            <p className="text-sm text-muted-foreground">{booking.customer?.name}</p>
+                            <p className="font-medium text-gray-200">{booking.service}</p>
+                            <p className="text-sm text-gray-400">{booking.customer?.name}</p>
                           </div>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium">
+                        <p className="text-sm font-medium text-gray-200">
                           {new Date(booking.bookingDate || booking.date).toLocaleDateString("en-US", {
                             month: "short",
                             day: "numeric",
                           })}
                         </p>
                         {booking.startTime && (
-                          <p className="text-xs text-muted-foreground">{booking.startTime}</p>
+                          <p className="text-xs text-gray-400">{booking.startTime}</p>
                         )}
                       </div>
                     </div>
@@ -395,7 +395,7 @@ export default function ArtistCalendarPage() {
                   const bookingDate = new Date(b.bookingDate || b.date);
                   return bookingDate >= new Date() && ["pending", "accepted", "confirmed"].includes(b.status);
                 }).length === 0 && (
-                  <p className="text-center text-muted-foreground py-8">No upcoming bookings</p>
+                  <p className="text-center text-gray-400 py-8">No upcoming bookings</p>
                 )}
               </div>
             )}
