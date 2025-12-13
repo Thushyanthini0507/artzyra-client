@@ -31,9 +31,11 @@ function PaymentSuccessContent() {
       }
 
       try {
+        console.log("🔍 Verifying payment intent:", paymentIntentId);
         const response = await apiClient.post("/payments/verify", {
           paymentIntentId,
         });
+        console.log("✅ Verification response:", response.data);
         
         if (response.data.success) {
           setVerified(true);
@@ -46,7 +48,11 @@ function PaymentSuccessContent() {
           setError(response.data.message || "Payment verification failed");
         }
       } catch (error: any) {
-        console.error("Verification error:", error);
+        console.error("❌ Verification error details:", {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status
+        });
         const errorMsg = error.response?.data?.message || error.message || "Failed to verify payment";
         setError(errorMsg);
         toast.error(errorMsg);

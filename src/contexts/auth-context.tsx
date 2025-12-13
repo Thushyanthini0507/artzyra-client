@@ -343,7 +343,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else if (role === "artist") {
         redirectPath = "/artist/dashboard"; // Always redirect artists to artist portal
       } else if (role === "customer") {
-        redirectPath = "/customer";
+        redirectPath = "/";
       } else if (backendRedirectPath && backendRedirectPath !== "/" && backendRedirectPath !== "/admin") {
         // Only use backend redirectPath if it's not /admin and role is unknown
         redirectPath = backendRedirectPath;
@@ -359,7 +359,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (role === "artist") {
           redirectPath = "/artist/dashboard";
         } else if (role === "customer") {
-          redirectPath = "/customer";
+          redirectPath = "/";
         } else {
           redirectPath = "/";
         }
