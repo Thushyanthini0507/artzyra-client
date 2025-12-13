@@ -4,8 +4,8 @@
  */
 
 // Cloudinary cloud name - update this with your actual cloud name
-// Set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME in your .env.local file
-const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'demo';
+// Set CLOUDINARY_CLOUD_NAME in your .env.local file
+const CLOUDINARY_CLOUD_NAME = process.env.CLOUDINARY_CLOUD_NAME || 'demo';
 
 /**
  * Builds a Cloudinary image URL with transformations
