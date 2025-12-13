@@ -216,8 +216,8 @@ export default function ArtistProfilePage() {
           {/* Left Column - Profile Info */}
           <div className="lg:col-span-4 space-y-8">
             {/* Profile Card */}
-            <div className="bg-[#1e1b29] rounded-[32px] p-8 text-center border border-white/5 relative mt-[-100px] shadow-xl">
-              <div className="relative inline-block mb-4">
+            <div className="bg-[#1e1b29] rounded-[32px] p-8 text-center border border-white/5 relative shadow-xl mt">
+              <div className="relative inline-block mb-4 ">
                 <Avatar className="h-32 w-32 border-4 border-[#1e1b29] shadow-lg">
                   <AvatarImage 
                     src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=200&background=random&color=fff&bold=true`} 
@@ -282,7 +282,7 @@ export default function ArtistProfilePage() {
           {/* Right Column - Content */}
           <div className="lg:col-span-8 space-y-10 lg:mt-[-100px]">
             {/* Services Section */}
-            <div>
+            <div className=" mt-20">
               <h3 className="text-2xl font-bold text-white mb-6">Services</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {(artist.skills && artist.skills.length > 0 ? artist.skills : ["Consultation", "Standard Service", "Premium Service", "Custom Project"]).map((skill: string, i: number) => (

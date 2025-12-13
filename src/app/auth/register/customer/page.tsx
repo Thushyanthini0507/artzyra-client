@@ -14,14 +14,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState, Suspense } from "react";
 import { PhoneInput } from "@/components/ui/phone-input";
 
-const customerSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  phone: z.string().regex(/^\+94\d{9}$/, "Phone number must start with +94 and have 9 digits after"),
-});
-
-type CustomerFormData = z.infer<typeof customerSchema>;
+import { customerRegisterSchema, type CustomerRegisterFormData } from "@/lib/validations/auth";
 
 function CustomerRegisterForm() {
   const { register: registerCustomer, loading, error } = useRegisterCustomer();
@@ -31,14 +24,14 @@ function CustomerRegisterForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<CustomerFormData>({
-    resolver: zodResolver(customerSchema),
+  } = useForm<CustomerRegisterFormData>({
+    resolver: zodResolver(customerRegisterSchema),
     defaultValues: {
       phone: "+94",
     },
   });
 
-  const onSubmit = async (data: CustomerFormData) => {
+  const onSubmit = async (data: CustomerRegisterFormData) => {
     await registerCustomer(data);
   };
 

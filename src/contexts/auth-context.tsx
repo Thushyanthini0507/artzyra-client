@@ -310,7 +310,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // The cookie is set by the backend with proper security settings
       if (typeof window !== "undefined") {
         localStorage.setItem("token", token);
-        console.log("🔵 AuthContext - Token saved to localStorage (cookie set by backend)");
+        // Explicitly set cookie to ensure middleware can read it
+        Cookies.set("token", token, { expires: 7, path: '/' }); 
+        console.log("🔵 AuthContext - Token saved to localStorage and Cookie");
       }
 
       closeLogin();
