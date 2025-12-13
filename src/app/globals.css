@@ -115,8 +115,12 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-size: max(14px, 1em);
   }
   body {
     @apply bg-background text-foreground;
+  }
+  h1, h2, h3, h4, h5, h6, label, button, th {
+    text-transform: capitalize;
   }
 }

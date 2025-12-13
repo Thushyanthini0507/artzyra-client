@@ -42,8 +42,7 @@ export function PaymentForm({ bookingId, amount, onSuccess }: PaymentFormProps) 
 
   const onSubmit = async (data: PaymentFormData) => {
     const result = await createPayment({
-      booking: bookingId,
-      amount: Number(data.amount),
+      bookingId: bookingId,
       paymentMethod: "credit_card",
     });
     if (result && onSuccess) {

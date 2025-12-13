@@ -34,7 +34,7 @@ export default function CategoryPage() {
               <div className="h-10 w-64 bg-muted rounded animate-pulse mx-auto" />
               <div className="h-6 w-96 bg-muted rounded animate-pulse mx-auto" />
             </div>
-            <div className="h-12 w-full max-w-2xl bg-muted rounded animate-pulse mx-auto" />
+            <div className="h-12 w-full max-w-3xl bg-muted rounded animate-pulse mx-auto" />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <Card key={i} className="h-full">

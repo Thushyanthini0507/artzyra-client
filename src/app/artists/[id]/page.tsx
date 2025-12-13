@@ -12,7 +12,8 @@ import { reviewService } from "@/services/review.service";
 import apiClient from "@/lib/apiClient";
 import { toast } from "sonner";
 import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, Image as ImageIcon, Search } from "lucide-react";
-import { formatHourlyRate } from "@/lib/utils/currency";
+import { PublicNavbar } from "@/components/layout/public-navbar";
+import { formatHourlyRate, formatLKR } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
@@ -180,34 +181,7 @@ export default function ArtistProfilePage() {
   return (
     <div className="min-h-screen bg-[#13111c] text-white font-sans">
       {/* Top Navbar */}
-      <nav className="absolute top-0 left-0 right-0 z-50 px-8 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 bg-[#5b21b6] rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-xl">L</span>
-          </div>
-          <span className="text-xl font-bold text-white">Artzyra</span>
-        </div>
-        
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-300">
-          <Link href="/browse" className="hover:text-white transition-colors">Discover</Link>
-          <Link href="/categories" className="hover:text-white transition-colors">Categories</Link>
-          <Link href="/for-artists" className="hover:text-white transition-colors">For Artists</Link>
-        </div>
-
-        <div className="flex items-center gap-4">
-          {!user ? (
-            <Link href="/auth/login">
-              <Button variant="ghost" className="text-white hover:bg-white/10 rounded-full px-6">Log In</Button>
-            </Link>
-          ) : (
-             <Avatar className="h-10 w-10 border-2 border-[#5b21b6]">
-                <AvatarFallback className="bg-[#fcd34d] text-black font-bold">
-                  {user.name?.charAt(0) || "U"}
-                </AvatarFallback>
-             </Avatar>
-          )}
-        </div>
-      </nav>
+      <PublicNavbar />
 
       {/* Banner Section */}
       <div className="relative w-full h-[400px] md:h-[500px] px-6 pt-24">
@@ -223,7 +197,7 @@ export default function ArtistProfilePage() {
             />
           ) : (
             <img
-              src={`https://images.unsplash.com/photo-1541961017774-22349e4a1262?w=1200&h=600&fit=crop&q=80`}
+              src={`https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1200&h=600&fit=crop&q=80`}
               alt="Artist banner"
               className="w-full h-full object-cover"
             />
@@ -306,21 +280,16 @@ export default function ArtistProfilePage() {
           </div>
 
           {/* Right Column - Content */}
-          <div className="lg:col-span-8 space-y-10">
+          <div className="lg:col-span-8 space-y-10 lg:mt-[-100px]">
             {/* Services Section */}
             <div>
               <h3 className="text-2xl font-bold text-white mb-6">Services</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {[
-                  { title: "Custom Murals", desc: "Large-scale wall art for homes, offices, and public spaces.", price: "$2,000" },
-                  { title: "Portrait Painting", desc: "Personalized portraits from photos or live sittings.", price: "$500" },
-                  { title: "Live Wedding Painting", desc: "Capture your special day with a unique, live-painted canvas.", price: "$1,500" },
-                  { title: "Canvas Commissions", desc: "Abstract or realist paintings tailored to your space.", price: "$800" }
-                ].map((service, i) => (
+                {(artist.skills && artist.skills.length > 0 ? artist.skills : ["Consultation", "Standard Service", "Premium Service", "Custom Project"]).map((skill: string, i: number) => (
                   <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5 hover:bg-[#252134] transition-colors group cursor-pointer">
-                    <h4 className="text-lg font-bold text-white mb-2">{service.title}</h4>
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{service.desc}</p>
-                    <p className="text-[#a78bfa] font-semibold text-sm">Starts at {service.price}</p>
+                    <h4 className="text-lg font-bold text-white mb-2">{skill}</h4>
+                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">Professional {skill.toLowerCase()} services tailored to your specific needs and requirements.</p>
+                    <p className="text-[#a78bfa] font-semibold text-sm">Starts at {formatLKR(artist.hourlyRate || 500)}</p>
                   </div>
                 ))}
               </div>
@@ -348,10 +317,17 @@ export default function ArtistProfilePage() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[1, 2, 3, 4, 5, 6].map((item, i) => (
+                {[
+                  "1562322140-8baeececf3df",
+                  "1560066984-138dadb4c035",
+                  "1595476108010-b4d1f102b1b1",
+                  "1522337660859-02fbefca4702",
+                  "1521590832917-230085070200",
+                  "1516975080664-ed2fc6a32937"
+                ].map((id, i) => (
                   <div key={i} className="aspect-square rounded-[24px] overflow-hidden relative group cursor-pointer">
                     <img
-                      src={`https://images.unsplash.com/photo-${1541961017774 + i}?w=500&h=500&fit=crop&q=80`}
+                      src={`https://images.unsplash.com/photo-${id}?w=500&h=500&fit=crop&q=80`}
                       alt={`Portfolio ${i}`}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
@@ -359,6 +335,7 @@ export default function ArtistProfilePage() {
                   </div>
                 ))}
               </div>
+
             </div>
 
             {/* Ratings & Reviews */}

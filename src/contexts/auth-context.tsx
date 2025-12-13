@@ -316,11 +316,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       closeLogin();
 
       // -------------------------
-      // REDIRECT LOGIC (PRIORITY: Role-based > Backend)
+      // REDIRECT LOGIC (PRIORITY: Query Param > Role-based > Backend)
       // -------------------------
-      // Always use role-based redirect to ensure correct portal access
       let redirectPath = "/";
       
+      // HIGHEST PRIORITY: Check for redirect parameter from URL (e.g., from booking flow)
+      if (typeof window !== "undefined") {
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirectParam = urlParams.get("redirect");
+        if (redirectParam) {
+          redirectPath = redirectParam;
+          console.log("🔵 AuthContext - Using redirect parameter from URL:", redirectPath);
+          // Use href for immediate redirect
+          window.location.href = redirectPath;
+          return { success: true, user: normalizedUser };
+        }
+      }
+      
+      // SECOND PRIORITY: Role-based redirect to ensure correct portal access
       // CRITICAL: Only redirect to /admin if role is explicitly "admin"
       // Never redirect to /admin if role is empty, undefined, or anything else
       if (role === "admin") {

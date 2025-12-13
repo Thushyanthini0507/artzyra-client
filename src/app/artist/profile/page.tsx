@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { isValidSriLankanPhone, normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { PhoneInput } from "@/components/ui/phone-input";
 
 export default function ArtistProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -210,22 +211,12 @@ export default function ArtistProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Phone (Sri Lankan format)</Label>
-                  <Input
+                  <Label htmlFor="phone">Phone</Label>
+                  <PhoneInput
                     id="phone"
-                    placeholder="0712345678 or 712345678"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    onBlur={(e) => {
-                      const value = e.target.value;
-                      if (value && isValidSriLankanPhone(value)) {
-                        setFormData({ ...formData, phone: normalizeSriLankanPhone(value) });
-                      }
-                    }}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Format: 0712345678 or 712345678
-                  </p>
                 </div>
 
                 <div className="space-y-2">

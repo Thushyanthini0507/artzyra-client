@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { formatTimeRange } from "@/lib/utils/timeFormat";
 
 // Colorful background palette for artist cards
 const cardColors = [
@@ -99,10 +100,8 @@ export default function CustomerDashboard() {
       day: "numeric",
       year: "numeric",
     });
-    const timeStr = booking.startTime && booking.endTime 
-      ? `${booking.startTime} - ${booking.endTime}`
-      : booking.startTime || "";
-    return `${dateStr}${timeStr ? `, ${timeStr}` : ""}`;
+    const timeStr = formatTimeRange(booking.startTime || "", booking.endTime || "");
+    return `${dateStr}${timeStr && timeStr !== "Time not set" ? `, ${timeStr}` : ""}`;
   };
 
   const getStatusVariant = (status: string) => {
@@ -141,118 +140,6 @@ export default function CustomerDashboard() {
           </div>
 
           <div className="space-y-12">
-            {/* Browse Categories Section */}
-            <section>
-              <div className="mb-6">
-                <h2 className="text-3xl font-bold text-white mb-2">Browse by Category</h2>
-                <p className="text-gray-400">Discover artists by their specialty</p>
-              </div>
-              {loading ? (
-                <div className="text-gray-500">Loading categories...</div>
-              ) : categories.length === 0 ? (
-                <div className="text-gray-500 bg-[#1e1b29] rounded-2xl p-8 text-center">
-                  No categories available.
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                  {categories.map((category) => (
-                    <Link
-                      key={category._id}
-                      href={`/browse?category=${category._id}`}
-                      className="group"
-                    >
-                      <Card className="bg-[#181524] border-none rounded-2xl overflow-hidden hover:bg-[#201d2e] transition-all duration-300 shadow-lg shadow-black/20 hover:shadow-purple-900/30 hover:-translate-y-1">
-                        <CardContent className="p-4 text-center">
-                          {category.image ? (
-                            <div className="relative w-full aspect-square mb-3 rounded-xl overflow-hidden bg-gradient-to-br from-purple-500/20 to-pink-500/20">
-                              <Image
-                                src={category.image}
-                                alt={category.name}
-                                fill
-                                className="object-cover group-hover:scale-110 transition-transform duration-500"
-                              />
-                            </div>
-                          ) : (
-                            <div className="w-full aspect-square mb-3 rounded-xl bg-gradient-to-br from-purple-500/20 to-pink-500/20 flex items-center justify-center">
-                              <span className="text-4xl">🎨</span>
-                            </div>
-                          )}
-                          <h3 className="font-semibold text-sm text-white group-hover:text-[#a78bfa] transition-colors line-clamp-1">
-                            {category.name}
-                          </h3>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {category.artistCount || 0} artists
-                          </p>
-                        </CardContent>
-                      </Card>
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </section>
-
-            {/* Featured Artists Section - More Prominent */}
-            <section className="bg-gradient-to-br from-[#1e1b29] to-[#13111c] rounded-3xl p-8 border border-white/5">
-              <div className="mb-8 text-center">
-                <h2 className="text-4xl font-bold text-white mb-3">Featured Artists</h2>
-                <p className="text-gray-400 text-lg">Discover our top-rated talented artists</p>
-              </div>
-              {loading ? (
-                <div className="text-gray-500 text-center py-8">Loading artists...</div>
-              ) : featuredArtists.length === 0 ? (
-                <div className="text-gray-500 bg-[#13111c] rounded-2xl p-8 text-center">
-                  No featured artists available.
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {featuredArtists.map((artist, index) => (
-                    <Card key={artist._id} className="bg-[#13111c] border border-white/5 rounded-3xl overflow-hidden hover:border-[#5b21b6]/50 transition-all duration-300 group shadow-xl shadow-black/30 hover:shadow-purple-900/40 hover:-translate-y-2">
-                      <CardContent className="p-5">
-                        {/* Colorful Avatar Container */}
-                        <div className={`relative w-full aspect-square overflow-hidden rounded-2xl mb-4 ${cardColors[index % cardColors.length]} flex items-center justify-center`}>
-                          {artist.profileImage ? (
-                            <Image
-                              src={artist.profileImage}
-                              alt={artist.name}
-                              fill
-                              className="object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
-                          ) : (
-                            <span className="text-6xl font-bold text-black/70">
-                              {getInitials(artist.name)}
-                            </span>
-                          )}
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div>
-                            <h3 className="font-bold text-lg text-white leading-tight line-clamp-1">{artist.name}</h3>
-                            <p className="text-sm text-gray-400 font-medium mt-1">
-                              {artist.category?.name || "Artist"}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <Star className="h-4 w-4 fill-[#fbbf24] text-[#fbbf24]" />
-                            <span className="text-sm font-semibold text-[#fbbf24]">
-                              {artist.rating?.toFixed(1) || "0.0"}
-                            </span>
-                            <span className="text-sm text-gray-500">
-                              ({artist.reviewCount || 0})
-                            </span>
-                          </div>
-                          <Link href={`/artists/${artist._id}`} className="block mt-3">
-                            <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white font-medium h-11 rounded-2xl text-sm transition-all shadow-lg shadow-purple-900/30">
-                              View Profile
-                            </Button>
-                          </Link>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </section>
-
             {/* My Bookings Section */}
             <section>
               <div className="mb-6">

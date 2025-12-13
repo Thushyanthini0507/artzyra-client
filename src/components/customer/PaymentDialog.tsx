@@ -24,11 +24,14 @@ export function PaymentDialog({ open, onOpenChange, booking, onSuccess }: Paymen
   const handlePayment = async () => {
     if (!booking) return;
     
-    const result = await createPayment({
-      booking: booking._id,
-      amount: booking.totalAmount,
+    console.log("💳 Initiating payment with data:", {
+      bookingId: booking._id,
       paymentMethod,
-      status: "completed",
+    });
+    
+    const result = await createPayment({
+      bookingId: booking._id,
+      paymentMethod,
     });
 
     if (result) {

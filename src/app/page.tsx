@@ -91,13 +91,13 @@ export default function Home() {
           <div className="container mx-auto px-4 relative z-10 pt-20">
             <div className="max-w-3xl">
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight mb-6">
-                DISCOVER A WORLD
+                Discover A World
                 <br />
-                FULL OF CREATIVITY,
+                Full Of Creativity,
                 <br />
-                TALENT, AND
+                Talent, And
                 <br />
-                LIMITLESS POSSIBILITIES.
+                Limitless Possibilities.
               </h1>
               <p className="text-lg md:text-xl text-white max-w-xl leading-relaxed mb-12">
                 Artzyra is a modern digital platform built to connect people
@@ -163,7 +163,7 @@ export default function Home() {
                         <h3 className="font-bold text-lg mb-3  text-black">
                           {feature.title}
                         </h3>
-                        <p className="text-sm  text-black/80 leading-relaxed max-w-[200px]">
+                        <p className="text-base  text-black/80 leading-relaxed max-w-[200px]">
                           {feature.description}
                         </p>
                       </div>
@@ -189,7 +189,7 @@ export default function Home() {
                         <h3 className="font-bold text-lg mb-3 text-black">
                           {feature.title}
                         </h3>
-                        <p className="text-sm text-black/80 leading-relaxed max-w-[200px]">
+                        <p className="text-base text-black/80 leading-relaxed max-w-[200px]">
                           {feature.description}
                         </p>
                       </div>
@@ -265,7 +265,7 @@ export default function Home() {
                             <h4 className="font-bold text-lg text-[#9b87f5]">
                               {testimonial.name}
                             </h4>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-sm text-gray-500">
                               {testimonial.service}
                             </p>
                           </div>
@@ -320,7 +320,7 @@ export default function Home() {
                             <h4 className="font-bold text-lg text-[#9b87f5]">
                               {testimonial.name}
                             </h4>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-sm text-gray-500">
                               {testimonial.service}
                             </p>
                           </div>

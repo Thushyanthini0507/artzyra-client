@@ -3,7 +3,7 @@ import { bookingService } from "@/services/booking.service";
 import { paymentService } from "@/services/payment.service";
 import { reviewService } from "@/services/review.service";
 import { customerService } from "@/services/customer.service";
-import { Booking, Payment, Review, Customer } from "@/types";
+import { Booking, Payment, Review, Customer, CreatePaymentData } from "@/types";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -201,7 +201,7 @@ export function useDeleteReview() {
 export function useCreatePayment() {
   const [loading, setLoading] = useState(false);
 
-  const createPayment = async (data: Partial<Payment>) => {
+  const createPayment = async (data: CreatePaymentData) => {
     setLoading(true);
     try {
       const response = await paymentService.createPayment(data);

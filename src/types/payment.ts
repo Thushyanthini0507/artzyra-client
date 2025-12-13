@@ -13,8 +13,7 @@ export interface Payment {
 }
 
 export interface CreatePaymentData {
-  booking: string;
-  amount: number;
-  paymentMethod: string;
+  bookingId: string;
+  paymentMethod?: string;
 }
 

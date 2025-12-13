@@ -97,7 +97,7 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
               
               <CardContent className="p-6 text-left">
                 {category.description && (
-                  <p className="text-xs text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
                     "{category.description}"
                   </p>
                 )}

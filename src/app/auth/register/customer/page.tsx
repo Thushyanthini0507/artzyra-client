@@ -12,6 +12,7 @@ import { useRegisterCustomer } from "@/hooks/useAuthActions";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
 import { useState, Suspense } from "react";
+import { PhoneInput } from "@/components/ui/phone-input";
 
 const customerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -95,9 +96,8 @@ function CustomerRegisterForm() {
                   
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-white font-medium ml-1">Phone</Label>
-                    <Input 
+                    <PhoneInput 
                       id="phone" 
-                      type="tel" 
                       {...register("phone")} 
                       className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
                     />

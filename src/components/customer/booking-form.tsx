@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useCreateBooking, useUpdateBooking } from "@/hooks/useCustomerHooks";
 import { useArtistPublicList } from "@/hooks/useApi";
 import { Booking } from "@/types";
+import { DatePicker } from "@/components/ui/date-picker";
+import { Controller } from "react-hook-form";
 
 const bookingSchema = z.object({
   artist: z.string().min(1, "Artist is required"),
@@ -37,6 +39,7 @@ export function BookingForm({ initialData, mode, bookingId }: BookingFormProps) 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
@@ -94,7 +97,17 @@ export function BookingForm({ initialData, mode, bookingId }: BookingFormProps) 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="date">Date</Label>
-          <Input id="date" type="date" {...register("date")} />
+          <Controller
+            name="date"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                value={field.value ? new Date(field.value) : undefined}
+                onChange={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                placeholder="Select a date"
+              />
+            )}
+          />
           {errors.date && <p className="text-sm text-red-500">{errors.date.message}</p>}
         </div>
         <div className="space-y-2">

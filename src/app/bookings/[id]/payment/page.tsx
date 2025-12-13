@@ -146,6 +146,13 @@ export default function PaymentPage() {
         
         const bookingData = bookingResponse.data;
         setBooking(bookingData);
+        
+        console.log("📋 Booking data:", {
+          id: bookingData._id,
+          totalAmount: bookingData.totalAmount,
+          paymentStatus: bookingData.paymentStatus,
+          service: bookingData.service,
+        });
 
         if (bookingData.paymentStatus === "paid") {
           toast.success("This booking is already paid");
@@ -154,19 +161,50 @@ export default function PaymentPage() {
         }
 
         // 2. Create PaymentIntent
-        const paymentResponse = await apiClient.post("/payments", {
+        console.log("💳 Initializing payment for booking:", bookingId);
+        
+        // Send both booking and bookingId to handle potential backend version mismatches
+        const payload = {
           bookingId: bookingId,
+          booking: bookingId, // For backward compatibility if backend expects this
           // No paymentMethod provided, so backend will return clientSecret for Payment Element
-        });
+        };
+        
+        const paymentResponse = await apiClient.post("/payments", payload);
+
+        console.log("✅ Payment response:", paymentResponse.data);
 
         if (paymentResponse.data.success && paymentResponse.data.data.clientSecret) {
           setClientSecret(paymentResponse.data.data.clientSecret);
         } else {
-          toast.error("Failed to initialize payment");
+          const errorMsg = paymentResponse.data.message || paymentResponse.data.error || "Failed to initialize payment";
+          console.error("❌ Payment initialization failed:", paymentResponse.data);
+          toast.error(errorMsg);
         }
       } catch (error: any) {
-        console.error("Payment initialization error:", error);
-        toast.error(error.response?.data?.message || "Failed to load payment details");
+        // Detailed error logging
+        const errorDetails = {
+          message: error.message,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          url: error.config?.url,
+          method: error.config?.method,
+        };
+        
+        console.error("❌ Payment initialization error details:", JSON.stringify(errorDetails, null, 2));
+        
+        // Extract detailed error message from backend
+        const errorMessage = 
+          error.response?.data?.message || 
+          error.response?.data?.error || 
+          error.message || 
+          "Failed to load payment details";
+        
+        toast.error(errorMessage, {
+          duration: 5000,
+          description: "Check console for details. If persistent, contact support.",
+        });
       } finally {
         setLoading(false);
       }

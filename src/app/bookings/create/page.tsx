@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { Loader2, Calendar as CalendarIcon, Clock, MapPin, DollarSign, Info } from "lucide-react";
 import { formatHourlyRate } from "@/lib/utils/currency";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { DatePicker } from "@/components/ui/date-picker";
 
 function BookingForm() {
   const router = useRouter();
@@ -166,19 +167,12 @@ function BookingForm() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="date">Date</Label>
-                      <div className="relative">
-                        <CalendarIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="date"
-                          name="date"
-                          type="date"
-                          min={new Date().toISOString().split("T")[0]}
-                          value={formData.date}
-                          onChange={handleInputChange}
-                          className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
-                          required
-                        />
-                      </div>
+                      <DatePicker
+                        value={formData.date ? new Date(formData.date) : undefined}
+                        onChange={(date) => setFormData(prev => ({ ...prev, date: date?.toISOString().split('T')[0] || '' }))}
+                        placeholder="Select booking date"
+                        className="bg-[#13111c] border-white/10"
+                      />
                     </div>
                     
                     <div className="space-y-2">

@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { User, LogOut } from "lucide-react";
+import { User, LogOut, Settings, Heart } from "lucide-react";
 import { NotificationMenu } from "@/components/NotificationMenu";
 
 export function PublicNavbar() {
@@ -78,28 +78,78 @@ export function PublicNavbar() {
                 Artzyra
               </Link>
 
-              <div className="hidden md:flex items-center gap-6">
-                <Link href="/" className={linkClass}>
-                  Home
-                </Link>
-                <Link href="/browse" className={linkClass}>
-                  Explore
-                </Link>
-                <Link href="/category" className={linkClass}>
-                  Category
-                </Link>
-                <Link href="/about" className={linkClass}>
-                  About
-                </Link>
-                <Link href="/auth/register/artist" className={linkClass}>
-                  For Artists
-                </Link>
-              </div>
+            <div className="hidden md:flex items-center gap-6">
+              {/* Show Home and Explore for non-customers */}
+              {user?.role !== "customer" && (
+                <>
+                  <Link href="/" className={linkClass}>
+                    Home
+                  </Link>
+                  <Link href="/browse" className={linkClass}>
+                    Explore
+                  </Link>
+                </>
+              )}
+              
+              {/* Role-based navigation links (customers don't see nav links here) */}
+              
+              {user?.role === "artist" && (
+                <>
+                  <Link href="/artist/bookings" className={linkClass}>
+                    My Bookings
+                  </Link>
+                  <Link href="/artist/profile" className={linkClass}>
+                    My Profile
+                  </Link>
+                </>
+              )}
+              
+              {user?.role === "admin" && (
+                <>
+                  <Link href="/admin" className={linkClass}>
+                    Dashboard
+                  </Link>
+                  <Link href="/admin/categories" className={linkClass}>
+                    Categories
+                  </Link>
+                  <Link href="/admin/users" className={linkClass}>
+                    Users
+                  </Link>
+                </>
+              )}
+              
+              {/* Guest navigation links */}
+              {!user && (
+                <>
+                  <Link href="/category" className={linkClass}>
+                    Category
+                  </Link>
+                  <Link href="/about" className={linkClass}>
+                    About
+                  </Link>
+                  <Link href="/auth/register/artist" className={linkClass}>
+                    For Artists
+                  </Link>
+                </>
+              )}
+            </div>
             </div>
 
             <div className="flex items-center gap-6">
               {user ? (
                 <>
+                  {/* Customer-specific links near notifications */}
+                  {user.role === "customer" && (
+                    <>
+                      <Link href="/customer/bookings" className={linkClass}>
+                        My Bookings
+                      </Link>
+                      <Link href="/customer/messages" className={linkClass}>
+                        Messages
+                      </Link>
+                    </>
+                  )}
+                  
                   {(user.role === "customer" || user.role === "artist") && (
                     <NotificationMenu />
                   )}
@@ -128,6 +178,42 @@ export function PublicNavbar() {
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
+                      
+                      {/* Customer-specific menu items */}
+                      {user.role === "customer" && (
+                        <>
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href="/customer/profile"
+                              className="cursor-pointer"
+                            >
+                              <User className="mr-2 h-4 w-4" />
+                              Profile
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href="/customer/settings"
+                              className="cursor-pointer"
+                            >
+                              <Settings className="mr-2 h-4 w-4" />
+                              Settings
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuItem asChild>
+                            <Link
+                              href="/customer/favorites"
+                              className="cursor-pointer"
+                            >
+                              <Heart className="mr-2 h-4 w-4" />
+                              Favorites
+                            </Link>
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                        </>
+                      )}
+                      
+                      {/* Dashboard for all logged-in users */}
                       <DropdownMenuItem asChild>
                         <Link
                           href={getDashboardLink()}

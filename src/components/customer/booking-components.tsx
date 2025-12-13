@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { formatLKR } from "@/lib/utils/currency";
+import { formatTimeRange } from "@/lib/utils/timeFormat";
 import { Booking } from "@/types/booking";
 import { Artist } from "@/types/artist";
 import { 
@@ -81,7 +82,7 @@ export function BookingInfo({ service, date, startTime, endTime, duration }: Boo
         </div>
         <div className="space-y-1">
           <p className="text-sm font-medium text-gray-400">Time</p>
-          <p className="font-semibold text-white">{startTime && endTime ? `${startTime} - ${endTime}` : "Time not set"}</p>
+          <p className="font-semibold text-white">{formatTimeRange(startTime || "", endTime || "")}</p>
         </div>
         <div className="space-y-1">
           <p className="text-sm font-medium text-gray-400">Duration</p>
