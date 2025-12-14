@@ -18,6 +18,7 @@ function ChatInterface() {
   const { user } = useAuth();
   const bookingId = searchParams.get("bookingId");
   const chatId = searchParams.get("id");
+  const artistId = searchParams.get("artistId");
 
   const [chat, setChat] = useState<any>(null);
   const [messages, setMessages] = useState<any[]>([]);
@@ -28,36 +29,15 @@ function ChatInterface() {
 
   const fetchChat = async () => {
     try {
-      let url = "/chats";
       if (chatId) {
-        url = `/chats/${chatId}`;
+        // Fetch existing chat by ID
+        const response = await apiClient.get(`/chats/${chatId}`);
+        if (response.data.success) {
+          setChat(response.data.data);
+          setMessages(response.data.data.messages || []);
+        }
       } else if (bookingId) {
-        url = `/chats/booking?bookingId=${bookingId}`;
-        // Note: Backend route is /chats/:id, but we need to support query param search
-        // My backend implementation in getChatById handles query params if id is not provided?
-        // Wait, my backend route is router.get("/:id", getChatById);
-        // And getChatById takes id from params.
-        // I need to adjust backend or frontend.
-        // Backend: 
-        // export const getChatById = asyncHandler(async (req, res) => {
-        //   const { id } = req.params;
-        //   const { bookingId } = req.query;
-        //   ...
-        // });
-        // If I call /chats/booking?bookingId=..., express will try to match "booking" as :id.
-        // So I should call /chats/search?bookingId=... or just handle it in frontend by getting all chats and filtering, or fix backend route.
-        // Actually, let's fix the frontend to call /chats first to find the chat, or assume I can pass "booking" as ID and backend handles it? No, backend expects ID to be ObjectId usually if strict.
-        // Let's check backend implementation again.
-        // It checks `if (bookingId)` from query.
-        // But the route is `/:id`.
-        // If I call `/api/chats/lookup?bookingId=...`, "lookup" is the ID.
-        // I should probably use a specific route for lookup or just use `GET /chats` with filter.
-        // My `getChats` (GET /) only returns all chats for user.
-        // I'll try to fetch all chats and find the one with the bookingId for now, as it's safer without changing backend routes again.
-      }
-
-      if (bookingId) {
-        // Fetch all chats and find the one
+        // Fetch all chats and find the one with matching bookingId
         const response = await apiClient.get("/chats");
         if (response.data.success) {
           const foundChat = response.data.data.find((c: any) => c.booking?._id === bookingId || c.booking === bookingId);
@@ -65,18 +45,36 @@ function ChatInterface() {
             setChat(foundChat);
             setMessages(foundChat.messages || []);
           } else {
-            // Chat doesn't exist, maybe create it?
-            // Or just show empty state.
-            // For this flow, we assume chat is created upon confirmation.
-            // If not found, we can't chat.
             toast.error("Chat not found for this booking");
           }
         }
-      } else if (chatId) {
-        const response = await apiClient.get(`/chats/${chatId}`);
-        if (response.data.success) {
-          setChat(response.data.data);
-          setMessages(response.data.data.messages || []);
+      } else if (artistId) {
+        // For physical artists - create or get existing chat
+        try {
+          // First, try to find existing chat
+          const allChatsResponse = await apiClient.get("/chats");
+          if (allChatsResponse.data.success) {
+            const existingChat = allChatsResponse.data.data.find((c: any) => {
+              const participants = c.participants.map((p: any) => p._id || p);
+              return participants.includes(artistId) && !c.booking;
+            });
+            
+            if (existingChat) {
+              setChat(existingChat);
+              setMessages(existingChat.messages || []);
+              return;
+            }
+          }
+          
+          // If no existing chat, create a new one
+          const createResponse = await apiClient.post("/chats/create", { artistId });
+          if (createResponse.data.success) {
+            setChat(createResponse.data.data);
+            setMessages(createResponse.data.data.messages || []);
+          }
+        } catch (error: any) {
+          console.error("Error creating/fetching chat with artist:", error);
+          toast.error(error.response?.data?.message || "Failed to start chat with artist");
         }
       }
     } catch (error) {
@@ -93,8 +91,12 @@ function ChatInterface() {
       // Poll for new messages every 5 seconds
       const interval = setInterval(fetchChat, 5000);
       return () => clearInterval(interval);
+    } else if (artistId) {
+      // Redirect to login if not authenticated
+      const redirectUrl = encodeURIComponent(`/chat?artistId=${artistId}`);
+      router.push(`/auth/login?redirect=${redirectUrl}`);
     }
-  }, [user, bookingId, chatId]);
+  }, [user, bookingId, chatId, artistId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -157,7 +159,7 @@ function ChatInterface() {
           </Avatar>
           <div>
             <CardTitle className="text-lg">{otherParticipant?.name}</CardTitle>
-            <p className="text-xs text-gray-400">{chat.booking?.service || "Service"}</p>
+            <p className="text-xs text-gray-400">{chat.booking?.service || "Direct Message"}</p>
           </div>
         </CardHeader>
         
