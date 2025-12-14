@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
@@ -82,12 +83,15 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
         {/* Logo Section with Glassmorphism */}
         <div className="flex h-24 items-center px-8 border-b border-white/10 backdrop-blur-md bg-white/5">
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 border border-purple-500/30 group-hover:border-purple-500/60 transition-all duration-300">
-              <Sparkles className="h-6 w-6 text-purple-400 group-hover:text-purple-300 group-hover:rotate-12 transition-all duration-300" />
+            <div className="relative h-12 w-40">
+              <Image
+                src="/images/logo.png"
+                alt="Artzyra Logo"
+                fill
+                className="object-contain brightness-200 contrast-200"
+                priority
+              />
             </div>
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-              Artzyra
-            </span>
           </Link>
         </div>
 
@@ -198,4 +202,3 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
     </div>
   );
 }
-

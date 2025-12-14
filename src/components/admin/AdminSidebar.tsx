@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
@@ -67,14 +68,17 @@ export function AdminSidebar() {
   return (
     <div className="flex h-full w-64 flex-col bg-gradient-to-b from-[#1a1625] to-[#13111c] border-r border-white/10">
       {/* Logo Section with Glassmorphism */}
-      <div className="flex h-16 items-center px-6 border-b border-white/10 backdrop-blur-md bg-white/5">
+      <div className="flex h-20 items-center px-6 border-b border-white/10 backdrop-blur-md bg-white/5">
         <Link href="/admin" className="flex items-center gap-2 font-semibold group">
-          <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 border border-purple-500/30 group-hover:border-purple-500/60 transition-all duration-300">
-            <Sparkles className="h-5 w-5 text-purple-400 group-hover:text-purple-300 group-hover:rotate-12 transition-all duration-300" />
+          <div className="relative h-12 w-40">
+            <Image
+              src="/images/logo.png"
+              alt="Artzyra Logo"
+              fill
+              className="object-contain brightness-200 contrast-200"
+              priority
+            />
           </div>
-          <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
-            ArtZyra
-          </span>
         </Link>
       </div>
 

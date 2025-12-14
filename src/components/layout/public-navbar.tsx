@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -73,9 +74,17 @@ export function PublicNavbar() {
             <div className="flex items-center gap-8">
               <Link
                 href="/"
-                className="text-2xl font-bold text-white"
+                className="flex items-center"
               >
-                Artzyra
+                <div className="relative h-14 w-48">
+                  <Image
+                    src="/images/logo.png"
+                    alt="Artzyra Logo"
+                    fill
+                    className="object-contain brightness-200 contrast-200"
+                    priority
+                  />
+                </div>
               </Link>
 
             <div className="hidden md:flex items-center gap-6">
