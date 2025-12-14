@@ -128,7 +128,7 @@ export default function BookingDetailsPage() {
 
               <Card className="bg-[#1e1b29] border-white/5 shadow-lg">
                 <CardContent className="pt-6">
-                  <LocationCard address={booking.location} />
+                  <LocationCard address={booking.location || ""} />
                 </CardContent>
               </Card>
 
@@ -157,7 +157,7 @@ export default function BookingDetailsPage() {
                 onCancel={handleCancel}
               />
 
-              {booking.status === 'confirmed' && (
+              {booking.status === 'in_progress' && (
                 <Card className="bg-[#1e1b29] border-[#5b21b6]/30 shadow-lg">
                   <CardHeader>
                     <CardTitle className="text-white">Action Required</CardTitle>

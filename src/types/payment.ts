@@ -1,6 +1,7 @@
-import { Booking } from "./booking";
+import { Booking, PaymentStatus } from "./booking";
 
-export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
+// PaymentStatus is imported from booking.ts to avoid duplicate exports
+// This file exports Payment interface
 
 export interface Payment {
   _id: string;

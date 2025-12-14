@@ -213,7 +213,7 @@ export default function BookingDetailsPage() {
                   <>
                     <Button 
                       className="bg-green-600 hover:bg-green-700 text-white"
-                      onClick={() => handleStatusUpdate("confirmed")}
+                      onClick={() => handleStatusUpdate("in_progress")}
                       disabled={actionLoading}
                     >
                       <CheckCircle className="mr-2 h-4 w-4" />

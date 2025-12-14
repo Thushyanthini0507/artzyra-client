@@ -2,7 +2,7 @@ import { Customer } from "./customer";
 import { Artist } from "./artist";
 
 export type BookingStatus = "pending" | "in_progress" | "review" | "completed" | "cancelled" | "declined";
-export type PaymentStatus = "pending" | "paid" | "refunded" | "failed" | "partial";
+export type PaymentStatus = "pending" | "paid" | "succeeded" | "refunded" | "failed" | "partial";
 export type PackageType = "basic" | "standard" | "premium" | "custom";
 export type UrgencyType = "normal" | "express";
 export type PricingType = "package" | "custom_quote";
@@ -97,6 +97,7 @@ export interface Booking {
   endTime?: string;
   duration?: number;
   location?: string;
+  specialRequests?: string;
   notes?: string;
   // Status
   status: BookingStatus;

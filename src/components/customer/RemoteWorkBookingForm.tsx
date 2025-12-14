@@ -32,14 +32,12 @@ const remoteBookingSchema = z.object({
   referenceLinkInput: z.string().optional(),
   
   // Delivery Timeline
-  expectedDeliveryDate: z.date({
-    required_error: "Expected delivery date is required",
-  }),
+  expectedDeliveryDate: z.date().optional(),
   urgency: z.enum(["normal", "express"]),
-  revisionCount: z.number().min(0).max(10).default(3),
+  revisionCount: z.number().min(0).max(10).default(3).optional(),
   
   // Communication
-  emailUpdates: z.boolean().default(false),
+  emailUpdates: z.boolean().default(false).optional(),
   
   // Pricing & Payment
   pricingType: z.enum(["package", "custom_quote"]),
@@ -104,7 +102,7 @@ export function RemoteWorkBookingForm({
       emailUpdates: false,
       pricingType: "package",
       paymentType: "full",
-      advancePercentage: 50,
+      advancePercentage: undefined,
     },
   });
 
@@ -169,9 +167,9 @@ export function RemoteWorkBookingForm({
         projectDescription: data.projectDescription,
         referenceLinks,
         uploadedFiles,
-        expectedDeliveryDate: data.expectedDeliveryDate.toISOString(),
+        expectedDeliveryDate: data.expectedDeliveryDate?.toISOString(),
         urgency: data.urgency,
-        revisionCount: { limit: data.revisionCount },
+        revisionCount: { requested: 0, used: 0, limit: data.revisionCount || 3 },
         emailUpdates: data.emailUpdates,
         pricingType: data.pricingType,
         packagePrice: pricingType === "package" ? totalAmount : undefined,

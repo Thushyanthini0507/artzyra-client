@@ -175,7 +175,7 @@ function BookingForm() {
       return artist.pricing?.amount || artist.hourlyRate || 0;
     }
     
-    const duration = parseFloat(formData.duration) || 0;
+    const duration = parseFloat(formData.duration || "0") || 0;
     return duration * (artist.hourlyRate || 0);
   };
 
@@ -404,7 +404,6 @@ function BookingForm() {
                               }}
                               placeholder="Select expected delivery date (optional)"
                               className="bg-[#13111c] border-white/10"
-                              minDate={new Date(Date.now() + getSelectedServiceDeliveryTime() * 24 * 60 * 60 * 1000)}
                             />
                           )}
                         />
@@ -585,7 +584,7 @@ function BookingForm() {
                       {artist.artistType !== 'remote' && (
                         <div className="flex justify-between text-gray-400">
                           <span>Duration</span>
-                          <span className="text-white">{formData.duration} {parseFloat(formData.duration) === 1 ? "hour" : "hours"}</span>
+                          <span className="text-white">{formData.duration} {parseFloat(formData.duration || "0") === 1 ? "hour" : "hours"}</span>
                         </div>
                       )}
                       {artist.artistType === 'remote' && (

@@ -186,7 +186,7 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
         <header className="h-24 flex items-center justify-end px-8 bg-[#13111c]/80 backdrop-blur-md sticky top-0 z-40 border-b border-white/5">
           <div className="flex items-center gap-4">
             <Button 
-              onClick={handleRefresh}
+              onClick={() => router.refresh()}
               className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white border-none shadow-lg shadow-emerald-900/20 rounded-xl h-10 px-4 gap-2 transition-all duration-300"
             >
               <RefreshCw className="h-4 w-4" />

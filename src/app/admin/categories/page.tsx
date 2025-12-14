@@ -120,7 +120,7 @@ export default function CategoriesPage() {
         }
       }
 
-      const dataToSubmit = { ...formData, image: imageUrl };
+      const dataToSubmit = { ...formData, image: imageUrl, type: formData.type as "physical" | "remote" };
       const response = editingCategory
         ? await adminService.updateCategory(editingCategory._id, dataToSubmit)
         : await adminService.createCategory(dataToSubmit);
