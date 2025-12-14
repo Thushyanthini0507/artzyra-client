@@ -60,7 +60,22 @@ function BookingForm() {
       try {
         const response = await artistService.getById(artistId);
         if (response.success) {
-          setArtist(response.data);
+          const artistData = response.data;
+          
+          // Check if artist is physical - they should not be booked here
+          if (artistData.artistType === 'physical') {
+            toast.error("Physical artists cannot be booked directly. Please chat with them first.");
+            router.push(`/chat?artistId=${artistId}`);
+            return;
+          }
+          
+          setArtist(artistData);
+          
+          // If remote, set default service price if available
+          if (artistData.artistType === 'remote' && artistData.pricing?.amount) {
+             // We don't need to set duration for remote, but we can keep it as 1 for calculation consistency if needed, 
+             // or handle it in calculateTotal
+          }
         } else {
           toast.error("Artist not found");
           router.push("/browse");
@@ -89,6 +104,11 @@ function BookingForm() {
 
   const calculateTotal = () => {
     if (!artist) return 0;
+    
+    if (artist.artistType === 'remote') {
+      return artist.pricing?.amount || artist.hourlyRate || 0;
+    }
+    
     const duration = parseFloat(formData.duration) || 0;
     return duration * (artist.hourlyRate || 0);
   };
@@ -96,9 +116,22 @@ function BookingForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.date || !formData.startTime || !formData.location) {
-      toast.error("Please fill in all required fields");
-      return;
+    // Validation based on artist type
+    if (artist.artistType === 'remote') {
+       if (!formData.notes) {
+          toast.error("Please provide project details in notes");
+          return;
+       }
+       // For remote, date/time/location might be optional or auto-filled
+       // We'll set defaults if missing to satisfy backend schema
+       if (!formData.date) formData.date = new Date().toISOString().split('T')[0];
+       if (!formData.startTime) formData.startTime = "09:00";
+       if (!formData.location) formData.location = "Remote / Online";
+    } else {
+       if (!formData.date || !formData.startTime || !formData.location) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -164,80 +197,110 @@ function BookingForm() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="date">Date</Label>
-                      <DatePicker
-                        value={formData.date ? new Date(formData.date) : undefined}
-                        onChange={(date) => setFormData(prev => ({ ...prev, date: date?.toISOString().split('T')[0] || '' }))}
-                        placeholder="Select booking date"
-                        className="bg-[#13111c] border-white/10"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="startTime">Start Time</Label>
-                      <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                        <Input
-                          id="startTime"
-                          name="startTime"
-                          type="time"
-                          value={formData.startTime}
+                  {artist.artistType === 'remote' ? (
+                    <div className="space-y-4">
+                      <div className="bg-[#5b21b6]/20 p-4 rounded-lg flex gap-3 items-start border border-[#5b21b6]/30">
+                        <Info className="h-5 w-5 text-[#9b87f5] shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-bold text-white text-sm mb-1">Remote Service</h4>
+                          <p className="text-xs text-gray-300 leading-relaxed">
+                            This is a remote service. Delivery will be within {artist.deliveryTime || 3} days.
+                            Please describe your requirements in detail below.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="notes">Project Details & Requirements *</Label>
+                        <Textarea
+                          id="notes"
+                          name="notes"
+                          placeholder="Describe your project, style preferences, and any specific requirements..."
+                          value={formData.notes}
                           onChange={handleInputChange}
-                          className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
+                          className="bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] min-h-[150px]"
                           required
                         />
                       </div>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label htmlFor="date">Date</Label>
+                          <DatePicker
+                            value={formData.date ? new Date(formData.date) : undefined}
+                            onChange={(date) => setFormData(prev => ({ ...prev, date: date?.toISOString().split('T')[0] || '' }))}
+                            placeholder="Select booking date"
+                            className="bg-[#13111c] border-white/10"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="startTime">Start Time</Label>
+                          <div className="relative">
+                            <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                            <Input
+                              id="startTime"
+                              name="startTime"
+                              type="time"
+                              value={formData.startTime}
+                              onChange={handleInputChange}
+                              className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
+                              required
+                            />
+                          </div>
+                        </div>
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="duration">Duration (Hours)</Label>
-                    <Select 
-                      value={formData.duration} 
-                      onValueChange={(val) => handleSelectChange("duration", val)}
-                    >
-                      <SelectTrigger className="bg-[#13111c] border-white/10 text-white focus:ring-[#9b87f5]">
-                        <SelectValue placeholder="Select duration" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#1e1b29] border-white/10 text-white">
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                          <SelectItem key={num} value={num.toString()} className="focus:bg-[#5b21b6] focus:text-white">
-                            {num} {num === 1 ? "Hour" : "Hours"}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="duration">Duration (Hours)</Label>
+                        <Select 
+                          value={formData.duration} 
+                          onValueChange={(val) => handleSelectChange("duration", val)}
+                        >
+                          <SelectTrigger className="bg-[#13111c] border-white/10 text-white focus:ring-[#9b87f5]">
+                            <SelectValue placeholder="Select duration" />
+                          </SelectTrigger>
+                          <SelectContent className="bg-[#1e1b29] border-white/10 text-white">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                              <SelectItem key={num} value={num.toString()} className="focus:bg-[#5b21b6] focus:text-white">
+                                {num} {num === 1 ? "Hour" : "Hours"}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="location">Location</Label>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                      <Input
-                        id="location"
-                        name="location"
-                        placeholder="Enter full address"
-                        value={formData.location}
-                        onChange={handleInputChange}
-                        className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
-                        required
-                      />
-                    </div>
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="location">Location</Label>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <Input
+                            id="location"
+                            name="location"
+                            placeholder="Enter full address"
+                            value={formData.location}
+                            onChange={handleInputChange}
+                            className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
+                            required
+                          />
+                        </div>
+                      </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea
-                      id="notes"
-                      name="notes"
-                      placeholder="Describe your project or any specific requirements..."
-                      value={formData.notes}
-                      onChange={handleInputChange}
-                      className="bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] min-h-[100px]"
-                    />
-                  </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="notes">Additional Notes</Label>
+                        <Textarea
+                          id="notes"
+                          name="notes"
+                          placeholder="Describe your project or any specific requirements..."
+                          value={formData.notes}
+                          onChange={handleInputChange}
+                          className="bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] min-h-[100px]"
+                        />
+                      </div>
+                    </>
+                  )}
 
                   <Button 
                     type="submit" 
@@ -278,13 +341,26 @@ function BookingForm() {
 
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between text-gray-400">
-                    <span>Hourly Rate</span>
-                    <span className="text-white">{formatHourlyRate(artist.hourlyRate)}</span>
+                    <span>{artist.artistType === 'remote' ? 'Service Price' : 'Hourly Rate'}</span>
+                    <span className="text-white">
+                      {artist.artistType === 'remote' && artist.pricing?.amount 
+                        ? formatHourlyRate(artist.pricing.amount) 
+                        : formatHourlyRate(artist.hourlyRate)
+                      }
+                    </span>
                   </div>
-                  <div className="flex justify-between text-gray-400">
-                    <span>Duration</span>
-                    <span className="text-white">{formData.duration} {parseFloat(formData.duration) === 1 ? "hour" : "hours"}</span>
-                  </div>
+                  {artist.artistType !== 'remote' && (
+                    <div className="flex justify-between text-gray-400">
+                      <span>Duration</span>
+                      <span className="text-white">{formData.duration} {parseFloat(formData.duration) === 1 ? "hour" : "hours"}</span>
+                    </div>
+                  )}
+                  {artist.artistType === 'remote' && (
+                    <div className="flex justify-between text-gray-400">
+                      <span>Delivery Time</span>
+                      <span className="text-white">{artist.deliveryTime || 3} Days</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-gray-400">
                     <span>Service Fee</span>
                     <span className="text-white">$0.00</span>

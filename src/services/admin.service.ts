@@ -48,8 +48,13 @@ export const adminService = {
     const response = await apiClient.post(`/payments/${paymentId}/refund`, {});
     return response.data;
   },
-  getCategories: async () => {
-    const response = await apiClient.get("/categories");
+  getCategories: async (params?: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    isActive?: boolean;
+  }) => {
+    const response = await apiClient.get("/categories", { params });
     return response.data;
   },
   createCategory: async (data: {
@@ -62,7 +67,7 @@ export const adminService = {
   },
   updateCategory: async (
     id: string,
-    data: { name?: string; description?: string; image?: string }
+    data: { name?: string; description?: string; image?: string; type?: "physical" | "remote" }
   ) => {
     const response = await apiClient.put(`/categories/${id}`, data);
     return response.data;

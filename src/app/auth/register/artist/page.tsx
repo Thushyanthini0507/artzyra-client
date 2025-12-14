@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -35,8 +35,37 @@ export default function ArtistRegisterPage() {
     },
   });
 
+  const selectedCategoryId = useWatch({
+    control,
+    name: "category",
+  });
+
+  const selectedCategory = categories.find((c: any) => c._id === selectedCategoryId);
+  const isRemote = selectedCategory?.type === "remote";
+
   const onSubmit = async (data: ArtistRegisterFormData) => {
-    await registerArtist(data);
+    // Transform data for backend if needed
+    const submissionData = {
+      ...data,
+      // If remote, structure pricing object
+      ...(isRemote && {
+        pricing: {
+          amount: Number(data.hourlyRate), // Using hourlyRate field for fixed price to reuse schema
+          unit: "project",
+          currency: "LKR"
+        },
+        deliveryTime: Number((data as any).deliveryTime)
+      }),
+      // If physical, ensure hourly rate is set correctly
+      ...(!isRemote && {
+        pricing: {
+          amount: Number(data.hourlyRate),
+          unit: "hour",
+          currency: "LKR"
+        }
+      })
+    };
+    await registerArtist(submissionData);
   };
 
   return (
@@ -143,61 +172,77 @@ export default function ArtistRegisterPage() {
                   {errors.bio && <p className="text-sm text-red-300 ml-1">{errors.bio.message}</p>}
                 </div>
 
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label htmlFor="category" className="text-white font-medium ml-1">Category</Label>
-                    <select
-                      id="category"
-                      className="flex h-12 w-full rounded-xl border border-transparent bg-white/10 px-3 py-2 text-sm text-white focus:border-white/30 focus:bg-white/20 focus:outline-none transition-all"
-                      {...register("category")}
-                    >
-                      <option value="" className="text-black">Select a category</option>
-                      {categories.map((cat: any) => (
-                        <option key={cat._id} value={cat._id} className="text-black">
-                          {cat.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.category && <p className="text-sm text-red-300 ml-1">{errors.category.message}</p>}
+                  <div className="grid gap-6 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="category" className="text-white font-medium ml-1">Category</Label>
+                      <select
+                        id="category"
+                        className="flex h-12 w-full rounded-xl border border-transparent bg-white/10 px-3 py-2 text-sm text-white focus:border-white/30 focus:bg-white/20 focus:outline-none transition-all"
+                        {...register("category")}
+                      >
+                        <option value="" className="text-black">Select a category</option>
+                        {categories.map((cat: any) => (
+                          <option key={cat._id} value={cat._id} className="text-black">
+                            {cat.name} {cat.type ? `(${cat.type})` : ''}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.category && <p className="text-sm text-red-300 ml-1">{errors.category.message}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="hourlyRate" className="text-white font-medium ml-1">
+                        {isRemote ? "Fixed Service Price (LKR)" : "Hourly Rate (LKR)"}
+                      </Label>
+                      <Input 
+                        id="hourlyRate" 
+                        type="number" 
+                        {...register("hourlyRate")} 
+                        className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                      />
+                      {errors.hourlyRate && <p className="text-sm text-red-300 ml-1">{errors.hourlyRate.message}</p>}
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="hourlyRate" className="text-white font-medium ml-1">Hourly Rate (LKR)</Label>
-                    <Input 
-                      id="hourlyRate" 
-                      type="number" 
-                      {...register("hourlyRate")} 
-                      className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
-                    />
-                    {errors.hourlyRate && <p className="text-sm text-red-300 ml-1">{errors.hourlyRate.message}</p>}
-                  </div>
-                </div>
+                  {isRemote ? (
+                    <div className="space-y-2">
+                      <Label htmlFor="deliveryTime" className="text-white font-medium ml-1">Delivery Time (Days)</Label>
+                      <Input 
+                        id="deliveryTime" 
+                        type="number" 
+                        {...register("deliveryTime" as any)} // Cast to any since it's not in schema yet
+                        className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                      />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="skills" className="text-white font-medium ml-1">Skills (comma separated)</Label>
+                        <Input 
+                          id="skills" 
+                          placeholder="e.g. Painting, Sketching, Digital Art" 
+                          {...register("skills")} 
+                          className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                        />
+                        {errors.skills && <p className="text-sm text-red-300 ml-1">{errors.skills.message}</p>}
+                      </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="skills" className="text-white font-medium ml-1">Skills (comma separated)</Label>
-                  <Input 
-                    id="skills" 
-                    placeholder="e.g. Painting, Sketching, Digital Art" 
-                    {...register("skills")} 
-                    className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
-                  />
-                  {errors.skills && <p className="text-sm text-red-300 ml-1">{errors.skills.message}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="availability" className="text-white font-medium ml-1">Availability</Label>
-                  <select
-                    id="availability"
-                    className="flex h-12 w-full rounded-xl border border-transparent bg-white/10 px-3 py-2 text-sm text-white focus:border-white/30 focus:bg-white/20 focus:outline-none transition-all"
-                    {...register("availability")}
-                  >
-                    <option value="" className="text-black">Select availability</option>
-                    <option value="Full-time" className="text-black">Full-time</option>
-                    <option value="Part-time" className="text-black">Part-time</option>
-                    <option value="Weekends" className="text-black">Weekends</option>
-                  </select>
-                  {errors.availability && <p className="text-sm text-red-300 ml-1">{errors.availability.message}</p>}
-                </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="availability" className="text-white font-medium ml-1">Availability</Label>
+                        <select
+                          id="availability"
+                          className="flex h-12 w-full rounded-xl border border-transparent bg-white/10 px-3 py-2 text-sm text-white focus:border-white/30 focus:bg-white/20 focus:outline-none transition-all"
+                          {...register("availability")}
+                        >
+                          <option value="" className="text-black">Select availability</option>
+                          <option value="Full-time" className="text-black">Full-time</option>
+                          <option value="Part-time" className="text-black">Part-time</option>
+                          <option value="Weekends" className="text-black">Weekends</option>
+                        </select>
+                        {errors.availability && <p className="text-sm text-red-300 ml-1">{errors.availability.message}</p>}
+                      </div>
+                    </>
+                  )}
               </div>
 
               {error && (

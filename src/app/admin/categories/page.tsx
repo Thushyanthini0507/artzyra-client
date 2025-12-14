@@ -20,15 +20,24 @@ import { Pencil, Trash2, Plus, Image as ImageIcon, X, Search, RefreshCcw, Layers
 import { toast } from "sonner";
 import Image from "next/image";
 
+interface Category {
+  _id: string;
+  name: string;
+  description?: string;
+  image?: string;
+  type?: "physical" | "remote";
+}
+
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<any[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingCategory, setEditingCategory] = useState<any>(null);
+  const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     image: "",
+    type: "physical",
   });
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -38,13 +47,13 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const response = await adminService.getCategories();
+      const response = await adminService.getCategories({ limit: 100 });
       if (response.success && response.data) {
         setCategories(Array.isArray(response.data) ? response.data : []);
       } else {
         toast.error(response.error || "Failed to load categories");
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error fetching categories:", error);
       toast.error("Failed to load categories");
     } finally {
@@ -119,21 +128,25 @@ export default function CategoriesPage() {
       if (response.success) {
         toast.success(`Category ${editingCategory ? "updated" : "created"} successfully`);
         handleDialogOpenChange(false);
-        fetchCategories();
+        // Force a refresh to ensure UI shows updated data
+        await fetchCategories();
       } else {
         toast.error(response.error || "Operation failed");
       }
     } catch (error: any) {
-      toast.error("Failed to save category");
+      console.error("Error saving category:", error);
+      const errorMessage = error?.response?.data?.error || error?.message || "Failed to save category";
+      toast.error(errorMessage);
     }
   };
 
-  const handleEdit = (category: any) => {
+  const handleEdit = (category: Category) => {
     setEditingCategory(category);
     setFormData({
       name: category.name,
       description: category.description || "",
       image: category.image || "",
+      type: category.type || "physical",
     });
     setImagePreview(category.image || "");
     setIsDialogOpen(true);
@@ -143,7 +156,7 @@ export default function CategoriesPage() {
     setIsDialogOpen(open);
     if (!open) {
       setEditingCategory(null);
-      setFormData({ name: "", description: "", image: "" });
+      setFormData({ name: "", description: "", image: "", type: "physical" });
       setImagePreview("");
       setSelectedFile(null);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -215,6 +228,19 @@ export default function CategoriesPage() {
                       placeholder="e.g., Digital Art"
                       className="bg-black/20 border-white/10 text-white focus:border-purple-500/50"
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="type" className="text-gray-300">Type *</Label>
+                    <select
+                      id="type"
+                      value={formData.type}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                      required
+                      className="w-full h-10 px-3 rounded-md bg-black/20 border border-white/10 text-white focus:border-purple-500/50 focus:outline-none"
+                    >
+                      <option value="physical">Physical (In-person)</option>
+                      <option value="remote">Remote (Online)</option>
+                    </select>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="description" className="text-gray-300">Description</Label>
@@ -337,6 +363,9 @@ export default function CategoriesPage() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
                   <div className="absolute bottom-0 left-0 p-4 w-full">
                     <h3 className="text-lg font-bold text-white truncate">{category.name}</h3>
+                    <span className={`text-xs px-2 py-1 rounded-full ${category.type === 'remote' ? 'bg-blue-500/20 text-blue-300' : 'bg-green-500/20 text-green-300'}`}>
+                      {category.type === 'remote' ? 'Remote' : 'Physical'}
+                    </span>
                   </div>
                 </div>
                 <CardContent className="p-4">
