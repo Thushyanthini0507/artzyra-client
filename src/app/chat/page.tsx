@@ -31,14 +31,14 @@ function ChatInterface() {
     try {
       if (chatId) {
         // Fetch existing chat by ID
-        const response = await apiClient.get(`/api/chats/${chatId}`);
+        const response = await apiClient.get(`/chats/${chatId}`);
         if (response.data.success) {
           setChat(response.data.data);
           setMessages(response.data.data.messages || []);
         }
       } else if (bookingId) {
         // Fetch all chats and find the one with matching bookingId
-        const response = await apiClient.get("/api/chats");
+        const response = await apiClient.get("/chats");
         if (response.data.success) {
           const foundChat = response.data.data.find((c: any) => c.booking?._id === bookingId || c.booking === bookingId);
           if (foundChat) {
@@ -53,7 +53,7 @@ function ChatInterface() {
         // For remote artists - chat only available after booking and payment
         // The backend endpoint handles finding existing chats automatically
         try {
-          const createResponse = await apiClient.post("/api/chats/create", { artistId });
+          const createResponse = await apiClient.post("/chats/create", { artistId });
           if (createResponse.data.success) {
             setChat(createResponse.data.data);
             setMessages(createResponse.data.data.messages || []);
@@ -118,7 +118,7 @@ function ChatInterface() {
 
     setSending(true);
     try {
-      const response = await apiClient.post(`/api/chats/${chat._id}/messages`, {
+      const response = await apiClient.post(`/chats/${chat._id}/messages`, {
         content: newMessage,
       });
 
