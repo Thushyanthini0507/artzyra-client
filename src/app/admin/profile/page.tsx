@@ -93,7 +93,7 @@ export default function AdminProfilePage() {
 
       const response = await adminService.updateProfile({
         name: formData.name,
-        phone: formData.phone ? normalizeSriLankanPhone(formData.phone) : undefined,
+        phone: formData.phone && formData.phone.trim() ? normalizeSriLankanPhone(formData.phone) : "",
         bio: formData.bio,
         department: formData.department,
         position: formData.position,

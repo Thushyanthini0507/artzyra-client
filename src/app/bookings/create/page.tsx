@@ -2,6 +2,9 @@
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { PublicLayout } from "@/components/layout/public-layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,6 +21,37 @@ import { formatHourlyRate } from "@/lib/utils/currency";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DatePicker } from "@/components/ui/date-picker";
 
+// Base schema for common fields
+const baseBookingSchema = z.object({
+  service: z.string().min(1, "Service type is required").min(3, "Service type must be at least 3 characters"),
+});
+
+// Remote artist booking schema
+const remoteBookingSchema = baseBookingSchema.extend({
+  projectTitle: z.string().min(1, "Project title is required").min(3, "Project title must be at least 3 characters"),
+  projectDescription: z.string().min(1, "Project description is required").min(20, "Project description must be at least 20 characters"),
+  expectedDeliveryDate: z.string().optional(),
+  // Optional fields for remote (not used but present for type compatibility)
+  date: z.string().optional(),
+  startTime: z.string().optional(),
+  duration: z.string().optional(),
+  location: z.string().optional(),
+  notes: z.string().optional(),
+});
+
+// Physical artist booking schema (for legacy support, though they shouldn't be bookable)
+const physicalBookingSchema = baseBookingSchema.extend({
+  date: z.string().min(1, "Booking date is required"),
+  startTime: z.string().min(1, "Start time is required"),
+  duration: z.string().min(1, "Duration is required"),
+  location: z.string().min(1, "Location is required").min(5, "Location must be at least 5 characters"),
+  notes: z.string().optional(),
+  // Optional fields for physical (not used but present for type compatibility)
+  projectTitle: z.string().optional(),
+  projectDescription: z.string().optional(),
+  expectedDeliveryDate: z.string().optional(),
+});
+
 function BookingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -28,14 +62,33 @@ function BookingForm() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
-  const [formData, setFormData] = useState({
-    date: "",
-    startTime: "",
-    duration: "1",
-    location: "",
-    notes: "",
-    service: "Custom Service", // Default or selectable
+  // Use a union schema that accepts both types
+  const bookingSchema = z.union([remoteBookingSchema, physicalBookingSchema]);
+
+  const {
+    register,
+    handleSubmit,
+    control,
+    watch,
+    formState: { errors },
+    setValue,
+    reset,
+  } = useForm({
+    resolver: zodResolver(bookingSchema),
+    defaultValues: {
+      service: "",
+      projectTitle: "",
+      projectDescription: "",
+      expectedDeliveryDate: "",
+      date: "",
+      startTime: "",
+      duration: "1",
+      location: "",
+      notes: "",
+    },
   });
+
+  const formData = watch();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -71,11 +124,18 @@ function BookingForm() {
           
           setArtist(artistData);
           
-          // If remote, set default service price if available
-          if (artistData.artistType === 'remote' && artistData.pricing?.amount) {
-             // We don't need to set duration for remote, but we can keep it as 1 for calculation consistency if needed, 
-             // or handle it in calculateTotal
-          }
+          // Reset form with proper defaults when artist loads
+          reset({
+            service: "",
+            projectTitle: "",
+            projectDescription: "",
+            expectedDeliveryDate: "",
+            date: "",
+            startTime: "",
+            duration: "1",
+            location: "",
+            notes: "",
+          });
         } else {
           toast.error("Artist not found");
           router.push("/browse");
@@ -93,14 +153,12 @@ function BookingForm() {
     }
   }, [artistId, user, authLoading, router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  // Update form when artist changes
+  useEffect(() => {
+    if (artist) {
+      setValue("service", formData.service || "");
+    }
+  }, [artist, setValue]);
 
   const calculateTotal = () => {
     if (!artist) return 0;
@@ -113,22 +171,15 @@ function BookingForm() {
     return duration * (artist.hourlyRate || 0);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validation based on artist type
+  const onSubmit = async (data: any) => {
+    // Validate based on artist type
     if (artist.artistType === 'remote') {
-       if (!formData.notes) {
-          toast.error("Please provide project details in notes");
-          return;
-       }
-       // For remote, date/time/location might be optional or auto-filled
-       // We'll set defaults if missing to satisfy backend schema
-       if (!formData.date) formData.date = new Date().toISOString().split('T')[0];
-       if (!formData.startTime) formData.startTime = "09:00";
-       if (!formData.location) formData.location = "Remote / Online";
+      if (!data.service || !data.projectTitle || !data.projectDescription) {
+        toast.error("Please fill in all required fields for remote booking");
+        return;
+      }
     } else {
-       if (!formData.date || !formData.startTime || !formData.location) {
+      if (!data.service || !data.date || !data.startTime || !data.location) {
         toast.error("Please fill in all required fields");
         return;
       }
@@ -143,16 +194,46 @@ function BookingForm() {
     }
 
     try {
-      const bookingData = {
-        artistId: artist.userId,
-        service: formData.service,
-        bookingDate: formData.date,
-        startTime: formData.startTime,
-        duration: parseFloat(formData.duration),
-        location: formData.location,
-        notes: formData.notes,
-        totalAmount: calculateTotal(),
-      };
+      let bookingData: any;
+      
+      if (artist.artistType === 'remote') {
+        // Remote artist booking format
+        const deliveryDays = artist.deliveryTime || 3;
+        const expectedDate = data.expectedDeliveryDate 
+          ? new Date(data.expectedDeliveryDate)
+          : new Date(Date.now() + deliveryDays * 24 * 60 * 60 * 1000);
+        
+        bookingData = {
+          artistId: artist.userId,
+          service: data.service,
+          projectTitle: data.projectTitle,
+          projectDescription: data.projectDescription,
+          expectedDeliveryDate: expectedDate.toISOString(),
+          pricingType: "package",
+          packagePrice: artist.pricing?.amount || artist.hourlyRate || calculateTotal(),
+          paymentType: "full",
+          urgency: "normal",
+          // Legacy fields for backward compatibility
+          bookingDate: new Date().toISOString().split('T')[0],
+          startTime: "09:00",
+          duration: 1,
+          location: "Remote / Online",
+          notes: data.projectDescription,
+          totalAmount: calculateTotal(),
+        };
+      } else {
+        // Physical artist booking format (legacy - but shouldn't reach here for remote)
+        bookingData = {
+          artistId: artist.userId,
+          service: data.service,
+          bookingDate: data.date,
+          startTime: data.startTime,
+          duration: parseFloat(data.duration),
+          location: data.location,
+          notes: data.notes || "",
+          totalAmount: calculateTotal(),
+        };
+      }
 
       const response = await bookingService.create(bookingData);
 
@@ -196,7 +277,7 @@ function BookingForm() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {artist.artistType === 'remote' ? (
                     <div className="space-y-4">
                       <div className="bg-[#5b21b6]/20 p-4 rounded-lg flex gap-3 items-start border border-[#5b21b6]/30">
@@ -211,91 +292,165 @@ function BookingForm() {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="notes">Project Details & Requirements *</Label>
-                        <Textarea
-                          id="notes"
-                          name="notes"
-                          placeholder="Describe your project, style preferences, and any specific requirements..."
-                          value={formData.notes}
-                          onChange={handleInputChange}
-                          className="bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] min-h-[150px]"
-                          required
+                        <Label htmlFor="service">Service Type *</Label>
+                        <Input
+                          id="service"
+                          {...register("service")}
+                          placeholder="e.g., Logo Design, Video Editing, Web Development"
+                          className={`bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.service ? "border-red-500" : ""}`}
                         />
+                        {errors.service && (
+                          <p className="text-sm text-red-500 mt-1">{errors.service.message as string}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="projectTitle">Project Title *</Label>
+                        <Input
+                          id="projectTitle"
+                          {...register("projectTitle")}
+                          placeholder="e.g., Company Logo Design"
+                          className={`bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.projectTitle ? "border-red-500" : ""}`}
+                        />
+                        {errors.projectTitle && (
+                          <p className="text-sm text-red-500 mt-1">{errors.projectTitle.message as string}</p>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="projectDescription">Project Details & Requirements *</Label>
+                        <Textarea
+                          id="projectDescription"
+                          {...register("projectDescription")}
+                          placeholder="Describe your project, style preferences, and any specific requirements..."
+                          className={`bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] min-h-[150px] ${errors.projectDescription ? "border-red-500" : ""}`}
+                        />
+                        {errors.projectDescription && (
+                          <p className="text-sm text-red-500 mt-1">{errors.projectDescription.message as string}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="expectedDeliveryDate">Expected Delivery Date</Label>
+                        <Controller
+                          name="expectedDeliveryDate"
+                          control={control}
+                          render={({ field }) => (
+                            <DatePicker
+                              value={field.value ? new Date(field.value) : undefined}
+                              onChange={(date) => {
+                                field.onChange(date?.toISOString().split('T')[0] || "");
+                              }}
+                              placeholder="Select expected delivery date (optional)"
+                              className="bg-[#13111c] border-white/10"
+                              minDate={new Date(Date.now() + (artist.deliveryTime || 3) * 24 * 60 * 60 * 1000)}
+                            />
+                          )}
+                        />
+                        <p className="text-xs text-gray-400">
+                          Default: {artist.deliveryTime || 3} days from today
+                        </p>
                       </div>
                     </div>
                   ) : (
                     <>
+                      <div className="space-y-2">
+                        <Label htmlFor="service">Service Type *</Label>
+                        <Input
+                          id="service"
+                          {...register("service")}
+                          placeholder="e.g., Photography, Videography"
+                          className={`bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.service ? "border-red-500" : ""}`}
+                        />
+                        {errors.service && (
+                          <p className="text-sm text-red-500 mt-1">{errors.service.message as string}</p>
+                        )}
+                      </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
-                          <Label htmlFor="date">Date</Label>
-                          <DatePicker
-                            value={formData.date ? new Date(formData.date) : undefined}
-                            onChange={(date) => setFormData(prev => ({ ...prev, date: date?.toISOString().split('T')[0] || '' }))}
-                            placeholder="Select booking date"
-                            className="bg-[#13111c] border-white/10"
+                          <Label htmlFor="date">Date *</Label>
+                          <Controller
+                            name="date"
+                            control={control}
+                            render={({ field }) => (
+                              <DatePicker
+                                value={field.value ? new Date(field.value) : undefined}
+                                onChange={(date) => field.onChange(date?.toISOString().split('T')[0] || '')}
+                                placeholder="Select booking date"
+                                className={`bg-[#13111c] border-white/10 ${errors.date ? "border-red-500" : ""}`}
+                              />
+                            )}
                           />
+                          {errors.date && (
+                            <p className="text-sm text-red-500 mt-1">{errors.date.message as string}</p>
+                          )}
                         </div>
                         
                         <div className="space-y-2">
-                          <Label htmlFor="startTime">Start Time</Label>
+                          <Label htmlFor="startTime">Start Time *</Label>
                           <div className="relative">
                             <Clock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <Input
                               id="startTime"
-                              name="startTime"
                               type="time"
-                              value={formData.startTime}
-                              onChange={handleInputChange}
-                              className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
-                              required
+                              {...register("startTime")}
+                              className={`pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.startTime ? "border-red-500" : ""}`}
                             />
                           </div>
+                          {errors.startTime && (
+                            <p className="text-sm text-red-500 mt-1">{errors.startTime.message as string}</p>
+                          )}
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="duration">Duration (Hours)</Label>
-                        <Select 
-                          value={formData.duration} 
-                          onValueChange={(val) => handleSelectChange("duration", val)}
-                        >
-                          <SelectTrigger className="bg-[#13111c] border-white/10 text-white focus:ring-[#9b87f5]">
-                            <SelectValue placeholder="Select duration" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-[#1e1b29] border-white/10 text-white">
-                            {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
-                              <SelectItem key={num} value={num.toString()} className="focus:bg-[#5b21b6] focus:text-white">
-                                {num} {num === 1 ? "Hour" : "Hours"}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                        <Label htmlFor="duration">Duration (Hours) *</Label>
+                        <Controller
+                          name="duration"
+                          control={control}
+                          render={({ field }) => (
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger className={`bg-[#13111c] border-white/10 text-white focus:ring-[#9b87f5] ${errors.duration ? "border-red-500" : ""}`}>
+                                <SelectValue placeholder="Select duration" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#1e1b29] border-white/10 text-white">
+                                {[1, 2, 3, 4, 5, 6, 7, 8].map((num) => (
+                                  <SelectItem key={num} value={num.toString()} className="focus:bg-[#5b21b6] focus:text-white">
+                                    {num} {num === 1 ? "Hour" : "Hours"}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        />
+                        {errors.duration && (
+                          <p className="text-sm text-red-500 mt-1">{errors.duration.message as string}</p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="location">Location</Label>
+                        <Label htmlFor="location">Location *</Label>
                         <div className="relative">
                           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                           <Input
                             id="location"
-                            name="location"
+                            {...register("location")}
                             placeholder="Enter full address"
-                            value={formData.location}
-                            onChange={handleInputChange}
-                            className="pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5]"
-                            required
+                            className={`pl-10 bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.location ? "border-red-500" : ""}`}
                           />
                         </div>
+                        {errors.location && (
+                          <p className="text-sm text-red-500 mt-1">{errors.location.message as string}</p>
+                        )}
                       </div>
 
                       <div className="space-y-2">
                         <Label htmlFor="notes">Additional Notes</Label>
                         <Textarea
                           id="notes"
-                          name="notes"
+                          {...register("notes")}
                           placeholder="Describe your project or any specific requirements..."
-                          value={formData.notes}
-                          onChange={handleInputChange}
                           className="bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] min-h-[100px]"
                         />
                       </div>
