@@ -479,34 +479,38 @@ export function BrowseArtists() {
                       key={artist._id} 
                       className="bg-white border-gray-200 overflow-hidden hover:shadow-2xl hover:shadow-[#9b87f5]/10 transition-all duration-300 group shadow-sm"
                     >
-                      {/* Artist Image */}
-                      <div className="relative w-full aspect-[4/3] overflow-hidden">
-                        <img
-                          src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=400&background=random&color=fff&bold=true`}
-                          alt={artist.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                          onError={(e) => {
-                            e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=400&background=random&color=fff&bold=true`;
-                          }}
-                        />
-                        {user?.role === "customer" && (
-                          <div className="absolute top-3 right-3">
-                            <FavoriteButton
-                              artistId={artist._id}
-                              initialIsFavorite={favorites.includes(artist._id)}
-                            />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E1E] to-transparent opacity-60"></div>
-                      </div>
+                      {/* Artist Image - Clickable */}
+                      <Link href={`/artists/${artist._id}`}>
+                        <div className="relative w-full aspect-[4/3] overflow-hidden cursor-pointer">
+                          <img
+                            src={artist.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=400&background=random&color=fff&bold=true`}
+                            alt={artist.name}
+                            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            onError={(e) => {
+                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(artist.name || 'Artist')}&size=400&background=random&color=fff&bold=true`;
+                            }}
+                          />
+                          {user?.role === "customer" && (
+                            <div className="absolute top-3 right-3 z-10" onClick={(e) => e.stopPropagation()}>
+                              <FavoriteButton
+                                artistId={artist._id}
+                                initialIsFavorite={favorites.includes(artist._id)}
+                              />
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-[#1E1E1E] to-transparent opacity-60"></div>
+                        </div>
+                      </Link>
 
                       <CardContent className="p-5 space-y-4 relative">
-                        {/* Name and Category */}
+                        {/* Name and Category - Name is clickable */}
                         <div className="flex items-start justify-between gap-2">
-                          <div>
-                            <CardTitle className="text-xl font-bold text-gray-900 mb-1">
-                              {artist.name}
-                            </CardTitle>
+                          <div className="flex-1">
+                            <Link href={`/artists/${artist._id}`}>
+                              <CardTitle className="text-xl font-bold text-gray-900 mb-1 hover:text-[#9b87f5] transition-colors cursor-pointer">
+                                {artist.name}
+                              </CardTitle>
+                            </Link>
                             <div className="flex items-center gap-2">
                               <div className="flex items-center gap-0.5">
                                 {[...Array(5)].map((_, i) => (

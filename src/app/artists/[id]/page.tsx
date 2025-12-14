@@ -11,7 +11,7 @@ import { artistService } from "@/services/artist.service";
 import { reviewService } from "@/services/review.service";
 import apiClient from "@/lib/apiClient";
 import { toast } from "sonner";
-import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, Image as ImageIcon, Search, MessageSquare } from "lucide-react";
+import { Loader2, Star, MapPin, Facebook, Instagram, Twitter, Linkedin, Youtube, ExternalLink, Image as ImageIcon, Search, MessageSquare, Globe } from "lucide-react";
 import { PublicNavbar } from "@/components/layout/public-navbar";
 import { formatHourlyRate, formatLKR } from "@/lib/utils/currency";
 import { cn } from "@/lib/utils";
@@ -273,6 +273,22 @@ export default function ArtistProfilePage() {
                 {artist.bio || "With a passion for vibrant colors, I specialize in creating large-scale murals and intimate portraits that capture the essence of my subjects."}
               </p>
 
+              {/* Website Link */}
+              {artist.website && (
+                <div className="mb-4">
+                  <a 
+                    href={artist.website} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 text-[#a78bfa] hover:text-[#9b87f5] transition-colors text-sm"
+                  >
+                    <Globe className="h-4 w-4" />
+                    <span>Visit Website</span>
+                    <ExternalLink className="h-3 w-3" />
+                  </a>
+                </div>
+              )}
+
               {/* Contact Information for Physical Artists */}
               {artist.artistType === 'physical' && (artist.phone || artist.userId?.phone || artist.email || artist.userId?.email) && (
                 <div className="mb-6 pt-6 border-t border-white/10">
@@ -298,13 +314,61 @@ export default function ArtistProfilePage() {
                 </div>
               )}
 
-              <div className="flex justify-center gap-4">
-                {[Facebook, Instagram, Twitter].map((Icon, i) => (
-                  <div key={i} className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                ))}
-              </div>
+              {/* Social Media Links */}
+              {(artist.socialLinks && Object.keys(artist.socialLinks).some(key => artist.socialLinks[key])) && (
+                <div className="flex justify-center gap-4 mb-6">
+                  {artist.socialLinks.facebook && (
+                    <a 
+                      href={artist.socialLinks.facebook} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Facebook className="h-5 w-5" />
+                    </a>
+                  )}
+                  {artist.socialLinks.instagram && (
+                    <a 
+                      href={artist.socialLinks.instagram} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Instagram className="h-5 w-5" />
+                    </a>
+                  )}
+                  {artist.socialLinks.twitter && (
+                    <a 
+                      href={artist.socialLinks.twitter} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Twitter className="h-5 w-5" />
+                    </a>
+                  )}
+                  {artist.socialLinks.linkedin && (
+                    <a 
+                      href={artist.socialLinks.linkedin} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Linkedin className="h-5 w-5" />
+                    </a>
+                  )}
+                  {artist.socialLinks.youtube && (
+                    <a 
+                      href={artist.socialLinks.youtube} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer"
+                    >
+                      <Youtube className="h-5 w-5" />
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Request a Quote / Contact */}
@@ -411,43 +475,45 @@ export default function ArtistProfilePage() {
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-bold text-white">Portfolio</h3>
-                <div className="flex gap-2">
-                  {["All", "Murals", "Portraits"].map((filter) => (
+                {artist.portfolio && artist.portfolio.length > 0 && (
+                  <div className="flex gap-2">
                     <button 
-                      key={filter}
                       className={cn(
                         "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
-                        filter === "All" 
+                        portfolioFilter === "all" 
                           ? "bg-primary text-primary-foreground" 
                           : "bg-[#1e1b29] text-gray-400 hover:text-white"
                       )}
+                      onClick={() => setPortfolioFilter("all")}
                     >
-                      {filter}
+                      All
                     </button>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[
-                  "1562322140-8baeececf3df",
-                  "1560066984-138dadb4c035",
-                  "1595476108010-b4d1f102b1b1",
-                  "1522337660859-02fbefca4702",
-                  "1521590832917-230085070200",
-                  "1516975080664-ed2fc6a32937"
-                ].map((id, i) => (
-                  <div key={i} className="aspect-square rounded-[24px] overflow-hidden relative group cursor-pointer">
-                    <img
-                      src={`https://images.unsplash.com/photo-${id}?w=500&h=500&fit=crop&q=80`}
-                      alt={`Portfolio ${i}`}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
-                  </div>
-                ))}
-              </div>
-
+              {artist.portfolio && artist.portfolio.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {portfolioImages.map((imageUrl: string, i: number) => (
+                    <div key={i} className="aspect-square rounded-[24px] overflow-hidden relative group cursor-pointer">
+                      <img
+                        src={imageUrl}
+                        alt={`Portfolio ${i + 1}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        onError={(e) => {
+                          e.currentTarget.src = `https://images.unsplash.com/photo-1560066984-138dadb4c035?w=500&h=500&fit=crop&q=80`;
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-[#1e1b29] rounded-[24px] p-8 border border-white/5 text-center">
+                  <ImageIcon className="h-12 w-12 mx-auto mb-4 text-gray-500 opacity-50" />
+                  <p className="text-gray-400">No portfolio images available yet.</p>
+                </div>
+              )}
             </div>
 
             {/* Ratings & Reviews */}
