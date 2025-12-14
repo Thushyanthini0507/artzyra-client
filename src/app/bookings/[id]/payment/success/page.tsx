@@ -121,7 +121,7 @@ function PaymentSuccessContent() {
                   
                   <div className="flex flex-col sm:flex-row gap-4 w-full">
                     <Link href={`/customer/bookings/${bookingId}`} className="flex-1">
-                      <Button variant="outline" className="w-full border-white/10 hover:bg-white/5 text-white h-12">
+                      <Button variant="outline" className="w-full border-white/10 bg-transparent hover:bg-white/5 text-white hover:text-white h-12">
                         View Booking
                       </Button>
                     </Link>
