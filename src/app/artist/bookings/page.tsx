@@ -87,14 +87,57 @@ export default function ArtistBookingsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-gray-300">{booking.service || "N/A"}</TableCell>
-                      <TableCell className="text-gray-300">{booking.bookingDate || booking.date ? new Date(booking.bookingDate || booking.date!).toLocaleDateString() : "N/A"}</TableCell>
-                      <TableCell className="text-gray-300">{booking.location || "N/A"}</TableCell>
+                      <TableCell className="text-gray-300">
+                        {(() => {
+                          // Try multiple date fields and format properly
+                          const dateValue = booking.bookingDate || booking.date || booking.expectedDeliveryDate || booking.createdAt;
+                          if (dateValue) {
+                            try {
+                              const date = new Date(dateValue);
+                              // Check if date is valid
+                              if (!isNaN(date.getTime())) {
+                                return date.toLocaleDateString("en-US", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                  timeZone: "UTC" // Use UTC to avoid timezone issues
+                                });
+                              }
+                            } catch (e) {
+                              console.error("Date parsing error:", e);
+                            }
+                          }
+                          return "N/A";
+                        })()}
+                      </TableCell>
+                      <TableCell className="text-gray-300">{booking.location || "Remote"}</TableCell>
                       <TableCell className="text-gray-300">{formatLKR(booking.totalAmount)}</TableCell>
                       <TableCell>{getStatusBadge(booking.status)}</TableCell>
                       <TableCell className="text-gray-300">
-                        {booking.startTime && booking.endTime 
-                          ? `${booking.startTime} - ${booking.endTime}`
-                          : "N/A"}
+                        {(() => {
+                          // For remote bookings, show expected delivery date or created date
+                          if (booking.startTime && booking.endTime) {
+                            return `${booking.startTime} - ${booking.endTime}`;
+                          } else if (booking.expectedDeliveryDate) {
+                            const deliveryDate = new Date(booking.expectedDeliveryDate);
+                            if (!isNaN(deliveryDate.getTime())) {
+                              return `Expected: ${deliveryDate.toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric"
+                              })}`;
+                            }
+                          } else if (booking.createdAt) {
+                            const createdDate = new Date(booking.createdAt);
+                            if (!isNaN(createdDate.getTime())) {
+                              return `Created: ${createdDate.toLocaleDateString("en-US", {
+                                month: "short",
+                                day: "numeric"
+                              })}`;
+                            }
+                          }
+                          return "N/A";
+                        })()}
                       </TableCell>
                     </TableRow>
                   ))}
