@@ -93,8 +93,9 @@ export function useCategories() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await categoryService.getAllCategories();
-        setCategories(data.data);
+        // Fetch all active categories with a high limit to get all of them
+        const data = await categoryService.getAllCategories({ isActive: true, limit: 100 });
+        setCategories(data.data || []);
       } catch (err: any) {
         setError(err.message || "Failed to fetch categories");
       } finally {

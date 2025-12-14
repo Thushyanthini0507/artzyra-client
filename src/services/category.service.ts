@@ -5,8 +5,8 @@ export const categoryService = {
     const response = await apiClient.get("/categories");
     return response.data;
   },
-  getAllCategories: async () => {
-    const response = await apiClient.get("/categories");
+  getAllCategories: async (params?: any) => {
+    const response = await apiClient.get("/categories", { params });
     return response.data;
   },
   getById: async (categoryId: string) => {

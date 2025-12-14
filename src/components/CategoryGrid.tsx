@@ -105,7 +105,7 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
         className="flex overflow-x-auto gap-6 pb-8 scrollbar-hide snap-x snap-mandatory"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
-        {categories.slice(0, 6).map((category) => (
+        {categories.map((category) => (
           <Link href={`/browse?category=${category._id}`} key={category._id} className="min-w-[280px] md:min-w-[320px] snap-center">
             <Card className="h-full border-none shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden bg-gray-50/50">
               {/* Category Image */}
