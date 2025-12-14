@@ -8,6 +8,7 @@ export interface Artist extends User {
   availability: string;
   rating?: number;
   reviewCount?: number;
+  artistType?: "physical" | "remote";
 }
 
 export interface CreateArtistData {

@@ -35,6 +35,7 @@ export default function ArtistProfilePage() {
     averageRating: 0,
     totalReviews: 0,
   });
+  const [hasCompletedBooking, setHasCompletedBooking] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,6 +63,30 @@ export default function ArtistProfilePage() {
             } catch (error) {
               console.error("Failed to fetch related artists", error);
               // Don't show error, just continue without related artists
+            }
+          }
+
+          // For remote artists, check if customer has a completed booking with payment
+          if (user && user.role === "customer" && artistData.artistType === "remote") {
+            try {
+              const { bookingService } = await import("@/services/booking.service");
+              const bookingsResponse = await bookingService.getCustomerBookings();
+              if (bookingsResponse.success && bookingsResponse.data) {
+                // Check if there's a booking with this artist that has completed payment
+                // artistData.userId is the User ID, which is what bookings.artist references
+                const artistUserId = artistData.userId?._id || artistData.userId;
+                const completedBooking = bookingsResponse.data.find((booking: any) => {
+                  const bookingArtistId = booking.artist?._id || booking.artist;
+                  return (
+                    bookingArtistId?.toString() === artistUserId?.toString() &&
+                    ["in_progress", "review", "completed"].includes(booking.status?.toLowerCase()) &&
+                    booking.paymentStatus?.toLowerCase() === "succeeded"
+                  );
+                });
+                setHasCompletedBooking(!!completedBooking);
+              }
+            } catch (err) {
+              console.error("Failed to check booking status", err);
             }
           }
         } else {
@@ -257,15 +282,15 @@ export default function ArtistProfilePage() {
               </div>
             </div>
 
-            {/* Request a Quote */}
+            {/* Request a Quote / Contact */}
             <div className="bg-[#1e1b29] rounded-[32px] p-8 border border-white/5">
               <h3 className="text-xl font-bold text-white mb-2">
-                {artist.artistType === 'physical' ? 'Contact Artist' : 'Request a Quote'}
+                {artist.artistType === 'physical' ? 'Contact Artist' : 'Book Artist'}
               </h3>
               <p className="text-gray-400 text-sm mb-6">
                 {artist.artistType === 'physical' 
                   ? `Interested in hiring ${artist.name}? Start a conversation to discuss your event details and pricing.`
-                  : `Pricing starts at ${formatHourlyRate(artist.hourlyRate || 500)}. Let ${artist.name} know about your project. She'll get back to you with a personalized quote.`
+                  : `Pricing starts at ${formatHourlyRate(artist.hourlyRate || 500)}. Book ${artist.name} to get started. Chat will be available after booking and payment.`
                 }
               </p>
               
@@ -286,19 +311,34 @@ export default function ArtistProfilePage() {
                   Chat with Artist
                 </Button>
               ) : (
-                <Button 
-                  className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12 rounded-xl font-semibold"
-                  onClick={() => {
-                    if (user?.role === "customer") {
-                      router.push(`/bookings/create?artistId=${artistId}`);
-                    } else {
-                      const redirectUrl = encodeURIComponent(`/bookings/create?artistId=${artistId}`);
-                      router.push(`/auth/login?redirect=${redirectUrl}`);
-                    }
-                  }}
-                >
-                  Book Now
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12 rounded-xl font-semibold"
+                    onClick={() => {
+                      if (user?.role === "customer") {
+                        router.push(`/bookings/create?artistId=${artistId}`);
+                      } else {
+                        const redirectUrl = encodeURIComponent(`/bookings/create?artistId=${artistId}`);
+                        router.push(`/auth/login?redirect=${redirectUrl}`);
+                      }
+                    }}
+                  >
+                    Book Now
+                  </Button>
+                  {/* Show chat button for remote artists only if booking and payment are completed */}
+                  {hasCompletedBooking && user?.role === "customer" && (
+                    <Button 
+                      variant="outline"
+                      className="w-full border-[#5b21b6] text-[#5b21b6] hover:bg-[#5b21b6] hover:text-white h-12 rounded-xl font-semibold"
+                      onClick={() => {
+                        router.push(`/chat?artistId=${artistId}`);
+                      }}
+                    >
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Chat with Artist
+                    </Button>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -314,11 +354,11 @@ export default function ArtistProfilePage() {
                     <h4 className="text-lg font-bold text-white mb-2">{skill}</h4>
                     <p className="text-gray-400 text-sm mb-4 line-clamp-2">Professional {skill.toLowerCase()} services tailored to your specific needs and requirements.</p>
                     <p className="text-[#a78bfa] font-semibold text-sm">
-                      {artist.artistType === 'remote' && artist.pricing?.amount 
+                      {(artist.artistType || 'physical') === 'remote' && artist.pricing?.amount 
                         ? `Fixed Price: ${formatLKR(artist.pricing.amount)}` 
                         : `Starts at ${formatLKR(artist.hourlyRate || 500)}`
                       }
-                      {artist.artistType === 'remote' && artist.deliveryTime && (
+                      {(artist.artistType || 'physical') === 'remote' && artist.deliveryTime && (
                         <span className="block text-gray-400 text-xs mt-1">Delivery in {artist.deliveryTime} days</span>
                       )}
                     </p>

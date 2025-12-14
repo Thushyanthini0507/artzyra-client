@@ -50,6 +50,7 @@ function ChatInterface() {
         }
       } else if (artistId) {
         // For physical artists - create or get existing chat
+        // For remote artists - chat only available after booking and payment
         // The backend endpoint handles finding existing chats automatically
         try {
           const createResponse = await apiClient.post("/chats/create", { artistId });
@@ -59,7 +60,16 @@ function ChatInterface() {
           }
         } catch (error: any) {
           console.error("Error creating/fetching chat with artist:", error);
-          toast.error(error.response?.data?.message || "Failed to start chat with artist");
+          const errorMessage = error.response?.data?.message || "Failed to start chat with artist";
+          toast.error(errorMessage);
+          
+          // If it's a remote artist access error, redirect to booking page
+          if (errorMessage.includes("Remote artists can only be contacted after booking") || 
+              errorMessage.includes("Chat is only available after payment")) {
+            setTimeout(() => {
+              router.push(`/bookings/create?artistId=${artistId}`);
+            }, 2000);
+          }
         }
       }
     } catch (error) {
