@@ -311,17 +311,6 @@ function BookingForm() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   {artist.artistType === 'remote' ? (
                     <div className="space-y-4">
-                      <div className="bg-[#5b21b6]/20 p-4 rounded-lg flex gap-3 items-start border border-[#5b21b6]/30">
-                        <Info className="h-5 w-5 text-[#9b87f5] shrink-0 mt-0.5" />
-                        <div>
-                          <h4 className="font-bold text-white text-sm mb-1">Remote Service</h4>
-                          <p className="text-xs text-gray-300 leading-relaxed">
-                            This is a remote service. Delivery will be within {artist.deliveryTime || 3} days.
-                            Please describe your requirements in detail below.
-                          </p>
-                        </div>
-                      </div>
-                      
                       <div className="space-y-2">
                         <Label htmlFor="service">Service Type *</Label>
                         {artist.services && artist.services.length > 0 ? (

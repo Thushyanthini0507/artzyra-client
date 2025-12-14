@@ -273,6 +273,31 @@ export default function ArtistProfilePage() {
                 {artist.bio || "With a passion for vibrant colors, I specialize in creating large-scale murals and intimate portraits that capture the essence of my subjects."}
               </p>
 
+              {/* Contact Information for Physical Artists */}
+              {artist.artistType === 'physical' && (artist.phone || artist.email || artist.userId?.email) && (
+                <div className="mb-6 pt-6 border-t border-white/10">
+                  <h4 className="text-sm font-semibold text-white mb-3">Contact Information</h4>
+                  <div className="space-y-2 text-sm">
+                    {artist.phone && (
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <span className="text-gray-500">Phone:</span>
+                        <a href={`tel:${artist.phone}`} className="text-[#a78bfa] hover:text-[#9b87f5] transition-colors">
+                          {artist.phone}
+                        </a>
+                      </div>
+                    )}
+                    {(artist.email || artist.userId?.email) && (
+                      <div className="flex items-center gap-2 text-gray-300">
+                        <span className="text-gray-500">Email:</span>
+                        <a href={`mailto:${artist.email || artist.userId?.email}`} className="text-[#a78bfa] hover:text-[#9b87f5] transition-colors break-all">
+                          {artist.email || artist.userId?.email}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-center gap-4">
                 {[Facebook, Instagram, Twitter].map((Icon, i) => (
                   <div key={i} className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:bg-[#5b21b6] hover:text-white transition-colors cursor-pointer">
