@@ -85,7 +85,8 @@ export default function PaymentsPage() {
           <Button 
             onClick={fetchPayments} 
             variant="outline" 
-            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all"
+            disabled={loading}
+            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/30 text-foreground hover:text-foreground transition-all"
           >
             <RefreshCcw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -183,11 +184,12 @@ export default function PaymentsPage() {
                           </div>
                         </TableCell>
                         <TableCell className="text-right">
-                          {payment.status !== "refunded" && (
+                          {payment.status !== "refunded" && 
+                           (payment.status === "succeeded" || payment.status === "completed" || payment.status === "paid") && (
                             <Button
                               size="sm"
                               variant="outline"
-                              className="text-red-400 border-red-500/30 hover:bg-red-500/20 hover:text-red-300 transition-all"
+                              className="text-destructive border-destructive/30 hover:bg-destructive/20 hover:text-destructive transition-all"
                               onClick={() => handleRefund(payment._id)}
                             >
                               <RotateCcw className="mr-2 h-3 w-3" />

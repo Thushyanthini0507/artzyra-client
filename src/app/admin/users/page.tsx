@@ -105,7 +105,8 @@ export default function UsersPage() {
           <Button 
             onClick={fetchUsers} 
             variant="outline" 
-            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all"
+            disabled={loading}
+            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/30 text-foreground hover:text-foreground transition-all"
           >
             <RefreshCcw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh List
