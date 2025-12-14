@@ -48,11 +48,13 @@ function PaymentSuccessContent() {
           setError(response.data.message || "Payment verification failed");
         }
       } catch (error: any) {
-        console.error("❌ Verification error details:", {
-          message: error.message,
-          response: error.response?.data,
-          status: error.response?.status
-        });
+        console.error("❌ Payment Verification Failed");
+        console.error("Full error object:", error);
+        console.error("Error message:", error?.message);
+        console.error("Error response data:", error?.response?.data);
+        console.error("Error status:", error?.response?.status);
+        console.error("Payment Intent ID sent:", paymentIntentId);
+        
         const errorMsg = error.response?.data?.message || error.message || "Failed to verify payment";
         setError(errorMsg);
         toast.error(errorMsg);

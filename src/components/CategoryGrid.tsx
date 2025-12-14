@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { getCategoryImage } from "@/lib/categoryImages";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 interface Category {
   _id: string;
@@ -20,6 +20,7 @@ interface CategoryGridProps {
 
 export function CategoryGrid({ categories, loading, error }: CategoryGridProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [hoveredSide, setHoveredSide] = useState<'left' | 'right' | null>(null);
 
   const scroll = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
@@ -29,6 +30,24 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
         behavior: 'smooth',
       });
     }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const rect = container.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const containerWidth = rect.width;
+    
+    // Determine which half of the container the mouse is in
+    if (mouseX < containerWidth / 2) {
+      setHoveredSide('left');
+    } else {
+      setHoveredSide('right');
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredSide(null);
   };
 
   if (loading) {
@@ -64,11 +83,17 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
   }
 
   return (
-    <div className="relative group">
-      {/* Left Arrow */}
+    <div 
+      className="relative" 
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      {/* Left Arrow - shows only when hovering left half */}
       <button
         onClick={() => scroll('left')}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 text-gray-800 hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+        className={`absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 text-gray-800 hover:bg-gray-50 transition-all ${
+          hoveredSide === 'left' ? 'opacity-100' : 'opacity-0'
+        }`}
         aria-label="Scroll left"
       >
         <ChevronLeft className="h-6 w-6" />
@@ -108,10 +133,12 @@ export function CategoryGrid({ categories, loading, error }: CategoryGridProps) 
         ))}
       </div>
 
-      {/* Right Arrow */}
+      {/* Right Arrow - shows only when hovering right half */}
       <button
         onClick={() => scroll('right')}
-        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 text-gray-800 hover:bg-gray-50 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-0"
+        className={`absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white shadow-lg rounded-full p-2 text-gray-800 hover:bg-gray-50 transition-all ${
+          hoveredSide === 'right' ? 'opacity-100' : 'opacity-0'
+        }`}
         aria-label="Scroll right"
       >
         <ChevronRight className="h-6 w-6" />

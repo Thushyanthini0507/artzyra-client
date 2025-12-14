@@ -342,30 +342,44 @@ export default function ArtistProfilePage() {
             <div>
               <h3 className="text-2xl font-bold text-white mb-6">Ratings & Reviews</h3>
               <div className="space-y-4">
-                {[
-                  { name: "Jane Doe", rating: 5, comment: "Elena painted a stunning mural for our office. She was professional, creative, and brought our vision to life perfectly. Highly recommend!" },
-                  { name: "John Smith", rating: 5, comment: "The portrait of my family exceeded all expectations. Elena has an incredible talent for capturing personality on canvas." }
-                ].map((review, i) => (
-                  <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5">
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={`https://ui-avatars.com/api/?name=${review.name}&background=random`} />
-                          <AvatarFallback>{review.name[0]}</AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <h4 className="font-bold text-white text-sm">{review.name}</h4>
-                          <div className="flex gap-0.5">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                              <Star key={star} className="h-3 w-3 fill-[#fbbf24] text-[#fbbf24]" />
-                            ))}
+                {reviews.length > 0 ? (
+                  reviews.map((review, i) => (
+                    <div key={review._id || i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5">
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={review.customer?.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.customer?.name || 'Customer')}&background=random`} />
+                            <AvatarFallback>{review.customer?.name?.[0] || 'C'}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <h4 className="font-bold text-white text-sm">{review.customer?.name || 'Anonymous'}</h4>
+                            <div className="flex gap-0.5">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <Star 
+                                  key={star} 
+                                  className={cn(
+                                    "h-3 w-3",
+                                    star <= review.rating ? "fill-[#fbbf24] text-[#fbbf24]" : "text-gray-600"
+                                  )} 
+                                />
+                              ))}
+                            </div>
                           </div>
                         </div>
+                        <span className="text-xs text-gray-500">
+                          {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : ''}
+                        </span>
                       </div>
+                      {review.comment && (
+                        <p className="text-gray-400 text-sm leading-relaxed">{review.comment}</p>
+                      )}
                     </div>
-                    <p className="text-gray-400 text-sm leading-relaxed">{review.comment}</p>
+                  ))
+                ) : (
+                  <div className="bg-[#1e1b29] rounded-[24px] p-8 border border-white/5 text-center">
+                    <p className="text-gray-400">No reviews yet. Be the first to review this artist!</p>
                   </div>
-                ))}
+                )}
               </div>
             </div>
           </div>

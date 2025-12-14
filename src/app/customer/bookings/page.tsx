@@ -45,9 +45,6 @@ export default function CustomerBookingsPage() {
               <h1 className="text-3xl font-bold text-white">My Bookings</h1>
               <p className="text-gray-400">Manage your appointments and services</p>
             </div>
-            <Link href="/customer/bookings/create">
-              <Button className="bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl px-6">Book an Artist</Button>
-            </Link>
           </div>
 
           <Card className="bg-[#1e1b29] border-white/5 shadow-xl">

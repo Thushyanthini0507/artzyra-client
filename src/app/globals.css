@@ -51,9 +51,11 @@
   --card-foreground: oklch(0.13 0.028 261.692);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.13 0.028 261.692);
-  --primary: oklch(0.35 0.15 290); /* Deep Purple */
+  --primary: oklch(0.35 0.15 290);
+  /* Deep Purple */
   --primary-foreground: oklch(0.985 0.002 247.839);
-  --secondary: oklch(0.95 0.02 290); /* Light Lavender */
+  --secondary: oklch(0.95 0.02 290);
+  /* Light Lavender */
   --secondary-foreground: oklch(0.35 0.15 290);
   --muted: oklch(0.97 0.01 290);
   --muted-foreground: oklch(0.55 0.05 290);
@@ -79,13 +81,15 @@
 }
 
 .dark {
-  --background: oklch(0.15 0.05 290); /* Dark Purple Background */
+  --background: oklch(0.15 0.05 290);
+  /* Dark Purple Background */
   --foreground: oklch(0.985 0.002 247.839);
   --card: oklch(0.2 0.05 290);
   --card-foreground: oklch(0.985 0.002 247.839);
   --popover: oklch(0.2 0.05 290);
   --popover-foreground: oklch(0.985 0.002 247.839);
-  --primary: oklch(0.6 0.15 290); /* Lighter Purple for Dark Mode */
+  --primary: oklch(0.6 0.15 290);
+  /* Lighter Purple for Dark Mode */
   --primary-foreground: oklch(0.15 0.05 290);
   --secondary: oklch(0.3 0.05 290);
   --secondary-foreground: oklch(0.985 0.002 247.839);
@@ -117,10 +121,24 @@
     @apply border-border outline-ring/50;
     font-size: max(14px, 1em);
   }
+
   body {
     @apply bg-background text-foreground;
   }
-  h1, h2, h3, h4, h5, h6, label, button, th {
+
+  button:not(:disabled) {
+    @apply cursor-pointer;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label,
+  button,
+  th {
     text-transform: capitalize;
   }
 }
