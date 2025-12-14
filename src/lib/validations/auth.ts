@@ -1,13 +1,19 @@
 import * as z from "zod";
 
 export const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address (e.g., example@domain.com)"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export const customerRegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address (e.g., example@domain.com)"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   phone: z.string().regex(/^\+94\d{9}$/, "Phone number must start with +94 and have 9 digits after"),
 });
@@ -25,7 +31,10 @@ const serviceSchema = z.object({
 
 export const artistRegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.string().email("Invalid email address"),
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Please enter a valid email address (e.g., example@domain.com)"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   phone: z.string().regex(/^\+94\d{9}$/, "Phone number must start with +94 and have 9 digits after"),
   bio: z.string().min(10, "Bio must be at least 10 characters"),
