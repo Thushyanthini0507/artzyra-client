@@ -164,7 +164,7 @@ export default function PendingArtistsPage() {
             onClick={fetchPendingArtists}
             disabled={loading}
             variant="outline"
-            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/30 text-foreground hover:text-foreground transition-all"
+            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-primary/30 text-white hover:text-white transition-all"
           >
             <RefreshCcw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
