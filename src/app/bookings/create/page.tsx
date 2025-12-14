@@ -164,11 +164,32 @@ function BookingForm() {
     if (!artist) return 0;
     
     if (artist.artistType === 'remote') {
+      // If artist has services array, find the selected service price
+      if (artist.services && artist.services.length > 0 && formData.service) {
+        const selectedService = artist.services.find((s: any) => s.name === formData.service);
+        if (selectedService) {
+          return selectedService.price;
+        }
+      }
+      // Fallback to pricing or hourlyRate
       return artist.pricing?.amount || artist.hourlyRate || 0;
     }
     
     const duration = parseFloat(formData.duration) || 0;
     return duration * (artist.hourlyRate || 0);
+  };
+
+  const getSelectedServiceDeliveryTime = () => {
+    if (!artist || !artist.services || artist.services.length === 0) {
+      return artist?.deliveryTime || 3;
+    }
+    if (formData.service) {
+      const selectedService = artist.services.find((s: any) => s.name === formData.service);
+      if (selectedService) {
+        return selectedService.deliveryTime;
+      }
+    }
+    return artist.deliveryTime || 3;
   };
 
   const onSubmit = async (data: any) => {
@@ -198,10 +219,19 @@ function BookingForm() {
       
       if (artist.artistType === 'remote') {
         // Remote artist booking format
-        const deliveryDays = artist.deliveryTime || 3;
+        const deliveryDays = getSelectedServiceDeliveryTime();
         const expectedDate = data.expectedDeliveryDate 
           ? new Date(data.expectedDeliveryDate)
           : new Date(Date.now() + deliveryDays * 24 * 60 * 60 * 1000);
+        
+        // Get service price if services array exists
+        let servicePrice = calculateTotal();
+        if (artist.services && artist.services.length > 0 && data.service) {
+          const selectedService = artist.services.find((s: any) => s.name === data.service);
+          if (selectedService) {
+            servicePrice = selectedService.price;
+          }
+        }
         
         bookingData = {
           artistId: artist.userId,
@@ -210,16 +240,17 @@ function BookingForm() {
           projectDescription: data.projectDescription,
           expectedDeliveryDate: expectedDate.toISOString(),
           pricingType: "package",
-          packagePrice: artist.pricing?.amount || artist.hourlyRate || calculateTotal(),
+          packagePrice: servicePrice,
           paymentType: "full",
           urgency: "normal",
+          deliveryDays: deliveryDays, // Store delivery days from selected service
           // Legacy fields for backward compatibility
           bookingDate: new Date().toISOString().split('T')[0],
           startTime: "09:00",
           duration: 1,
           location: "Remote / Online",
           notes: data.projectDescription,
-          totalAmount: calculateTotal(),
+          totalAmount: servicePrice,
         };
       } else {
         // Physical artist booking format (legacy - but shouldn't reach here for remote)
@@ -293,12 +324,42 @@ function BookingForm() {
                       
                       <div className="space-y-2">
                         <Label htmlFor="service">Service Type *</Label>
-                        <Input
-                          id="service"
-                          {...register("service")}
-                          placeholder="e.g., Logo Design, Video Editing, Web Development"
-                          className={`bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.service ? "border-red-500" : ""}`}
-                        />
+                        {artist.services && artist.services.length > 0 ? (
+                          <Controller
+                            name="service"
+                            control={control}
+                            render={({ field }) => (
+                              <Select value={field.value} onValueChange={field.onChange}>
+                                <SelectTrigger className={`bg-[#13111c] border-white/10 text-white focus:ring-[#9b87f5] ${errors.service ? "border-red-500" : ""}`}>
+                                  <SelectValue placeholder="Select a service" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-[#1e1b29] border-white/10 text-white">
+                                  {artist.services.map((service: any, index: number) => (
+                                    <SelectItem 
+                                      key={index} 
+                                      value={service.name}
+                                      className="focus:bg-[#5b21b6] focus:text-white"
+                                    >
+                                      <div className="flex items-center justify-between w-full">
+                                        <span>{service.name}</span>
+                                        <span className="ml-4 text-[#a78bfa] text-sm">
+                                          {formatHourlyRate(service.price)} • {service.deliveryTime} {service.deliveryTime === 1 ? 'day' : 'days'}
+                                        </span>
+                                      </div>
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            )}
+                          />
+                        ) : (
+                          <Input
+                            id="service"
+                            {...register("service")}
+                            placeholder="e.g., Logo Design, Video Editing, Web Development"
+                            className={`bg-[#13111c] border-white/10 text-white focus:border-[#9b87f5] ${errors.service ? "border-red-500" : ""}`}
+                          />
+                        )}
                         {errors.service && (
                           <p className="text-sm text-red-500 mt-1">{errors.service.message as string}</p>
                         )}
@@ -343,12 +404,12 @@ function BookingForm() {
                               }}
                               placeholder="Select expected delivery date (optional)"
                               className="bg-[#13111c] border-white/10"
-                              minDate={new Date(Date.now() + (artist.deliveryTime || 3) * 24 * 60 * 60 * 1000)}
+                              minDate={new Date(Date.now() + getSelectedServiceDeliveryTime() * 24 * 60 * 60 * 1000)}
                             />
                           )}
                         />
                         <p className="text-xs text-gray-400">
-                          Default: {artist.deliveryTime || 3} days from today
+                          Default: {getSelectedServiceDeliveryTime()} days from today
                         </p>
                       </div>
                     </div>
@@ -495,26 +556,45 @@ function BookingForm() {
                 </div>
 
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between text-gray-400">
-                    <span>{artist.artistType === 'remote' ? 'Service Price' : 'Hourly Rate'}</span>
-                    <span className="text-white">
-                      {artist.artistType === 'remote' && artist.pricing?.amount 
-                        ? formatHourlyRate(artist.pricing.amount) 
-                        : formatHourlyRate(artist.hourlyRate)
-                      }
-                    </span>
-                  </div>
-                  {artist.artistType !== 'remote' && (
-                    <div className="flex justify-between text-gray-400">
-                      <span>Duration</span>
-                      <span className="text-white">{formData.duration} {parseFloat(formData.duration) === 1 ? "hour" : "hours"}</span>
-                    </div>
-                  )}
-                  {artist.artistType === 'remote' && (
-                    <div className="flex justify-between text-gray-400">
-                      <span>Delivery Time</span>
-                      <span className="text-white">{artist.deliveryTime || 3} Days</span>
-                    </div>
+                  {artist.artistType === 'remote' && formData.service && artist.services && artist.services.length > 0 ? (
+                    <>
+                      <div className="flex justify-between text-gray-400">
+                        <span>Selected Service</span>
+                        <span className="text-white">{formData.service}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-400">
+                        <span>Service Price</span>
+                        <span className="text-white">{formatHourlyRate(calculateTotal())}</span>
+                      </div>
+                      <div className="flex justify-between text-gray-400">
+                        <span>Delivery Time</span>
+                        <span className="text-white">{getSelectedServiceDeliveryTime()} {getSelectedServiceDeliveryTime() === 1 ? 'Day' : 'Days'}</span>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex justify-between text-gray-400">
+                        <span>{artist.artistType === 'remote' ? 'Service Price' : 'Hourly Rate'}</span>
+                        <span className="text-white">
+                          {artist.artistType === 'remote' && artist.pricing?.amount 
+                            ? formatHourlyRate(artist.pricing.amount) 
+                            : formatHourlyRate(artist.hourlyRate)
+                          }
+                        </span>
+                      </div>
+                      {artist.artistType !== 'remote' && (
+                        <div className="flex justify-between text-gray-400">
+                          <span>Duration</span>
+                          <span className="text-white">{formData.duration} {parseFloat(formData.duration) === 1 ? "hour" : "hours"}</span>
+                        </div>
+                      )}
+                      {artist.artistType === 'remote' && (
+                        <div className="flex justify-between text-gray-400">
+                          <span>Delivery Time</span>
+                          <span className="text-white">{getSelectedServiceDeliveryTime()} Days</span>
+                        </div>
+                      )}
+                    </>
                   )}
                   <div className="flex justify-between text-gray-400">
                     <span>Service Fee</span>

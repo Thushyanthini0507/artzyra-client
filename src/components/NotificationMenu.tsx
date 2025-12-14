@@ -54,6 +54,19 @@ export function NotificationMenu() {
     } catch (error: any) {
       console.error("Failed to fetch notifications", error);
       
+      // Handle rate limiting errors (429) - show user-friendly message
+      if (error.response?.status === 429 || error.isRateLimitError) {
+        console.warn("Rate limited - notifications will retry automatically", {
+          error: error.message,
+          userMessage: error.userMessage,
+        });
+        // Don't show toast for rate limits - retries are handled automatically
+        // Just use empty state temporarily
+        setNotifications([]);
+        setUnreadCount(0);
+        return;
+      }
+      
       // Handle network errors gracefully (non-critical)
       if (
         error.isNetworkError ||

@@ -12,6 +12,17 @@ export const customerRegisterSchema = z.object({
   phone: z.string().regex(/^\+94\d{9}$/, "Phone number must start with +94 and have 9 digits after"),
 });
 
+const serviceSchema = z.object({
+  name: z.string().min(1, "Service name is required"),
+  price: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+    message: "Price must be a positive number",
+  }),
+  deliveryTime: z.string().refine((val) => !isNaN(Number(val)) && Number(val) >= 1, {
+    message: "Delivery time must be at least 1 day",
+  }),
+  description: z.string().optional(),
+});
+
 export const artistRegisterSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
@@ -19,11 +30,13 @@ export const artistRegisterSchema = z.object({
   phone: z.string().regex(/^\+94\d{9}$/, "Phone number must start with +94 and have 9 digits after"),
   bio: z.string().min(10, "Bio must be at least 10 characters"),
   category: z.string().min(1, "Category is required"),
-  skills: z.string().min(1, "Skills are required"),
-  hourlyRate: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+  skills: z.string().optional(),
+  hourlyRate: z.string().optional().refine((val) => !val || (!isNaN(Number(val)) && Number(val) > 0), {
     message: "Hourly rate must be a positive number",
   }),
-  availability: z.string().min(1, "Availability is required"),
+  availability: z.string().optional(),
+  deliveryTime: z.string().optional(),
+  services: z.array(serviceSchema).optional(),
 });
 
 export type LoginFormData = z.infer<typeof loginSchema>;

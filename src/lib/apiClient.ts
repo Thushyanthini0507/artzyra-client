@@ -3,6 +3,13 @@ import Cookies from "js-cookie";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
+// Extend AxiosRequestConfig to include retry count
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    __retryCount?: number;
+  }
+}
+
 const apiClient = axios.create({
   baseURL: apiUrl,
   timeout: 60000, // Increased to 60 seconds
@@ -28,10 +35,71 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response: Handle 401, 403, network errors
+// Helper function for exponential backoff with jitter
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const getRetryDelay = (retryCount: number, retryAfter?: string): number => {
+  // If Retry-After header is present, use it (convert to milliseconds)
+  if (retryAfter) {
+    const retryAfterMs = parseInt(retryAfter, 10) * 1000;
+    // Add some jitter (±20%)
+    const jitter = retryAfterMs * 0.2 * (Math.random() * 2 - 1);
+    return Math.max(1000, retryAfterMs + jitter);
+  }
+  
+  // Exponential backoff: baseDelay * 2^retryCount with jitter
+  const baseDelay = 1000; // 1 second
+  const exponentialDelay = baseDelay * Math.pow(2, retryCount);
+  const jitter = exponentialDelay * 0.3 * Math.random(); // ±30% jitter
+  return Math.min(exponentialDelay + jitter, 30000); // Cap at 30 seconds
+};
+
+// Response: Handle 401, 403, network errors, and 429 rate limiting
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    // Handle 429 Too Many Requests with retry logic
+    if (error.response?.status === 429) {
+      const config = error.config;
+      
+      // Don't retry if retry count exceeds max or if request doesn't support retries
+      const maxRetries = 3;
+      const retryCount = config.__retryCount || 0;
+      
+      // Only retry GET requests and other safe methods
+      const isRetryableMethod = ['get', 'head', 'options'].includes(
+        config?.method?.toLowerCase() || ''
+      );
+      
+      if (retryCount < maxRetries && isRetryableMethod) {
+        config.__retryCount = retryCount + 1;
+        
+        // Get Retry-After header if present
+        const retryAfter = error.response?.headers?.['retry-after'] || 
+                          error.response?.headers?.['Retry-After'];
+        
+        const delayMs = getRetryDelay(retryCount, retryAfter);
+        
+        console.warn(
+          `Rate limited (429). Retrying in ${Math.round(delayMs / 1000)}s... (Attempt ${retryCount + 1}/${maxRetries})`
+        );
+        
+        await delay(delayMs);
+        
+        // Retry the request
+        return apiClient(config);
+      } else {
+        // Max retries reached or non-retryable method
+        console.error(
+          `Rate limit exceeded (429). ${retryCount >= maxRetries ? 'Max retries reached.' : 'Request method not retryable.'}`
+        );
+        
+        // Enhance error with user-friendly message
+        error.userMessage = 
+          "Too many requests. Please wait a moment and try again.";
+      }
+    }
+    
     // Handle network errors (no response from server)
     if (!error.response) {
       const isNetworkError =

@@ -42,9 +42,18 @@ function MessagesContent() {
           });
           setConversations(formattedConversations);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch conversations", error);
-        toast.error("Failed to load chats");
+        
+        // Handle rate limiting errors
+        if (error.response?.status === 429) {
+          toast.error(
+            error.userMessage || 
+            "Too many requests. Please wait a moment and try again."
+          );
+        } else {
+          toast.error("Failed to load chats");
+        }
       } finally {
         setLoading(false);
       }
@@ -71,9 +80,17 @@ function MessagesContent() {
           }));
           setMessages(formattedMessages);
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error("Failed to fetch messages", error);
-        toast.error("Failed to load messages");
+        
+        // Handle rate limiting errors
+        if (error.response?.status === 429) {
+          // Don't show toast for rate limits during polling - retries are handled automatically
+          // Only log for debugging
+          console.warn("Rate limited while fetching messages - will retry automatically");
+        } else {
+          toast.error("Failed to load messages");
+        }
       }
     };
 

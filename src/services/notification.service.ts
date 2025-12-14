@@ -13,6 +13,17 @@ export const notificationService = {
       });
       return response.data;
     } catch (error: any) {
+      // Handle 429 rate limiting errors
+      if (error.response?.status === 429) {
+        // The retry logic in apiClient should have already attempted retries
+        // If we still get 429, all retries were exhausted
+        throw {
+          ...error,
+          isRateLimitError: true,
+          userMessage: error.userMessage || "Too many requests. Please wait a moment and try again.",
+        };
+      }
+      
       // Re-throw with additional context for network errors
       if (!error.response && (error.code === "ERR_NETWORK" || error.message === "Network Error")) {
         throw {

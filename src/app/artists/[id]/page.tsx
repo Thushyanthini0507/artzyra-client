@@ -349,21 +349,36 @@ export default function ArtistProfilePage() {
             <div className=" mt-20">
               <h3 className="text-2xl font-bold text-white mb-6">Services</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {(artist.skills && artist.skills.length > 0 ? artist.skills : ["Consultation", "Standard Service", "Premium Service", "Custom Project"]).map((skill: string, i: number) => (
-                  <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5 hover:bg-[#252134] transition-colors group cursor-pointer">
-                    <h4 className="text-lg font-bold text-white mb-2">{skill}</h4>
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">Professional {skill.toLowerCase()} services tailored to your specific needs and requirements.</p>
-                    <p className="text-[#a78bfa] font-semibold text-sm">
-                      {(artist.artistType || 'physical') === 'remote' && artist.pricing?.amount 
-                        ? `Fixed Price: ${formatLKR(artist.pricing.amount)}` 
-                        : `Starts at ${formatLKR(artist.hourlyRate || 500)}`
-                      }
-                      {(artist.artistType || 'physical') === 'remote' && artist.deliveryTime && (
-                        <span className="block text-gray-400 text-xs mt-1">Delivery in {artist.deliveryTime} days</span>
-                      )}
-                    </p>
-                  </div>
-                ))}
+                {/* For remote artists, show services array */}
+                {artist.artistType === 'remote' && artist.services && artist.services.length > 0 ? (
+                  artist.services.map((service: any, i: number) => (
+                    <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5 hover:bg-[#252134] transition-colors group cursor-pointer">
+                      <h4 className="text-lg font-bold text-white mb-2">{service.name}</h4>
+                      <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                        {service.description || `Professional ${service.name.toLowerCase()} services tailored to your specific needs.`}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <p className="text-[#a78bfa] font-semibold text-lg">
+                          {formatLKR(service.price || 0)}
+                        </p>
+                        <p className="text-gray-400 text-xs">
+                          Delivery in {service.deliveryTime || 1} {service.deliveryTime === 1 ? 'day' : 'days'}
+                        </p>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  // For physical artists or fallback, show skills
+                  (artist.skills && artist.skills.length > 0 ? artist.skills : ["Consultation", "Standard Service", "Premium Service", "Custom Project"]).map((skill: string, i: number) => (
+                    <div key={i} className="bg-[#1e1b29] rounded-[24px] p-6 border border-white/5 hover:bg-[#252134] transition-colors group cursor-pointer">
+                      <h4 className="text-lg font-bold text-white mb-2">{skill}</h4>
+                      <p className="text-gray-400 text-sm mb-4 line-clamp-2">Professional {skill.toLowerCase()} services tailored to your specific needs and requirements.</p>
+                      <p className="text-[#a78bfa] font-semibold text-sm">
+                        Starts at {formatLKR(artist.hourlyRate || 500)}
+                      </p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
