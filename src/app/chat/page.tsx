@@ -193,7 +193,7 @@ function ChatInterface() {
               type="submit" 
               size="icon" 
               disabled={sending || !newMessage.trim()}
-              className="bg-[#9b87f5] hover:bg-[#8a76d6]"
+              className="bg-primary text-primary-foreground hover:bg-primary/90"
             >
               {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             </Button>

@@ -21,6 +21,7 @@ function PaymentSuccessContent() {
   const [loading, setLoading] = useState(true);
   const [verified, setVerified] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [artistId, setArtistId] = useState<string | null>(null);
 
   useEffect(() => {
     const verifyPayment = async () => {
@@ -40,10 +41,24 @@ function PaymentSuccessContent() {
         if (response.data.success) {
           setVerified(true);
           toast.success("Payment verified successfully!");
-          // Auto-redirect to messages after 3 seconds
-          setTimeout(() => {
-            router.push("/customer/messages");
-          }, 3000);
+          
+          // Fetch booking to get artist ID
+          try {
+            const bookingResponse = await bookingService.getBookingById(bookingId);
+            if (bookingResponse.data) {
+              const booking = bookingResponse.data;
+              const artist = booking.artist;
+              // Extract artist ID - could be object with _id or userId, or just a string
+              const extractedArtistId = typeof artist === 'object' 
+                ? (artist._id || artist.userId?._id || artist.userId)
+                : artist;
+              if (extractedArtistId) {
+                setArtistId(extractedArtistId);
+              }
+            }
+          } catch (err) {
+            console.error("Failed to fetch booking for artist ID:", err);
+          }
         } else {
           setError(response.data.message || "Payment verification failed");
         }
@@ -87,7 +102,7 @@ function PaymentSuccessContent() {
                   <p className="text-gray-300 mb-8 leading-relaxed">{error}</p>
                   <div className="flex flex-col sm:flex-row gap-4 w-full">
                     <Link href="/customer" className="flex-1">
-                      <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12">
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12">
                         Go to Dashboard
                       </Button>
                     </Link>
@@ -110,8 +125,11 @@ function PaymentSuccessContent() {
                         View Booking
                       </Button>
                     </Link>
-                    <Link href="/customer/messages" className="flex-1">
-                      <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12">
+                    <Link 
+                      href={artistId ? `/chat?artistId=${artistId}` : `/chat?bookingId=${bookingId}`} 
+                      className="flex-1"
+                    >
+                      <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12">
                         <MessageSquare className="mr-2 h-4 w-4" />
                         Chat with Artist
                       </Button>

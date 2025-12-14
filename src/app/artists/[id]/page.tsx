@@ -296,7 +296,7 @@ export default function ArtistProfilePage() {
               
               {artist.artistType === 'physical' ? (
                 <Button 
-                  className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12 rounded-xl font-semibold"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-xl font-semibold"
                   onClick={() => {
                     if (user) {
                       // Navigate to chat
@@ -313,7 +313,7 @@ export default function ArtistProfilePage() {
               ) : (
                 <div className="space-y-3">
                   <Button 
-                    className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white h-12 rounded-xl font-semibold"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 h-12 rounded-xl font-semibold"
                     onClick={() => {
                       if (user?.role === "customer") {
                         router.push(`/bookings/create?artistId=${artistId}`);
@@ -329,7 +329,7 @@ export default function ArtistProfilePage() {
                   {hasCompletedBooking && user?.role === "customer" && (
                     <Button 
                       variant="outline"
-                      className="w-full border-[#5b21b6] text-[#5b21b6] hover:bg-[#5b21b6] hover:text-white h-12 rounded-xl font-semibold"
+                      className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground h-12 rounded-xl font-semibold"
                       onClick={() => {
                         router.push(`/chat?artistId=${artistId}`);
                       }}
@@ -393,7 +393,7 @@ export default function ArtistProfilePage() {
                       className={cn(
                         "px-4 py-1.5 rounded-full text-sm font-medium transition-colors",
                         filter === "All" 
-                          ? "bg-[#5b21b6] text-white" 
+                          ? "bg-primary text-primary-foreground" 
                           : "bg-[#1e1b29] text-gray-400 hover:text-white"
                       )}
                     >

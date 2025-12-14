@@ -7,7 +7,7 @@ import { bookingService } from "@/services/booking.service";
 import { Booking } from "@/types/booking";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
+import { Loader2, MessageSquare } from "lucide-react";
 import { 
   BookingHeader, 
   BookingInfo, 
@@ -69,8 +69,21 @@ export default function BookingDetailsPage() {
   };
 
   const handleContact = () => {
-    // Placeholder for messaging
-    toast.info("Messaging feature coming soon!");
+    if (!booking) return;
+    
+    // Get artist ID from booking
+    const artist = booking.artist as any;
+    const artistId = typeof artist === 'object' 
+      ? (artist._id || artist.userId?._id || artist.userId)
+      : artist;
+    
+    if (artistId) {
+      router.push(`/chat?artistId=${artistId}`);
+    } else if (booking._id) {
+      router.push(`/chat?bookingId=${booking._id}`);
+    } else {
+      toast.error("Unable to start chat. Artist information not available.");
+    }
   };
 
   if (loading) {
@@ -153,8 +166,29 @@ export default function BookingDetailsPage() {
                     <p className="text-sm text-gray-400 mb-4">
                       Your booking has been accepted. Please proceed with payment to confirm.
                     </p>
-                    <Button className="w-full bg-[#5b21b6] hover:bg-[#4c1d95] text-white" onClick={() => setIsPaymentOpen(true)}>
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90" onClick={() => setIsPaymentOpen(true)}>
                       Pay Now
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Show Chat button for paid bookings (in_progress, review, completed) or any booking with payment succeeded */}
+              {(booking.paymentStatus === "succeeded" || ["in_progress", "review", "completed"].includes(booking.status)) && booking.status !== "cancelled" && (
+                <Card className="bg-[#1e1b29] border-primary/30 shadow-lg">
+                  <CardHeader>
+                    <CardTitle className="text-white">Chat with Artist</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-400 mb-4">
+                      Your booking is confirmed. You can now chat with the artist about your project.
+                    </p>
+                    <Button 
+                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90" 
+                      onClick={handleContact}
+                    >
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Chat with Artist
                     </Button>
                   </CardContent>
                 </Card>

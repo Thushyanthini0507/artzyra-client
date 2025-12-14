@@ -520,7 +520,7 @@ function BookingForm() {
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-[#9b87f5] hover:bg-[#8a76d6] text-white font-bold py-6 text-lg rounded-xl"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-6 text-lg rounded-xl"
                     disabled={submitting}
                   >
                     {submitting ? (
