@@ -11,8 +11,10 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
     switch (status.toLowerCase()) {
       case "approved":
       case "completed":
+      case "succeeded":
       case "active":
       case "accepted":
+      case "paid":
         return "default"; // Usually black/primary
       case "pending":
       case "processing":
@@ -21,6 +23,8 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
       case "failed":
       case "cancelled":
         return "destructive"; // Red
+      case "refunded":
+        return "outline"; // Outlined style for refunded
       default:
         return "outline";
     }

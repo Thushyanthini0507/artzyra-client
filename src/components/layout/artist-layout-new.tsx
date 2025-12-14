@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { artistService } from "@/services/artist.service";
 
 const sidebarItems = [
   {
@@ -57,6 +59,23 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
+  const [artistProfile, setArtistProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchArtistProfile = async () => {
+      if (user?.role === "artist") {
+        try {
+          const response = await artistService.getProfile();
+          if (response.success && response.data) {
+            setArtistProfile(response.data.artist || response.data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch artist profile:", error);
+        }
+      }
+    };
+    fetchArtistProfile();
+  }, [user]);
 
   const getInitials = (name: string | undefined) => {
     if (!name) return "U";
@@ -68,13 +87,9 @@ export function ArtistLayoutNew({ children }: { children: React.ReactNode }) {
       .slice(0, 2);
   };
 
-  const artistName = user?.name || "Artist";
-  const artistTitle = "Painter & Illustrator"; // This should ideally come from the profile
-  const artistImage = user?.profileImage || "";
-
-  const handleRefresh = () => {
-    router.refresh();
-  };
+  const artistName = artistProfile?.name || user?.name || "Artist";
+  const artistTitle = artistProfile?.category?.name || "Artist"; // Get from profile
+  const artistImage = artistProfile?.profileImage || "";
 
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-[#13111c] via-[#1a1625] to-[#13111c]">

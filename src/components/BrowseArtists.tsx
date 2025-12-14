@@ -404,14 +404,14 @@ export function BrowseArtists() {
                 <div className="space-y-3 pt-2">
                   <Button 
                     onClick={handleApplyFilters} 
-                    className="w-full bg-[#9b87f5] hover:bg-[#8a76d6] text-white font-semibold h-11 rounded-lg"
+                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-11 rounded-lg"
                   >
                     Apply Filters
                   </Button>
                   <Button
                     variant="ghost"
                     onClick={handleResetFilters}
-                    className="w-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 h-11 rounded-lg"
+                    className="w-full text-muted-foreground hover:text-foreground hover:bg-accent h-11 rounded-lg"
                   >
                     Reset
                   </Button>
@@ -467,7 +467,7 @@ export function BrowseArtists() {
                 <p className="text-gray-600 mb-6">
                   We couldn't find any artists matching your criteria.
                 </p>
-                <Button onClick={handleResetFilters} className="bg-[#9b87f5] hover:bg-[#8a76d6] text-white">
+                <Button onClick={handleResetFilters} className="bg-primary text-primary-foreground hover:bg-primary/90">
                   Clear Filters
                 </Button>
               </div>
@@ -540,7 +540,7 @@ export function BrowseArtists() {
 
                         {/* View Profile Button */}
                         <Button 
-                          className="w-full bg-[#3e2a5e] hover:bg-[#4d3575] text-white/90 font-medium h-10 rounded-lg mt-2 group-hover:bg-[#5b3c88] transition-colors"
+                          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-medium h-10 rounded-lg mt-2 transition-colors"
                           asChild
                         >
                           <Link href={`/artists/${artist._id}`}>View Profile</Link>
@@ -593,7 +593,7 @@ export function BrowseArtists() {
                               className={cn(
                                 "h-10 w-10",
                                 currentPage === 1 
-                                  ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 border-none" 
                                   : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                               )}
                               onClick={() => {
@@ -617,7 +617,7 @@ export function BrowseArtists() {
                               className={cn(
                                 "h-10 w-10",
                                 currentPage === pageNum 
-                                  ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 border-none" 
                                   : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                               )}
                               onClick={() => {
@@ -634,7 +634,7 @@ export function BrowseArtists() {
                               className={cn(
                                 "h-10 w-10",
                                 currentPage === totalPagesCalc 
-                                  ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 border-none" 
                                   : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
                               )}
                               onClick={() => {
@@ -653,12 +653,12 @@ export function BrowseArtists() {
                         <Button
                           key={pageNum}
                           variant={currentPage === pageNum ? "default" : "outline"}
-                          className={cn(
-                            "h-10 w-10",
-                            currentPage === pageNum 
-                              ? "bg-[#9b87f5] hover:bg-[#8a76d6] text-white border-none" 
-                              : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
-                          )}
+                              className={cn(
+                                "h-10 w-10",
+                                currentPage === pageNum 
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 border-none" 
+                                  : "bg-white border-gray-200 text-gray-900 hover:bg-gray-100"
+                              )}
                           onClick={() => {
                             const params = new URLSearchParams(searchParams.toString());
                             params.set("page", pageNum.toString());

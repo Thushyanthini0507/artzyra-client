@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useCustomerBookings, useDeleteBooking } from "@/hooks/useCustomerHooks";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import { Trash2, Edit, Eye, CreditCard, Star } from "lucide-react";
+import { Trash2, Edit, Eye, CreditCard, Star, MessageSquare } from "lucide-react";
 import { PaymentDialog } from "@/components/customer/PaymentDialog";
 import { ReviewDialog } from "@/components/customer/ReviewDialog";
 import { formatLKR } from "@/lib/utils/currency";
@@ -59,7 +59,7 @@ export default function CustomerBookingsPage() {
                 <div className="text-center py-10">
                   <p className="text-gray-400 mb-4">You haven't made any bookings yet.</p>
                   <Link href="/customer/bookings/create">
-                    <Button className="bg-[#5b21b6] hover:bg-[#4c1d95] text-white rounded-xl">Book Your First Artist</Button>
+                    <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl">Book Your First Artist</Button>
                   </Link>
                 </div>
               ) : (
@@ -115,14 +115,35 @@ export default function CustomerBookingsPage() {
                           </Button>
                         )}
                         {booking.status === "completed" && (
-                          <Button size="sm" variant="secondary" className="gap-2 bg-[#2e1065] text-white hover:bg-[#3b157a] rounded-xl" onClick={() => handleReview(booking)}>
+                          <Button size="sm" variant="secondary" className="gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-xl" onClick={() => handleReview(booking)}>
                             <Star className="h-4 w-4" /> Review
+                          </Button>
+                        )}
+                        {/* Show Chat button for paid bookings (in_progress, review, completed) or any booking with payment succeeded */}
+                        {(booking.paymentStatus === "succeeded" || ["in_progress", "review", "completed"].includes(booking.status)) && booking.status !== "cancelled" && (
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            className="gap-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl"
+                            onClick={() => {
+                              const artist = booking.artist as any;
+                              const artistId = typeof artist === 'object' 
+                                ? (artist._id || artist.userId?._id || artist.userId)
+                                : artist;
+                              if (artistId) {
+                                window.location.href = `/chat?artistId=${artistId}`;
+                              } else {
+                                window.location.href = `/chat?bookingId=${booking._id}`;
+                              }
+                            }}
+                          >
+                            <MessageSquare className="h-4 w-4" /> Chat
                           </Button>
                         )}
                         
                         <div className="flex gap-2">
                           <Link href={`/customer/bookings/${booking._id}`}>
-                            <Button variant="outline" size="sm" className="gap-2 border-white/10 text-gray-300 hover:bg-white/5 hover:text-white rounded-xl">
+                            <Button variant="outline" size="sm" className="gap-2 border-white/10 text-foreground hover:bg-accent hover:text-accent-foreground rounded-xl">
                               <Eye className="h-4 w-4" /> View
                             </Button>
                           </Link>
