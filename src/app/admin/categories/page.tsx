@@ -3,17 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { adminService } from "@/services/admin.service";
 import { uploadService } from "@/services/upload.service";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AdminLayout } from "@/components/layout/admin-layout";
 import {
   Dialog,
   DialogContent,
@@ -21,12 +11,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Pencil, Trash2, Plus, Image as ImageIcon, X } from "lucide-react";
+import { Pencil, Trash2, Plus, Image as ImageIcon, X, Search, RefreshCcw, Layers } from "lucide-react";
 import { toast } from "sonner";
 import Image from "next/image";
-import { AdminLayout } from "@/components/layouts/admin-layout";
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<any[]>([]);
@@ -40,6 +32,7 @@ export default function CategoriesPage() {
   });
   const [imagePreview, setImagePreview] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchCategories = async () => {
@@ -53,17 +46,7 @@ export default function CategoriesPage() {
       }
     } catch (error: any) {
       console.error("Error fetching categories:", error);
-      
-      // Handle network errors with user-friendly messages
-      if (error.code === "ERR_NETWORK" || error.isNetworkError) {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL
-        toast.error(
-          `Cannot connect to backend server. Please ensure the API server is running at ${apiUrl}`,
-          { duration: 5000 }
-        );
-      } else {
-        toast.error(error.userMessage || error.message || "Failed to load categories");
-      }
+      toast.error("Failed to load categories");
     } finally {
       setLoading(false);
     }
@@ -76,36 +59,19 @@ export default function CategoriesPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Validate file type
       if (!file.type.startsWith("image/")) {
         toast.error("Please select an image file");
         return;
       }
-
-      // Validate file size (max 10MB for Cloudinary)
-      const MAX_SIZE = 10 * 1024 * 1024; // 10MB
-      if (file.size > MAX_SIZE) {
+      if (file.size > 10 * 1024 * 1024) {
         toast.error("Image size must be less than 10MB.");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
         return;
       }
 
       setSelectedFile(file);
-
-      // Convert to base64 for preview only
       const reader = new FileReader();
-      reader.onerror = () => {
-        toast.error("Failed to read image file");
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-      };
       reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setImagePreview(base64String);
-        // We don't set formData.image here anymore, we'll handle it on submit
+        setImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -115,16 +81,12 @@ export default function CategoriesPage() {
     setFormData({ ...formData, image: "" });
     setImagePreview("");
     setSelectedFile(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validate form
-    if (!formData.name || formData.name.trim().length === 0) {
+    if (!formData.name.trim()) {
       toast.error("Category name is required");
       return;
     }
@@ -132,67 +94,37 @@ export default function CategoriesPage() {
     try {
       let imageUrl = formData.image;
 
-      // Upload image if a new file is selected
       if (selectedFile) {
         const uploadToast = toast.loading("Uploading image...");
         try {
           const uploadResult = await uploadService.uploadImage(selectedFile, "category");
           toast.dismiss(uploadToast);
-
-          if (!uploadResult.success || !uploadResult.data) {
-            const errorMsg = uploadResult.error || uploadResult.message || "Failed to upload image";
-            console.error("Upload failed:", uploadResult);
-            toast.error(errorMsg, { duration: 5000 });
-            return;
+          if (uploadResult.success && uploadResult.data) {
+            imageUrl = uploadResult.data.url;
+          } else {
+            throw new Error(uploadResult.error || "Upload failed");
           }
-          imageUrl = uploadResult.data.url;
-        } catch (uploadError: any) {
+        } catch (error) {
           toast.dismiss(uploadToast);
-          const errorMsg = 
-            uploadError.response?.data?.error || 
-            uploadError.response?.data?.message || 
-            uploadError.message || 
-            "Failed to upload image";
-          console.error("Upload error:", uploadError);
-          toast.error(errorMsg, { duration: 5000 });
+          toast.error("Failed to upload image");
           return;
         }
       }
 
-      const dataToSubmit = {
-        ...formData,
-        image: imageUrl,
-      };
+      const dataToSubmit = { ...formData, image: imageUrl };
+      const response = editingCategory
+        ? await adminService.updateCategory(editingCategory._id, dataToSubmit)
+        : await adminService.createCategory(dataToSubmit);
 
-      let response;
-      if (editingCategory) {
-        response = await adminService.updateCategory(
-          editingCategory._id,
-          dataToSubmit
-        );
-        if (response.success) {
-          toast.success("Category updated");
-        } else {
-          toast.error(response.error || "Failed to update category");
-          return;
-        }
+      if (response.success) {
+        toast.success(`Category ${editingCategory ? "updated" : "created"} successfully`);
+        handleDialogOpenChange(false);
+        fetchCategories();
       } else {
-        response = await adminService.createCategory(dataToSubmit);
-
-        if (response.success) {
-          toast.success("Category created successfully");
-        } else {
-          toast.error(response.error || "Failed to create category");
-          return;
-        }
+        toast.error(response.error || "Operation failed");
       }
-
-      handleDialogOpenChange(false);
-      fetchCategories();
     } catch (error: any) {
-      toast.error(
-        error.message || error.error || "Failed to save category"
-      );
+      toast.error("Failed to save category");
     }
   };
 
@@ -210,23 +142,12 @@ export default function CategoriesPage() {
   const handleDialogOpenChange = (open: boolean) => {
     setIsDialogOpen(open);
     if (!open) {
-      // Reset form when dialog closes
       setEditingCategory(null);
       setFormData({ name: "", description: "", image: "" });
       setImagePreview("");
       setSelectedFile(null);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
-  };
-
-  const handleAddCategory = () => {
-    setEditingCategory(null);
-    setFormData({ name: "", description: "", image: "" });
-    setImagePreview("");
-    setSelectedFile(null);
-    setIsDialogOpen(true);
   };
 
   const handleDelete = async (id: string) => {
@@ -239,229 +160,214 @@ export default function CategoriesPage() {
       } else {
         toast.error(response.error || "Failed to delete category");
       }
-    } catch (error: any) {
-      toast.error(error.message || error.error || "Failed to delete category");
+    } catch (error) {
+      toast.error("Failed to delete category");
     }
   };
+
+  const filteredCategories = categories.filter(category => 
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    category.description?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
               Categories
             </h1>
-            <p className="text-muted-foreground">
-              Manage artist categories. Total: {loading ? "..." : categories.length}
+            <p className="text-muted-foreground mt-1">
+              Manage artist categories and specializations.
             </p>
           </div>
-          <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
-            <DialogTrigger asChild>
-              <Button onClick={handleAddCategory}>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Category
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingCategory ? "Edit Category" : "Add Category"}
-                </DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, name: e.target.value })
-                    }
-                    required
-                    placeholder="e.g., Digital Art, Photography"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={(e) =>
-                      setFormData({ ...formData, description: e.target.value })
-                    }
-                    placeholder="Describe this category..."
-                    rows={4}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="image">Image</Label>
+          <div className="flex gap-2">
+            <Button 
+              onClick={fetchCategories} 
+              variant="outline" 
+              className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all"
+            >
+              <RefreshCcw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Dialog open={isDialogOpen} onOpenChange={handleDialogOpenChange}>
+              <DialogTrigger asChild>
+                <Button className="bg-purple-600 hover:bg-purple-700 text-white border-0 shadow-lg shadow-purple-500/20">
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Category
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="bg-[#1a1625] border-white/10 text-white sm:max-w-[600px]">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold">
+                    {editingCategory ? "Edit Category" : "Add New Category"}
+                  </DialogTitle>
+                </DialogHeader>
+                <form onSubmit={handleSubmit} className="space-y-6 mt-4">
                   <div className="space-y-2">
-                    {imagePreview ? (
-                      <div className="relative w-full h-48 border rounded-lg overflow-hidden">
-                        <Image
-                          src={imagePreview}
-                          alt="Category preview"
-                          fill
-                          className="object-cover"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2"
-                          onClick={handleRemoveImage}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    ) : (
-                      <div
-                        className="border-2 border-dashed rounded-lg p-8 text-center cursor-pointer hover:bg-gray-50 transition-colors"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <ImageIcon className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                        <p className="text-sm text-gray-600">
-                          Click to upload image
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                          PNG, JPG up to 5MB
-                        </p>
-                      </div>
-                    )}
+                    <Label htmlFor="name" className="text-gray-300">Name *</Label>
                     <Input
-                      ref={fileInputRef}
-                      id="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      required
+                      placeholder="e.g., Digital Art"
+                      className="bg-black/20 border-white/10 text-white focus:border-purple-500/50"
                     />
-                    {!imagePreview && (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={() => fileInputRef.current?.click()}
-                        className="w-full"
-                      >
-                        <ImageIcon className="mr-2 h-4 w-4" />
-                        Choose Image
-                      </Button>
-                    )}
                   </div>
-                </div>
-                <div className="flex justify-end gap-2 pt-4">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => handleDialogOpenChange(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button type="submit">Save</Button>
-                </div>
-              </form>
-            </DialogContent>
-          </Dialog>
+                  <div className="space-y-2">
+                    <Label htmlFor="description" className="text-gray-300">Description</Label>
+                    <Textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                      placeholder="Describe this category..."
+                      rows={3}
+                      className="bg-black/20 border-white/10 text-white focus:border-purple-500/50 resize-none"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-gray-300">Cover Image</Label>
+                    <div className="border-2 border-dashed border-white/10 rounded-xl p-4 hover:bg-white/5 transition-colors text-center">
+                      {imagePreview ? (
+                        <div className="relative w-full h-48 rounded-lg overflow-hidden group">
+                          <Image
+                            src={imagePreview}
+                            alt="Preview"
+                            fill
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="sm"
+                              onClick={handleRemoveImage}
+                            >
+                              <X className="h-4 w-4 mr-2" />
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className="py-8 cursor-pointer"
+                          onClick={() => fileInputRef.current?.click()}
+                        >
+                          <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
+                            <ImageIcon className="h-6 w-6 text-gray-400" />
+                          </div>
+                          <p className="text-sm text-gray-300 font-medium">Click to upload image</p>
+                          <p className="text-xs text-gray-500 mt-1">PNG, JPG up to 10MB</p>
+                        </div>
+                      )}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="hidden"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => handleDialogOpenChange(false)}
+                      className="text-gray-400 hover:text-white hover:bg-white/10"
+                    >
+                      Cancel
+                    </Button>
+                    <Button type="submit" className="bg-purple-600 hover:bg-purple-700 text-white">
+                      {editingCategory ? "Save Changes" : "Create Category"}
+                    </Button>
+                  </div>
+                </form>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
-        <div className="flex justify-center">
-          <Card className="w-full max-w-6xl">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>All Categories</CardTitle>
-                {!loading && categories.length > 0 && (
-                  <span className="text-sm text-muted-foreground">
-                    {categories.length} {categories.length === 1 ? "category" : "categories"}
-                  </span>
-                )}
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Image</TableHead>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {loading ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center">
-                          Loading...
-                        </TableCell>
-                      </TableRow>
-                    ) : categories.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="text-center">
-                          No categories found.
-                        </TableCell>
-                      </TableRow>
-                    ) : (
-                      categories.map((category) => (
-                        <TableRow key={category._id}>
-                          <TableCell>
-                            {category.image ? (
-                              <div className="relative w-16 h-16 rounded overflow-hidden">
-                                <Image
-                                  src={category.image}
-                                  alt={category.name}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="w-16 h-16 rounded bg-gray-100 flex items-center justify-center">
-                                <ImageIcon className="h-6 w-6 text-gray-400" />
-                              </div>
-                            )}
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {category.name}
-                          </TableCell>
-                          <TableCell>
-                            <div className="max-w-md">
-                              {category.description ? (
-                                <p className="text-sm text-muted-foreground line-clamp-2">
-                                  {category.description}
-                                </p>
-                              ) : (
-                                <span className="text-muted-foreground">-</span>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                onClick={() => handleEdit(category)}
-                              >
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => handleDelete(category._id)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Search Bar */}
+        <div className="relative max-w-md">
+          <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+          <Input
+            placeholder="Search categories..."
+            className="pl-10 bg-white/5 border-white/10 text-white placeholder:text-gray-500 focus:border-purple-500/50 rounded-xl h-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
+
+        {/* Categories Grid */}
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500" />
+          </div>
+        ) : filteredCategories.length === 0 ? (
+          <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
+            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4">
+              <Layers className="h-8 w-8 text-gray-500" />
+            </div>
+            <h3 className="text-lg font-medium text-white">No categories found</h3>
+            <p className="text-gray-400 mt-1">Try creating a new category or adjusting your search.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {filteredCategories.map((category) => (
+              <Card 
+                key={category._id} 
+                className="group bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md overflow-hidden hover:border-purple-500/30 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300"
+              >
+                <div className="relative h-48 w-full overflow-hidden">
+                  {category.image ? (
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-white/5 flex items-center justify-center">
+                      <ImageIcon className="h-10 w-10 text-gray-600" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
+                  <div className="absolute bottom-0 left-0 p-4 w-full">
+                    <h3 className="text-lg font-bold text-white truncate">{category.name}</h3>
+                  </div>
+                </div>
+                <CardContent className="p-4">
+                  <p className="text-sm text-gray-400 line-clamp-2 h-10">
+                    {category.description || "No description provided."}
+                  </p>
+                </CardContent>
+                <CardFooter className="p-4 pt-0 flex justify-end gap-2">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-gray-400 hover:text-white hover:bg-white/10"
+                    onClick={() => handleEdit(category)}
+                  >
+                    <Pencil className="h-4 w-4 mr-1" />
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    onClick={() => handleDelete(category._id)}
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    Delete
+                  </Button>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
