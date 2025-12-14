@@ -16,6 +16,9 @@ interface ArtistSelectorProps {
 
 export function ArtistSelector({ categoryId, onSelect, onBack }: ArtistSelectorProps) {
   const { artists, loading, error } = useArtistsByCategory(categoryId);
+  
+  // Filter out physical artists - they cannot be booked through the platform
+  const bookableArtists = artists.filter((artist: any) => artist.artistType !== 'physical');
 
   if (loading) {
     return (
@@ -68,7 +71,7 @@ export function ArtistSelector({ categoryId, onSelect, onBack }: ArtistSelectorP
     );
   }
 
-  if (artists.length === 0) {
+  if (bookableArtists.length === 0) {
     return (
       <div className="space-y-6">
         <Button variant="outline" onClick={onBack}>
@@ -79,7 +82,11 @@ export function ArtistSelector({ categoryId, onSelect, onBack }: ArtistSelectorP
           <p className="text-muted-foreground">Choose the artist you'd like to book</p>
         </div>
         <div className="text-center py-12">
-          <p className="text-muted-foreground">No artists available in this category</p>
+          <p className="text-muted-foreground">
+            {artists.length > 0 
+              ? "No bookable artists available in this category. Physical artists must be contacted directly via chat."
+              : "No artists available in this category"}
+          </p>
         </div>
       </div>
     );
@@ -97,7 +104,7 @@ export function ArtistSelector({ categoryId, onSelect, onBack }: ArtistSelectorP
       </div>
       
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {artists.map((artist) => (
+        {bookableArtists.map((artist) => (
           <Card
             key={artist._id}
             className="cursor-pointer hover:border-primary transition-colors overflow-hidden"

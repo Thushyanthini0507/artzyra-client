@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -11,6 +13,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useCreateBooking } from "@/hooks/useBookingFlow";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Controller } from "react-hook-form";
+import { artistService } from "@/services/artist.service";
+import { toast } from "sonner";
 
 const bookingSchema = z.object({
   bookingDate: z.string().min(1, "Booking date is required"),
@@ -38,6 +42,8 @@ interface BookingFormStepProps {
 
 export function BookingFormStep({ artistId, categoryId, onBack }: BookingFormStepProps) {
   const { createBooking, loading } = useCreateBooking();
+  const router = useRouter();
+  const [checkingArtist, setCheckingArtist] = useState(true);
 
   const {
     register,
@@ -47,6 +53,32 @@ export function BookingFormStep({ artistId, categoryId, onBack }: BookingFormSte
   } = useForm<BookingFormData>({
     resolver: zodResolver(bookingSchema),
   });
+
+  // Check if artist is physical - they cannot be booked
+  useEffect(() => {
+    const checkArtistType = async () => {
+      try {
+        const response = await artistService.getById(artistId);
+        if (response.success && response.data) {
+          if (response.data.artistType === 'physical') {
+            toast.error("Physical artists cannot be booked directly. Please contact them via chat.");
+            router.push(`/chat?artistId=${artistId}`);
+            return;
+          }
+        }
+      } catch (error) {
+        console.error("Error checking artist type:", error);
+        toast.error("Failed to load artist information");
+        onBack();
+      } finally {
+        setCheckingArtist(false);
+      }
+    };
+
+    if (artistId) {
+      checkArtistType();
+    }
+  }, [artistId, router, onBack]);
 
   const onSubmit = async (data: BookingFormData) => {
     const bookingData = {
@@ -62,6 +94,23 @@ export function BookingFormStep({ artistId, categoryId, onBack }: BookingFormSte
     console.log("📤 Sending booking data:", bookingData);
     await createBooking(bookingData);
   };
+
+  if (checkingArtist) {
+    return (
+      <div className="space-y-6">
+        <Button variant="outline" onClick={onBack} className="mb-2">
+          ← Back to Artists
+        </Button>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">Loading artist information...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

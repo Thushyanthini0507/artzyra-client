@@ -50,23 +50,8 @@ function ChatInterface() {
         }
       } else if (artistId) {
         // For physical artists - create or get existing chat
+        // The backend endpoint handles finding existing chats automatically
         try {
-          // First, try to find existing chat
-          const allChatsResponse = await apiClient.get("/chats");
-          if (allChatsResponse.data.success) {
-            const existingChat = allChatsResponse.data.data.find((c: any) => {
-              const participants = c.participants.map((p: any) => p._id || p);
-              return participants.includes(artistId) && !c.booking;
-            });
-            
-            if (existingChat) {
-              setChat(existingChat);
-              setMessages(existingChat.messages || []);
-              return;
-            }
-          }
-          
-          // If no existing chat, create a new one
           const createResponse = await apiClient.post("/chats/create", { artistId });
           if (createResponse.data.success) {
             setChat(createResponse.data.data);
