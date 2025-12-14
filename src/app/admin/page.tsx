@@ -440,8 +440,11 @@ export default function AdminDashboard() {
       value: totalUsers,
       description: `${totalCustomers} customers + ${totalArtists} artists`,
       icon: Users,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-cyan-400",
+      bgGradient: "bg-gradient-to-br from-blue-500/20 to-cyan-500/20",
+      borderColor: "border-cyan-500/30",
+      hoverBorder: "hover:border-cyan-500/60",
+      shadowColor: "hover:shadow-cyan-500/20",
       link: "/admin/users",
     },
     {
@@ -449,8 +452,11 @@ export default function AdminDashboard() {
       value: totalCustomers,
       description: "Registered customers",
       icon: UserCheck,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-emerald-400",
+      bgGradient: "bg-gradient-to-br from-emerald-500/20 to-green-500/20",
+      borderColor: "border-emerald-500/30",
+      hoverBorder: "hover:border-emerald-500/60",
+      shadowColor: "hover:shadow-emerald-500/20",
       link: "/admin/users",
     },
     {
@@ -458,8 +464,11 @@ export default function AdminDashboard() {
       value: totalArtists,
       description: `${approvedArtists} approved, ${pendingArtists} pending`,
       icon: Palette,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-purple-400",
+      bgGradient: "bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20",
+      borderColor: "border-purple-500/30",
+      hoverBorder: "hover:border-purple-500/60",
+      shadowColor: "hover:shadow-purple-500/20",
       link: "/admin/artists",
     },
     {
@@ -467,8 +476,11 @@ export default function AdminDashboard() {
       value: pendingArtists,
       description: pendingArtists > 0 ? "Requires your attention" : "All approved",
       icon: AlertCircle,
-      color: pendingArtists > 0 ? "text-orange-600" : "text-green-600",
-      bgColor: pendingArtists > 0 ? "bg-orange-50" : "bg-green-50",
+      color: pendingArtists > 0 ? "text-orange-400" : "text-emerald-400",
+      bgGradient: pendingArtists > 0 ? "bg-gradient-to-br from-orange-500/20 to-amber-500/20" : "bg-gradient-to-br from-emerald-500/20 to-green-500/20",
+      borderColor: pendingArtists > 0 ? "border-orange-500/30" : "border-emerald-500/30",
+      hoverBorder: pendingArtists > 0 ? "hover:border-orange-500/60" : "hover:border-emerald-500/60",
+      shadowColor: pendingArtists > 0 ? "hover:shadow-orange-500/20" : "hover:shadow-emerald-500/20",
       link: "/admin/pending-artists",
       urgent: pendingArtists > 0,
     },
@@ -477,8 +489,11 @@ export default function AdminDashboard() {
       value: totalBookings,
       description: `${completedBookings} completed, ${pendingBookings} pending`,
       icon: ShoppingBag,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-violet-400",
+      bgGradient: "bg-gradient-to-br from-violet-500/20 to-purple-500/20",
+      borderColor: "border-violet-500/30",
+      hoverBorder: "hover:border-violet-500/60",
+      shadowColor: "hover:shadow-violet-500/20",
       link: "/admin/bookings",
     },
     {
@@ -486,61 +501,95 @@ export default function AdminDashboard() {
       value: pendingBookings,
       description: pendingBookings > 0 ? "Active requests" : "No pending",
       icon: Clock,
-      color: pendingBookings > 0 ? "text-yellow-600" : "text-gray-600",
-      bgColor: pendingBookings > 0 ? "bg-yellow-50" : "bg-gray-50",
+      color: pendingBookings > 0 ? "text-yellow-400" : "text-gray-400",
+      bgGradient: pendingBookings > 0 ? "bg-gradient-to-br from-yellow-500/20 to-amber-500/20" : "bg-gradient-to-br from-gray-500/20 to-slate-500/20",
+      borderColor: pendingBookings > 0 ? "border-yellow-500/30" : "border-gray-500/30",
+      hoverBorder: pendingBookings > 0 ? "hover:border-yellow-500/60" : "hover:border-gray-500/60",
+      shadowColor: pendingBookings > 0 ? "hover:shadow-yellow-500/20" : "hover:shadow-gray-500/20",
       link: "/admin/bookings",
     },
   ];
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
-          <p className="text-muted-foreground">Overview of your platform's performance.</p>
+      <div className="space-y-8">
+        {/* Header Section */}
+        <div className="space-y-2">
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-400 text-lg">Overview of your platform's performance and key metrics.</p>
         </div>
 
+        {/* Stats Cards Section */}
         {loading ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i}>
+              <Card 
+                key={i}
+                className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md"
+              >
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                  <div className="h-4 w-4 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-4 w-24 bg-gradient-to-r from-purple-500/30 to-fuchsia-500/30 rounded animate-pulse" />
+                  <div className="h-10 w-10 bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 rounded-xl animate-pulse" />
                 </CardHeader>
                 <CardContent>
-                  <div className="h-8 w-16 bg-gray-200 rounded animate-pulse mb-2" />
-                  <div className="h-3 w-32 bg-gray-200 rounded animate-pulse" />
+                  <div className="h-10 w-20 bg-gradient-to-r from-purple-500/30 to-fuchsia-500/30 rounded animate-pulse mb-2" />
+                  <div className="h-3 w-32 bg-white/10 rounded animate-pulse" />
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
             {cards.map((card) => (
-              <Link key={card.title} href={card.link || "#"}>
-                <Card className={`hover:shadow-lg transition-all cursor-pointer border-2 hover:border-primary ${card.bgColor}`}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
-                    <div className={`p-2 rounded-lg ${card.bgColor}`}>
+              <Link key={card.title} href={card.link || "#"} className="group">
+                <Card 
+                  className={`
+                    ${card.bgGradient}
+                    backdrop-blur-md
+                    border ${card.borderColor}
+                    ${card.hoverBorder}
+                    hover:scale-105
+                    hover:shadow-xl ${card.shadowColor}
+                    transition-all duration-300
+                    cursor-pointer
+                    rounded-2xl
+                    overflow-hidden
+                    relative
+                  `}
+                >
+                  {/* Animated background for urgent items */}
+                  {card.urgent && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 via-transparent to-orange-500/10 animate-pulse" />
+                  )}
+                  
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 relative z-10">
+                    <CardTitle className="text-sm font-semibold text-gray-300">
+                      {card.title}
+                    </CardTitle>
+                    <div className={`p-2.5 rounded-xl ${card.bgGradient} border ${card.borderColor} group-hover:scale-110 transition-transform duration-300`}>
                       <card.icon className={`h-5 w-5 ${card.color}`} />
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <div className="text-3xl font-bold">
+                  <CardContent className="relative z-10">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-3xl font-bold text-white">
                         {isNaN(card.value) ? 0 : card.value}
                       </div>
                       {card.urgent && (
-                        <Badge variant="destructive" className="animate-pulse">
-                          Action Required
+                        <Badge 
+                          variant="destructive" 
+                          className="animate-pulse bg-orange-500/20 text-orange-400 border-orange-500/30 hover:bg-orange-500/30"
+                        >
+                          Action
                         </Badge>
                       )}
                     </div>
-                    <p className="text-xs text-muted-foreground mt-2">{card.description}</p>
-                    <div className="flex items-center gap-1 text-xs text-primary mt-2">
-                      <span>View details</span>
-                      <ArrowRight className="h-3 w-3" />
+                    <p className="text-xs text-gray-400 mb-3">{card.description}</p>
+                    <div className="flex items-center gap-1 text-xs text-purple-400 group-hover:text-purple-300 transition-colors">
+                      <span className="font-medium">View details</span>
+                      <ArrowRight className="h-3 w-3 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </CardContent>
                 </Card>
@@ -549,16 +598,17 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        {/* Main Content Grid */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
           {/* Recent Users */}
-          <Card className="col-span-4">
+          <Card className="col-span-4 bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md rounded-2xl hover:border-purple-500/30 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
-                <CardTitle>Recent Users</CardTitle>
-                <CardDescription>Latest registered users on the platform</CardDescription>
+                <CardTitle className="text-white text-xl">Recent Users</CardTitle>
+                <CardDescription className="text-gray-400">Latest registered users on the platform</CardDescription>
               </div>
               <Link href="/admin/users">
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="border-purple-500/30 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/60 transition-all">
                   View All
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
@@ -566,7 +616,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               {recentUsers.length === 0 ? (
-                <div className="text-sm text-muted-foreground text-center py-8">
+                <div className="text-sm text-gray-400 text-center py-8 bg-white/5 rounded-xl">
                   No users found
                 </div>
               ) : (
@@ -574,17 +624,17 @@ export default function AdminDashboard() {
                   {recentUsers.map((user) => (
                     <div
                       key={user._id}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50 transition-colors"
+                      className="flex items-center justify-between p-4 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300 group"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-sm font-semibold text-primary">
+                        <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 flex items-center justify-center border border-purple-500/30 group-hover:scale-110 transition-transform">
+                          <span className="text-base font-bold text-purple-400">
                             {user.name?.charAt(0)?.toUpperCase() || "U"}
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-sm">{user.name || "Unknown"}</p>
-                          <p className="text-xs text-muted-foreground">{user.email}</p>
+                          <p className="font-semibold text-sm text-white">{user.name || "Unknown"}</p>
+                          <p className="text-xs text-gray-400">{user.email}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -596,6 +646,7 @@ export default function AdminDashboard() {
                               ? "secondary"
                               : "outline"
                           }
+                          className="bg-purple-500/20 text-purple-400 border-purple-500/30"
                         >
                           {user.role || "customer"}
                         </Badge>
@@ -607,6 +658,13 @@ export default function AdminDashboard() {
                                 : user.status === "pending"
                                 ? "secondary"
                                 : "destructive"
+                            }
+                            className={
+                              user.status === "approved" 
+                                ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                                : user.status === "pending"
+                                ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                                : "bg-red-500/20 text-red-400 border-red-500/30"
                             }
                           >
                             {user.status}
@@ -621,35 +679,35 @@ export default function AdminDashboard() {
           </Card>
 
           {/* Quick Actions & Stats */}
-          <Card className="col-span-3">
+          <Card className="col-span-3 bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md rounded-2xl hover:border-purple-500/30 transition-all duration-300">
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common admin tasks</CardDescription>
+              <CardTitle className="text-white text-xl">Quick Actions</CardTitle>
+              <CardDescription className="text-gray-400">Common admin tasks</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {pendingArtists > 0 && (
                 <Link href="/admin/artists">
-                  <Button className="w-full justify-start" variant="destructive">
-                    <AlertCircle className="h-4 w-4 mr-2" />
+                  <Button className="w-full justify-start bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 hover:from-orange-500/30 hover:to-red-500/30 hover:border-orange-500/60 text-orange-400 hover:text-orange-300 transition-all duration-300 h-12 rounded-xl" variant="outline">
+                    <AlertCircle className="h-5 w-5 mr-2" />
                     Review {pendingArtists} Pending Artist{pendingArtists !== 1 ? "s" : ""}
                   </Button>
                 </Link>
               )}
               <Link href="/admin/artists">
-                <Button className="w-full justify-start" variant="outline">
-                  <Palette className="h-4 w-4 mr-2" />
+                <Button className="w-full justify-start bg-white/5 border border-white/10 hover:bg-purple-500/10 hover:border-purple-500/30 text-gray-300 hover:text-white transition-all duration-300 h-12 rounded-xl" variant="outline">
+                  <Palette className="h-5 w-5 mr-2" />
                   Manage Artists
                 </Button>
               </Link>
               <Link href="/admin/users">
-                <Button className="w-full justify-start" variant="outline">
-                  <Users className="h-4 w-4 mr-2" />
+                <Button className="w-full justify-start bg-white/5 border border-white/10 hover:bg-purple-500/10 hover:border-purple-500/30 text-gray-300 hover:text-white transition-all duration-300 h-12 rounded-xl" variant="outline">
+                  <Users className="h-5 w-5 mr-2" />
                   Manage Users
                 </Button>
               </Link>
               <Link href="/admin/bookings">
-                <Button className="w-full justify-start" variant="outline">
-                  <ShoppingBag className="h-4 w-4 mr-2" />
+                <Button className="w-full justify-start bg-white/5 border border-white/10 hover:bg-purple-500/10 hover:border-purple-500/30 text-gray-300 hover:text-white transition-all duration-300 h-12 rounded-xl" variant="outline">
+                  <ShoppingBag className="h-5 w-5 mr-2" />
                   View Bookings
                 </Button>
               </Link>
@@ -658,66 +716,66 @@ export default function AdminDashboard() {
         </div>
 
         {/* Statistics Overview */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md rounded-2xl hover:border-emerald-500/30 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Artist Approval Rate</CardTitle>
-              <CheckCircle className="h-4 w-4 text-green-600" />
+              <CardTitle className="text-sm font-medium text-gray-300">Artist Approval Rate</CardTitle>
+              <CheckCircle className="h-5 w-5 text-emerald-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{approvalRate}%</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-3xl font-bold text-white">{approvalRate}%</div>
+              <p className="text-xs text-gray-400 mt-1">
                 {approvedArtists} of {totalArtists} approved
               </p>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="mt-3 w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-green-600 h-2 rounded-full transition-all"
+                  className="bg-gradient-to-r from-emerald-500 to-green-400 h-2.5 rounded-full transition-all duration-500"
                   style={{ width: `${approvalRate}%` }}
                 />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md rounded-2xl hover:border-blue-500/30 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Booking Completion</CardTitle>
-              <TrendingUp className="h-4 w-4 text-blue-600" />
+              <CardTitle className="text-sm font-medium text-gray-300">Booking Completion</CardTitle>
+              <TrendingUp className="h-5 w-5 text-blue-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{completionRate}%</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-3xl font-bold text-white">{completionRate}%</div>
+              <p className="text-xs text-gray-400 mt-1">
                 {completedBookings} of {totalBookings} completed
               </p>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+              <div className="mt-3 w-full bg-white/10 rounded-full h-2.5 overflow-hidden">
                 <div
-                  className="bg-blue-600 h-2 rounded-full transition-all"
+                  className="bg-gradient-to-r from-blue-500 to-cyan-400 h-2.5 rounded-full transition-all duration-500"
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md rounded-2xl hover:border-purple-500/30 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Customers</CardTitle>
-              <UserCheck className="h-4 w-4 text-purple-600" />
+              <CardTitle className="text-sm font-medium text-gray-300">Active Customers</CardTitle>
+              <UserCheck className="h-5 w-5 text-purple-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{isNaN(totalCustomers) ? 0 : totalCustomers}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-3xl font-bold text-white">{isNaN(totalCustomers) ? 0 : totalCustomers}</div>
+              <p className="text-xs text-gray-400 mt-1">
                 Registered customers
               </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md rounded-2xl hover:border-orange-500/30 transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Platform Activity</CardTitle>
-              <Activity className="h-4 w-4 text-orange-600" />
+              <CardTitle className="text-sm font-medium text-gray-300">Platform Activity</CardTitle>
+              <Activity className="h-5 w-5 text-orange-400" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{isNaN(totalBookings) ? 0 : totalBookings}</div>
-              <p className="text-xs text-muted-foreground mt-1">
+              <div className="text-3xl font-bold text-white">{isNaN(totalBookings) ? 0 : totalBookings}</div>
+              <p className="text-xs text-gray-400 mt-1">
                 Total bookings created
               </p>
             </CardContent>

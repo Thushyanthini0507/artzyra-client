@@ -3,6 +3,21 @@
 import { useEffect, useState } from "react";
 import { adminService } from "@/services/admin.service";
 import { toast } from "sonner";
+import { AdminLayout } from "@/components/layout/admin-layout";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Search, Filter, RefreshCcw, Mail, Shield, User as UserIcon } from "lucide-react";
 
 interface User {
   _id: string;
@@ -10,22 +25,21 @@ interface User {
   email: string;
   role?: string;
   status?: string;
+  profileImage?: string;
+  createdAt?: string;
 }
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<"all" | "artist" | "customer">("all");
 
-  // Fetch users from backend - backend requires role parameter
-  // So we fetch both artists and customers separately
   const fetchUsers = async () => {
     setLoading(true);
     setError(null);
     try {
-      console.log("🔵 Admin Users Page - Fetching all users (artists + customers)...");
-      
-      // Fetch both roles in parallel
       const [artistsResponse, customersResponse] = await Promise.allSettled([
         adminService.getUsers("artist"),
         adminService.getUsers("customer"),
@@ -33,57 +47,32 @@ export default function UsersPage() {
 
       const allUsers: User[] = [];
 
-      // Process artists
       if (artistsResponse.status === "fulfilled") {
         const result = artistsResponse.value;
         if (result.success && result.data && Array.isArray(result.data)) {
           allUsers.push(...result.data.map((user: any) => ({ ...user, role: user.role || "artist" })));
-        } else if (result.error && !result.error.includes("schema") && !result.error.includes("populate")) {
-          // Only show error if it's not a schema error (those are handled silently)
-          console.warn("🔵 Admin Users Page - Could not fetch artists:", result.error);
         }
       }
 
-      // Process customers
       if (customersResponse.status === "fulfilled") {
         const result = customersResponse.value;
         if (result.success && result.data && Array.isArray(result.data)) {
           allUsers.push(...result.data.map((user: any) => ({ ...user, role: user.role || "customer" })));
-        } else if (result.error && !result.error.includes("schema") && !result.error.includes("populate")) {
-          // Only show error if it's not a schema error (those are handled silently)
-          console.warn("🔵 Admin Users Page - Could not fetch customers:", result.error);
         }
       }
 
-      // Check if we got any users
-      if (allUsers.length === 0) {
-        // If both failed, check if it was due to schema errors
-        const artistsError = artistsResponse.status === "fulfilled" ? artistsResponse.value.error : null;
-        const customersError = customersResponse.status === "fulfilled" ? customersResponse.value.error : null;
-        
-        const hasSchemaError = 
-          (artistsError && (artistsError.includes("schema") || artistsError.includes("populate"))) ||
-          (customersError && (customersError.includes("schema") || customersError.includes("populate")));
+      // Sort by creation date (newest first)
+      allUsers.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
 
-        if (hasSchemaError) {
-          setError("Backend schema error: Cannot fetch users. Please check backend logs.");
-          toast.error("Backend schema error: Cannot fetch users");
-        } else {
-          setUsers([]);
-        }
-      } else {
-        console.log("🔵 Admin Users Page - Setting users:", allUsers.length);
-        setUsers(allUsers);
-      }
+      setUsers(allUsers);
     } catch (err: any) {
-      console.error("🔴 Admin Users Page - Error fetching users:", err);
-      const errorMsg = 
-        err.response?.data?.error ||
-        err.response?.data?.message ||
-        err.message ||
-        "Failed to fetch users";
-      setError(errorMsg);
-      toast.error(errorMsg);
+      console.error("Error fetching users:", err);
+      setError("Failed to fetch users");
+      toast.error("Failed to fetch users");
     } finally {
       setLoading(false);
     }
@@ -93,49 +82,159 @@ export default function UsersPage() {
     fetchUsers();
   }, []);
 
+  const filteredUsers = users.filter((user) => {
+    const matchesSearch = 
+      user.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesRole = roleFilter === "all" || user.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
+
   return (
-    <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Users List</h1>
-      
-      {loading ? (
-        <p>Loading users...</p>
-      ) : error ? (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-          <p className="font-semibold">Error loading users:</p>
-          <p>{error}</p>
-          <button
-            onClick={fetchUsers}
-            className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Users Management
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Manage and monitor all registered users.
+            </p>
+          </div>
+          <Button 
+            onClick={fetchUsers} 
+            variant="outline" 
+            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all"
           >
-            Retry
-          </button>
+            <RefreshCcw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh List
+          </Button>
         </div>
-      ) : users.length === 0 ? (
-        <p className="text-gray-500">No users found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border border-gray-300">
-            <thead>
-              <tr className="bg-gray-200">
-                <th className="p-2 border text-left">Name</th>
-                <th className="p-2 border text-left">Email</th>
-                <th className="p-2 border text-left">Role</th>
-                <th className="p-2 border text-left">Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <tr key={user._id} className="hover:bg-gray-50">
-                  <td className="p-2 border">{user.name || "N/A"}</td>
-                  <td className="p-2 border">{user.email}</td>
-                  <td className="p-2 border capitalize">{user.role || "N/A"}</td>
-                  <td className="p-2 border capitalize">{user.status || "N/A"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+
+        <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md shadow-xl">
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <CardTitle className="text-xl text-white">All Users</CardTitle>
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search users..."
+                    className="pl-9 bg-black/20 border-white/10 text-white placeholder:text-gray-500 focus:border-purple-500/50 w-full sm:w-[250px]"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant={roleFilter === "all" ? "default" : "outline"}
+                    onClick={() => setRoleFilter("all")}
+                    className={roleFilter === "all" ? "bg-purple-600 hover:bg-purple-700" : "bg-black/20 border-white/10 text-gray-300 hover:bg-white/5"}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={roleFilter === "artist" ? "default" : "outline"}
+                    onClick={() => setRoleFilter("artist")}
+                    className={roleFilter === "artist" ? "bg-purple-600 hover:bg-purple-700" : "bg-black/20 border-white/10 text-gray-300 hover:bg-white/5"}
+                  >
+                    Artists
+                  </Button>
+                  <Button
+                    variant={roleFilter === "customer" ? "default" : "outline"}
+                    onClick={() => setRoleFilter("customer")}
+                    className={roleFilter === "customer" ? "bg-purple-600 hover:bg-purple-700" : "bg-black/20 border-white/10 text-gray-300 hover:bg-white/5"}
+                  >
+                    Customers
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500" />
+              </div>
+            ) : filteredUsers.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <UserIcon className="h-8 w-8 opacity-50" />
+                </div>
+                <p className="text-lg font-medium">No users found</p>
+                <p className="text-sm">Try adjusting your search or filters</p>
+              </div>
+            ) : (
+              <div className="rounded-md border border-white/10 overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-white/5">
+                    <TableRow className="border-white/10 hover:bg-white/5">
+                      <TableHead className="text-gray-300">User</TableHead>
+                      <TableHead className="text-gray-300">Role</TableHead>
+                      <TableHead className="text-gray-300">Status</TableHead>
+                      <TableHead className="text-gray-300">Joined</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredUsers.map((user) => (
+                      <TableRow key={user._id} className="border-white/10 hover:bg-white/5 transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10 ring-2 ring-purple-500/20">
+                              <AvatarImage src={user.profileImage} />
+                              <AvatarFallback className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 text-purple-300">
+                                {user.name?.charAt(0)?.toUpperCase() || "U"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-white">{user.name || "Unknown"}</div>
+                              <div className="text-xs text-gray-400 flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {user.email}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline" 
+                            className={`
+                              capitalize border-0
+                              ${user.role === 'admin' ? 'bg-red-500/20 text-red-400' : 
+                                user.role === 'artist' ? 'bg-purple-500/20 text-purple-400' : 
+                                'bg-blue-500/20 text-blue-400'}
+                            `}
+                          >
+                            {user.role === 'admin' && <Shield className="h-3 w-3 mr-1" />}
+                            {user.role || "Customer"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant="outline"
+                            className={`
+                              capitalize border-0
+                              ${user.status === 'approved' ? 'bg-emerald-500/20 text-emerald-400' : 
+                                user.status === 'pending' ? 'bg-yellow-500/20 text-yellow-400' : 
+                                'bg-gray-500/20 text-gray-400'}
+                            `}
+                          >
+                            {user.status || "Active"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-gray-400 text-sm">
+                          {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A"}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </AdminLayout>
   );
 }

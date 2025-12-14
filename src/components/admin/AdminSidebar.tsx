@@ -12,6 +12,7 @@ import {
   Tags,
   BarChart3,
   LogOut,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/auth-context";
@@ -64,39 +65,65 @@ export function AdminSidebar() {
   const { logout } = useAuth();
 
   return (
-    <div className="flex h-full w-64 flex-col border-r bg-card">
-      <div className="flex h-14 items-center border-b px-6">
-        <Link href="/admin" className="flex items-center gap-2 font-semibold">
-          <span className="text-xl font-bold text-primary">ArtZyra</span>
+    <div className="flex h-full w-64 flex-col bg-gradient-to-b from-[#1a1625] to-[#13111c] border-r border-white/10">
+      {/* Logo Section with Glassmorphism */}
+      <div className="flex h-16 items-center px-6 border-b border-white/10 backdrop-blur-md bg-white/5">
+        <Link href="/admin" className="flex items-center gap-2 font-semibold group">
+          <div className="p-2 rounded-lg bg-gradient-to-br from-purple-500/20 to-fuchsia-500/20 border border-purple-500/30 group-hover:border-purple-500/60 transition-all duration-300">
+            <Sparkles className="h-5 w-5 text-purple-400 group-hover:text-purple-300 group-hover:rotate-12 transition-all duration-300" />
+          </div>
+          <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-fuchsia-400 bg-clip-text text-transparent">
+            ArtZyra
+          </span>
         </Link>
       </div>
-      <div className="flex-1 overflow-auto py-4">
-        <nav className="grid items-start px-4 text-sm font-medium">
-          {sidebarItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
-                pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground"
-              )}
-            >
-              <item.icon className="h-4 w-4" />
-              {item.title}
-            </Link>
-          ))}
+
+      {/* Navigation Section */}
+      <div className="flex-1 overflow-auto py-6">
+        <nav className="grid items-start px-3 text-sm font-medium gap-1">
+          {sidebarItems.map((item) => {
+            const isActive = pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href));
+            
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "group flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-300 relative overflow-hidden",
+                  isActive
+                    ? "bg-gradient-to-r from-purple-500/20 to-fuchsia-500/20 text-white border-l-4 border-purple-500 shadow-lg shadow-purple-500/20"
+                    : "text-gray-400 hover:text-white hover:bg-white/5 border-l-4 border-transparent hover:border-purple-500/50"
+                )}
+              >
+                {/* Active indicator glow */}
+                {isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent animate-pulse" />
+                )}
+                
+                <item.icon 
+                  className={cn(
+                    "h-5 w-5 transition-all duration-300 relative z-10",
+                    isActive 
+                      ? "text-purple-400" 
+                      : "text-gray-500 group-hover:text-purple-400 group-hover:scale-110"
+                  )} 
+                />
+                <span className="relative z-10 font-medium">{item.title}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
-      <div className="border-t p-4">
+
+      {/* Logout Section */}
+      <div className="border-t border-white/10 p-4 backdrop-blur-md bg-white/5">
         <Button
           variant="ghost"
-          className="w-full justify-start gap-3 text-muted-foreground hover:text-destructive"
+          className="w-full justify-start gap-3 text-gray-400 hover:text-red-400 hover:bg-gradient-to-r hover:from-red-500/10 hover:to-red-500/20 border border-transparent hover:border-red-500/30 transition-all duration-300 rounded-xl h-12"
           onClick={logout}
         >
-          <LogOut className="h-4 w-4" />
-          Logout
+          <LogOut className="h-5 w-5 group-hover:rotate-12 transition-transform duration-300" />
+          <span className="font-medium">Logout</span>
         </Button>
       </div>
     </div>

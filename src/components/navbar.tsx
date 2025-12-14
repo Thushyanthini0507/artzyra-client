@@ -98,6 +98,9 @@ export function Navbar() {
                     <Button variant="outline">Sign Up</Button>
                   </Link>
                   <Link href="/auth/register/artist">
+                    <Button variant="outline">For Artist</Button>
+                  </Link>
+                  <Link href="/auth/register/artist">
                     <Button>Become an Artist</Button>
                   </Link>
                 </>

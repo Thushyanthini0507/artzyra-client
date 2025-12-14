@@ -11,10 +11,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, X, RefreshCcw } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Check, X, RefreshCcw, AlertCircle, Calendar, Mail, User } from "lucide-react";
 import { toast } from "sonner";
 import apiClient from "@/lib/apiClient";
 import Cookies from "js-cookie";
@@ -25,7 +26,9 @@ export default function PendingArtistsPage() {
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [diagnosticLogs, setDiagnosticLogs] = useState<string[]>([]);
+  const [showDebug, setShowDebug] = useState(false);
 
+  // ... (Keep existing diagnostic logic but hidden by default)
   const runDiagnostics = async () => {
     const logs: string[] = [];
     const addLog = (msg: string) =>
@@ -60,75 +63,8 @@ export default function PendingArtistsPage() {
         addLog(
           `✅ Status Response Keys: ${Object.keys(status.data).join(", ")}`
         );
-        if (status.data.data && status.data.data.stats) {
-          addLog(
-            `✅ Pending Count (nested): ${status.data.data.stats.pendingArtists}`
-          );
-        } else if (status.data.data) {
-          addLog(`✅ Pending Count (data): ${status.data.data.pendingArtists}`);
-        } else {
-          addLog(`✅ Pending Count (root): ${status.data.pendingArtists}`);
-        }
       } catch (e: any) {
         addLog(`❌ Status Failed: ${e.response?.status} - ${e.message}`);
-      }
-
-      // Check Specific ID (from test-registration)
-      const targetId = "693388526aaf282a39c938a4";
-      addLog(`Probing ID: ${targetId}...`);
-      const idEndpoints = [
-        `/api/admin/users/${targetId}`,
-        `/api/admin/artists/${targetId}`,
-        `/api/admin/pending/${targetId}`,
-        `/api/users/${targetId}`,
-        `/api/artists/${targetId}`,
-      ];
-
-      for (const ep of idEndpoints) {
-        try {
-          const res = await apiClient.get(ep);
-          addLog(`✅ ID Found at ${ep}: ${res.status}`);
-          addLog(`   Data: ${JSON.stringify(res.data).substring(0, 100)}...`);
-        } catch (e: any) {
-          // addLog(`❌ ID Probe ${ep}: ${e.response?.status}`);
-        }
-      }
-
-      // Check Endpoints with Fuzzing
-      const endpoints = [
-        "/api/admin/users?role=artist",
-        "/api/admin/users?role=Artist",
-        "/api/admin/users?role=artist&status=pending",
-        "/api/admin/users?role=artist&approved=false",
-        "/api/admin/users?role=artist&isApproved=false",
-        "/api/admin/users?role=pending",
-        "/api/admin/users?status=pending",
-        "/api/admin/pending/artists?limit=100",
-        "/api/admin/pending/artists?all=true",
-      ];
-
-      for (const endpoint of endpoints) {
-        addLog(`Checking ${endpoint}...`);
-        try {
-          const res = await apiClient.get(endpoint);
-          const data = Array.isArray(res.data) ? res.data : res.data.data || [];
-          const isArray = Array.isArray(data);
-          addLog(
-            `✅ ${res.status} - ${
-              isArray ? `Array(${data.length})` : "Not Array"
-            }`
-          );
-
-          if (isArray && data.length > 0) {
-            // Show first 3 items
-            data.slice(0, 3).forEach((item: any, idx: number) => {
-              addLog(`   [${idx}] ${item.name} (${item.email})`);
-              addLog(`       Role: ${item.role}, Status: ${item.status}`);
-            });
-          }
-        } catch (e: any) {
-          addLog(`❌ Failed: ${e.response?.status} - ${e.message}`);
-        }
       }
     } catch (error: any) {
       addLog(`Critical Error: ${error.message}`);
@@ -151,61 +87,20 @@ export default function PendingArtistsPage() {
   const fetchPendingArtists = async () => {
     setLoading(true);
     try {
-      console.log("🔵 Pending Artists Page - Fetching pending artists...");
       const response = await adminService.getPendingArtists();
-      console.log(
-        "🔵 Pending Artists Page - Full response:",
-        JSON.stringify(response, null, 2)
-      );
-
       if (response.success) {
         const artistsList = Array.isArray(response.data) ? response.data : [];
-        console.log(
-          "🔵 Pending Artists Page - Setting artists:",
-          artistsList.length
-        );
-
-        if (artistsList.length > 0) {
-          console.log(
-            "🔵 Pending Artists Page - Artists found:",
-            artistsList.map((a: any) => ({
-              id: a._id,
-              name: a.name || a.shopName,
-              email: a.email,
-              status: a.status,
-            }))
-          );
-        }
-
         setArtists(artistsList);
-
         if (artistsList.length === 0) {
-          console.log("🔵 Pending Artists Page - No pending artists found");
           toast.info("No pending artists - all approved!");
-        } else {
-          toast.success(
-            `Found ${artistsList.length} pending artist${
-              artistsList.length !== 1 ? "s" : ""
-            }`
-          );
         }
       } else {
-        console.error(
-          "🔴 Pending Artists Page - Failed to fetch:",
-          response.error
-        );
-        if (response.error) {
-          toast.error(response.error);
-        }
+        toast.error(response.error || "Failed to fetch pending artists");
         setArtists([]);
       }
     } catch (error: any) {
-      console.error("🔴 Pending Artists Page - Error fetching:", error);
-      const errorMsg =
-        error.message ||
-        error.response?.data?.message ||
-        "Failed to fetch pending artists";
-      toast.error(errorMsg);
+      console.error("Error fetching:", error);
+      toast.error("Failed to fetch pending artists");
       setArtists([]);
     } finally {
       setLoading(false);
@@ -218,64 +113,36 @@ export default function PendingArtistsPage() {
   }, []);
 
   const handleApprove = async (id: string) => {
-    if (processingId) return; // Prevent double clicks
-
+    if (processingId) return;
     setProcessingId(id);
     try {
-      console.log("🔵 Pending Artists - Approving artist:", id);
       const response = await adminService.approveArtist(id);
-      console.log("🔵 Pending Artists - Approval response:", response);
-
       if (response.success) {
         toast.success("Artist approved successfully");
-        // Wait a bit before refreshing to ensure backend has updated
-        setTimeout(() => {
-          fetchPendingArtists();
-        }, 500);
+        setTimeout(() => fetchPendingArtists(), 500);
       } else {
-        const errorMsg = response.error || "Failed to approve artist";
-        console.error("🔴 Pending Artists - Approval failed:", errorMsg);
-        toast.error(errorMsg);
+        toast.error(response.error || "Failed to approve artist");
       }
     } catch (error: any) {
-      console.error("🔴 Pending Artists - Approval error:", error);
-      const errorMsg =
-        error.message ||
-        error.response?.data?.message ||
-        "Failed to approve artist";
-      toast.error(errorMsg);
+      toast.error("Failed to approve artist");
     } finally {
       setProcessingId(null);
     }
   };
 
   const handleReject = async (id: string) => {
-    if (processingId) return; // Prevent double clicks
-
+    if (processingId) return;
     setProcessingId(id);
     try {
-      console.log("🔵 Pending Artists - Rejecting artist:", id);
       const response = await adminService.rejectArtist(id);
-      console.log("🔵 Pending Artists - Rejection response:", response);
-
       if (response.success) {
         toast.success("Artist rejected successfully");
-        // Wait a bit before refreshing to ensure backend has updated
-        setTimeout(() => {
-          fetchPendingArtists();
-        }, 500);
+        setTimeout(() => fetchPendingArtists(), 500);
       } else {
-        const errorMsg = response.error || "Failed to reject artist";
-        console.error("🔴 Pending Artists - Rejection failed:", errorMsg);
-        toast.error(errorMsg);
+        toast.error(response.error || "Failed to reject artist");
       }
     } catch (error: any) {
-      console.error("🔴 Pending Artists - Rejection error:", error);
-      const errorMsg =
-        error.message ||
-        error.response?.data?.message ||
-        "Failed to reject artist";
-      toast.error(errorMsg);
+      toast.error("Failed to reject artist");
     } finally {
       setProcessingId(null);
     }
@@ -284,12 +151,12 @@ export default function PendingArtistsPage() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">
-              Pending Artists
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
+              Pending Applications
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground mt-1">
               Review and approve artist applications.
             </p>
           </div>
@@ -297,189 +164,171 @@ export default function PendingArtistsPage() {
             onClick={fetchPendingArtists}
             disabled={loading}
             variant="outline"
+            className="bg-white/5 border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all"
           >
-            <RefreshCcw
-              className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`}
-            />
+            <RefreshCcw className={`mr-2 h-4 w-4 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </Button>
         </div>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-white/5 to-white/10 border-white/10 backdrop-blur-md shadow-xl">
           <CardHeader>
-            <CardTitle>Applications</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Artist</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Applied On</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
-                      Loading...
-                    </TableCell>
-                  </TableRow>
-                ) : artists.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center">
-                      No pending applications.
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  artists.map((artist) => (
-                    <TableRow key={artist._id}>
-                      <TableCell className="flex items-center gap-3">
-                        <Avatar className="h-9 w-9">
-                          <AvatarImage src={artist.profileImage} />
-                          <AvatarFallback>
-                            {artist.name?.charAt(0) || "A"}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div>
-                          <div className="font-medium">{artist.name}</div>
-                          <div className="text-sm text-muted-foreground">
-                            {artist.email}
-                          </div>
-                          {artist.status === "approved" && (
-                            <span className="text-xs bg-yellow-100 text-yellow-800 px-1 rounded">
-                              API says: Approved
-                            </span>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        {(() => {
-                          const cat = artist.category;
-                          if (!cat) return "N/A";
-                          if (Array.isArray(cat)) {
-                            return cat.length > 0
-                              ? cat[0].name || "Unknown"
-                              : "N/A";
-                          }
-                          if (typeof cat === "object") {
-                            return cat.name || "Unknown";
-                          }
-                          return String(cat);
-                        })()}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(artist.createdAt).toLocaleDateString()}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                            onClick={() => handleApprove(artist._id)}
-                            disabled={
-                              processingId === artist._id ||
-                              processingId !== null
-                            }
-                          >
-                            {processingId === artist._id ? (
-                              <>
-                                <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
-                                Processing...
-                              </>
-                            ) : (
-                              <>
-                                <Check className="mr-2 h-4 w-4" />
-                                Approve
-                              </>
-                            )}
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                            onClick={() => handleReject(artist._id)}
-                            disabled={
-                              processingId === artist._id ||
-                              processingId !== null
-                            }
-                          >
-                            {processingId === artist._id ? (
-                              <>
-                                <RefreshCcw className="mr-2 h-4 w-4 animate-spin" />
-                                Processing...
-                              </>
-                            ) : (
-                              <>
-                                <X className="mr-2 h-4 w-4" />
-                                Reject
-                              </>
-                            )}
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-
-        {/* Debug Info Section */}
-        <Card className="mt-8 border-yellow-200 bg-yellow-50">
-          <CardHeader>
-            <CardTitle className="text-yellow-800 text-lg">
-              Debug Info
+            <CardTitle className="text-xl text-white flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-orange-400" />
+              Pending Requests
+              <Badge variant="secondary" className="ml-2 bg-orange-500/20 text-orange-400 border-orange-500/30">
+                {artists.length}
+              </Badge>
             </CardTitle>
+            <CardDescription className="text-gray-400">
+              Artists waiting for your approval to join the platform.
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-sm text-yellow-700 space-y-2">
-              <p>
-                <strong>Total Artists Found:</strong> {artists.length}
-              </p>
-              <p>
-                <strong>Backend Pending Count (Dashboard):</strong>{" "}
-                {stats?.pendingArtists ?? "Unknown"}
-              </p>
-              <p>
-                <strong>Status Check:</strong> If you see artists here but they
-                are not pending, the status filter might be wrong.
-              </p>
-
-              <div className="mt-4">
-                <Button
-                  onClick={runDiagnostics}
-                  size="sm"
-                  variant="outline"
-                  className="mb-2"
-                >
-                  Run Diagnostics
-                </Button>
-                {diagnosticLogs.length > 0 && (
-                  <div className="bg-black text-white p-2 rounded text-xs font-mono h-40 overflow-y-auto">
-                    {diagnosticLogs.map((log, i) => (
-                      <div key={i}>{log}</div>
-                    ))}
-                  </div>
-                )}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500" />
               </div>
-
-              <details>
-                <summary className="cursor-pointer font-medium hover:underline">
-                  View Raw Data (First Item)
-                </summary>
-                <pre className="mt-2 p-2 bg-black text-white rounded text-xs overflow-auto max-h-60">
-                  {artists.length > 0
-                    ? JSON.stringify(artists[0], null, 2)
-                    : "No data"}
-                </pre>
-              </details>
-            </div>
+            ) : artists.length === 0 ? (
+              <div className="text-center py-12 text-gray-400">
+                <div className="bg-white/5 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Check className="h-8 w-8 text-emerald-500" />
+                </div>
+                <p className="text-lg font-medium text-white">All Caught Up!</p>
+                <p className="text-sm">No pending artist applications at the moment.</p>
+              </div>
+            ) : (
+              <div className="rounded-md border border-white/10 overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-white/5">
+                    <TableRow className="border-white/10 hover:bg-white/5">
+                      <TableHead className="text-gray-300">Artist Details</TableHead>
+                      <TableHead className="text-gray-300">Category</TableHead>
+                      <TableHead className="text-gray-300">Applied On</TableHead>
+                      <TableHead className="text-right text-gray-300">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {artists.map((artist) => (
+                      <TableRow key={artist._id} className="border-white/10 hover:bg-white/5 transition-colors">
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10 ring-2 ring-orange-500/20">
+                              <AvatarImage src={artist.profileImage} />
+                              <AvatarFallback className="bg-gradient-to-br from-orange-500/20 to-red-500/20 text-orange-400">
+                                {artist.name?.charAt(0) || "A"}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-white">{artist.name}</div>
+                              <div className="text-xs text-gray-400 flex items-center gap-1">
+                                <Mail className="h-3 w-3" />
+                                {artist.email}
+                              </div>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="bg-white/5 border-white/10 text-gray-300">
+                            {(() => {
+                              const cat = artist.category;
+                              if (!cat) return "N/A";
+                              if (Array.isArray(cat)) {
+                                return cat.length > 0 ? cat[0].name || "Unknown" : "N/A";
+                              }
+                              if (typeof cat === "object") {
+                                return cat.name || "Unknown";
+                              }
+                              return String(cat);
+                            })()}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-gray-400 text-sm">
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-3 w-3" />
+                            {new Date(artist.createdAt).toLocaleDateString()}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-2">
+                            <Button
+                              size="sm"
+                              className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/30 transition-all"
+                              onClick={() => handleApprove(artist._id)}
+                              disabled={processingId === artist._id || processingId !== null}
+                            >
+                              {processingId === artist._id ? (
+                                <RefreshCcw className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <Check className="mr-1 h-4 w-4" />
+                                  Approve
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              size="sm"
+                              className="bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30 transition-all"
+                              onClick={() => handleReject(artist._id)}
+                              disabled={processingId === artist._id || processingId !== null}
+                            >
+                              {processingId === artist._id ? (
+                                <RefreshCcw className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <X className="mr-1 h-4 w-4" />
+                                  Reject
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
           </CardContent>
         </Card>
+
+        {/* Debug Info Toggle */}
+        <div className="flex justify-center">
+            <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowDebug(!showDebug)}
+                className="text-xs text-gray-500 hover:text-gray-300"
+            >
+                {showDebug ? "Hide Debug Info" : "Show Debug Info"}
+            </Button>
+        </div>
+
+        {showDebug && (
+            <Card className="border-yellow-500/20 bg-yellow-500/5">
+            <CardHeader>
+                <CardTitle className="text-yellow-500 text-sm">Debug Info</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="text-xs text-yellow-200/70 space-y-2 font-mono">
+                <p>Total Artists Found: {artists.length}</p>
+                <p>Backend Pending Count: {stats?.pendingArtists ?? "Unknown"}</p>
+                <div className="mt-4">
+                    <Button onClick={runDiagnostics} size="sm" variant="outline" className="mb-2 border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10">
+                    Run Diagnostics
+                    </Button>
+                    {diagnosticLogs.length > 0 && (
+                    <div className="bg-black/50 p-2 rounded text-xs h-40 overflow-y-auto border border-white/10">
+                        {diagnosticLogs.map((log, i) => (
+                        <div key={i}>{log}</div>
+                        ))}
+                    </div>
+                    )}
+                </div>
+                </div>
+            </CardContent>
+            </Card>
+        )}
       </div>
     </AdminLayout>
   );

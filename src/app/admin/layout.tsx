@@ -14,7 +14,7 @@ export default function AdminLayout({
   const showHeader = !hideHeaderPaths.includes(pathname);
 
   return (
-    <div className="flex h-screen w-full bg-muted/40">
+    <div className="flex h-screen w-full bg-gradient-to-br from-[#13111c] via-[#1a1625] to-[#13111c]">
       <AdminSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         {showHeader && <AdminHeader />}

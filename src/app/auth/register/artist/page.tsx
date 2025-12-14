@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,7 @@ export default function ArtistRegisterPage() {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<ArtistRegisterFormData>({
     resolver: zodResolver(artistRegisterSchema),
@@ -90,10 +91,16 @@ export default function ArtistRegisterPage() {
                   
                   <div className="space-y-2">
                     <Label htmlFor="phone" className="text-white font-medium ml-1">Phone</Label>
-                    <PhoneInput 
-                      id="phone" 
-                      {...register("phone")} 
-                      className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                    <Controller
+                      name="phone"
+                      control={control}
+                      render={({ field }) => (
+                        <PhoneInput 
+                          id="phone" 
+                          {...field}
+                          className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                        />
+                      )}
                     />
                     {errors.phone && <p className="text-sm text-red-300 ml-1">{errors.phone.message}</p>}
                   </div>
