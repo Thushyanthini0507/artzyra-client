@@ -274,15 +274,15 @@ export default function ArtistProfilePage() {
               </p>
 
               {/* Contact Information for Physical Artists */}
-              {artist.artistType === 'physical' && (artist.phone || artist.email || artist.userId?.email) && (
+              {artist.artistType === 'physical' && (artist.phone || artist.userId?.phone || artist.email || artist.userId?.email) && (
                 <div className="mb-6 pt-6 border-t border-white/10">
                   <h4 className="text-sm font-semibold text-white mb-3">Contact Information</h4>
                   <div className="space-y-2 text-sm">
-                    {artist.phone && (
+                    {(artist.phone || artist.userId?.phone) && (
                       <div className="flex items-center gap-2 text-gray-300">
-                        <span className="text-gray-500">Phone:</span>
-                        <a href={`tel:${artist.phone}`} className="text-[#a78bfa] hover:text-[#9b87f5] transition-colors">
-                          {artist.phone}
+                        <span className="text-gray-500">Mobile:</span>
+                        <a href={`tel:${artist.phone || artist.userId?.phone}`} className="text-[#a78bfa] hover:text-[#9b87f5] transition-colors">
+                          {artist.phone || artist.userId?.phone}
                         </a>
                       </div>
                     )}

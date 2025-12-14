@@ -60,8 +60,23 @@ function ChatInterface() {
           }
         } catch (error: any) {
           console.error("Error creating/fetching chat with artist:", error);
-          const errorMessage = error.response?.data?.message || "Failed to start chat with artist";
-          toast.error(errorMessage);
+          console.error("Error details:", {
+            status: error.response?.status,
+            statusText: error.response?.statusText,
+            data: error.response?.data,
+            url: error.config?.url,
+            baseURL: error.config?.baseURL,
+          });
+          
+          const errorMessage = error.response?.data?.message || error.message || "Failed to start chat with artist";
+          
+          // Handle 404 specifically
+          if (error.response?.status === 404) {
+            toast.error("Chat endpoint not found. Please contact support.");
+            console.error("404 Error - Chat endpoint may not be registered properly");
+          } else {
+            toast.error(errorMessage);
+          }
           
           // If it's a remote artist access error, redirect to booking page
           if (errorMessage.includes("Remote artists can only be contacted after booking") || 
