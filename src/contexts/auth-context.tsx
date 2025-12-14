@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     // Skip if endpoint is marked as broken (backend schema issue)
     if (typeof window !== "undefined" && localStorage.getItem("authMeBroken") === "true") {
-      console.log("🔵 AuthContext - Skipping /api/auth/me (endpoint marked as broken)");
+      console.log("AuthContext - Skipping /api/auth/me (endpoint marked as broken)");
       const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
       
       // Try to decode user from JWT token as fallback
@@ -92,11 +92,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               name: payload.name || payload.email?.split("@")[0] || "User",
               role: String(payload.role || "").toLowerCase().trim(),
             };
-            console.log("🔵 AuthContext - Decoded user from JWT token:", userFromToken);
+            console.log("AuthContext - Decoded user from JWT token:", userFromToken);
             setUser(userFromToken as User);
           }
         } catch (e) {
-          console.warn("🔵 AuthContext - Could not decode JWT token:", e);
+          console.warn("AuthContext - Could not decode JWT token:", e);
           setUser(null);
         }
       } else {
@@ -126,7 +126,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: payload.name || payload.email?.split("@")[0] || "User",
                 role: String(payload.role || "").toLowerCase().trim(),
               };
-              console.log("🔵 AuthContext - Fallback: Decoded user from JWT token:", userFromToken);
+              console.log("AuthContext - Fallback: Decoded user from JWT token:", userFromToken);
               setUser(userFromToken as User);
             } else {
               const hasToken = Cookies.get("token");
@@ -144,7 +144,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error: any) {
       // Handle 403 Forbidden (user authenticated but not approved) - don't clear user
       if (error.response?.status === 403) {
-        console.warn("🔵 AuthContext - 403 Forbidden: User authenticated but not approved");
+        console.warn("AuthContext - 403 Forbidden: User authenticated but not approved");
         // Don't clear user - they're logged in but pending approval
         // Try to decode from JWT token to keep user in context
         const token = Cookies.get("token") || (typeof window !== "undefined" ? localStorage.getItem("token") : null);
@@ -159,16 +159,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: payload.name || payload.email?.split("@")[0] || "User",
                 role: String(payload.role || "").toLowerCase().trim(),
               };
-              console.log("🔵 AuthContext - 403: Keeping user from JWT token:", userFromToken);
+              console.log("AuthContext - 403: Keeping user from JWT token:", userFromToken);
               setUser(userFromToken as User);
             }
           } catch (e) {
-            console.warn("🔵 AuthContext - Could not decode JWT token:", e);
+            console.warn("AuthContext - Could not decode JWT token:", e);
           }
         }
       } else if (error.response?.status === 401) {
         // 401 Unauthorized - clear user and redirect
-        console.warn("🔵 AuthContext - 401 Unauthorized: Clearing user");
+        console.warn("AuthContext - 401 Unauthorized: Clearing user");
         setUser(null);
       } else {
         // Other errors - try to decode from JWT token as fallback
@@ -184,7 +184,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 name: payload.name || payload.email?.split("@")[0] || "User",
                 role: String(payload.role || "").toLowerCase().trim(),
               };
-              console.log("🔵 AuthContext - Error fallback: Decoded user from JWT token:", userFromToken);
+              console.log("AuthContext - Error fallback: Decoded user from JWT token:", userFromToken);
               setUser(userFromToken as User);
             } else {
               const hasToken = Cookies.get("token");
@@ -215,7 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.login({ email, password });
 
-      console.log("🔵 AuthContext - Raw login response:", JSON.stringify(response, null, 2));
+      console.log("AuthContext - Raw login response:", JSON.stringify(response, null, 2));
 
       // Check if login was successful
       if (!response.success) {
@@ -237,9 +237,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const userData = responseData.user || responseData.data?.user || responseData;
       const profileData = responseData.profile || responseData.data?.profile;
 
-      console.log("🔵 AuthContext - Extracted token:", token ? `✅ Found (${token.length} chars)` : "❌ Missing");
-      console.log("🔵 AuthContext - Extracted redirectPath:", backendRedirectPath);
-      console.log("🔵 AuthContext - Extracted userData:", userData ? "✅ Found" : "❌ Missing");
+      console.log("AuthContext - Extracted token:", token ? `Found (${token.length} chars)` : "Missing");
+      console.log("AuthContext - Extracted redirectPath:", backendRedirectPath);
+      console.log("AuthContext - Extracted userData:", userData ? "Found" : "Missing");
 
       if (!token) {
         return { success: false, error: "No token received from server" };
@@ -276,24 +276,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const payload = JSON.parse(atob(tokenParts[1]));
             if (payload.role) {
               role = String(payload.role).toLowerCase().trim();
-              console.log("🔵 AuthContext - Extracted role from JWT token:", role);
+              console.log("AuthContext - Extracted role from JWT token:", role);
             }
           }
         } catch (e) {
-          console.warn("🔵 AuthContext - Could not decode JWT token:", e);
+          console.warn("AuthContext - Could not decode JWT token:", e);
         }
       }
       
-      console.log("🔵 AuthContext - Raw userData:", JSON.stringify(userData, null, 2));
-      console.log("🔵 AuthContext - Normalized user:", JSON.stringify(normalizedUser, null, 2));
-      console.log("🔵 AuthContext - Extracted role:", role || "❌ EMPTY - This will cause redirect issues!");
-      console.log("🔵 AuthContext - Backend redirectPath:", backendRedirectPath);
+      console.log("AuthContext - Raw userData:", JSON.stringify(userData, null, 2));
+      console.log("AuthContext - Normalized user:", JSON.stringify(normalizedUser, null, 2));
+      console.log("AuthContext - Extracted role:", role || "EMPTY - This will cause redirect issues!");
+      console.log("AuthContext - Backend redirectPath:", backendRedirectPath);
       
       // CRITICAL DEBUG: Log if role is admin but redirect might fail
       if (role === "admin") {
-        console.log("✅ AuthContext - ADMIN ROLE DETECTED - Should redirect to /admin");
+        console.log("AuthContext - ADMIN ROLE DETECTED - Should redirect to /admin");
       } else {
-        console.warn("⚠️ AuthContext - Role is NOT admin. Role value:", role, "Type:", typeof role);
+        console.warn("AuthContext - Role is NOT admin. Role value:", role, "Type:", typeof role);
       }
 
       // CRITICAL: Ensure user has the correct role before setting
@@ -303,7 +303,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Set user BEFORE redirect so auth context is updated
       setUser(userToSet);
-      console.log("🔵 AuthContext - User set in context with role:", userToSet.role);
+      console.log("AuthContext - User set in context with role:", userToSet.role);
 
       // Backend sets the HTTP-only cookie automatically
       // We only store in localStorage as fallback for debugging
@@ -312,7 +312,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("token", token);
         // Explicitly set cookie to ensure middleware can read it
         Cookies.set("token", token, { expires: 7, path: '/' }); 
-        console.log("🔵 AuthContext - Token saved to localStorage and Cookie");
+        console.log("AuthContext - Token saved to localStorage and Cookie");
       }
 
       closeLogin();
@@ -328,7 +328,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const redirectParam = urlParams.get("redirect");
         if (redirectParam) {
           redirectPath = redirectParam;
-          console.log("🔵 AuthContext - Using redirect parameter from URL:", redirectPath);
+          console.log("AuthContext - Using redirect parameter from URL:", redirectPath);
           // Use href for immediate redirect
           window.location.href = redirectPath;
           return { success: true, user: normalizedUser };
@@ -350,12 +350,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         // Default to home if role is unknown and backend path is invalid
         redirectPath = "/";
-        console.warn("🔴 AuthContext - WARNING: Role is empty or unknown, redirecting to home. Role:", role);
+        console.warn("AuthContext - WARNING: Role is empty or unknown, redirecting to home. Role:", role);
       }
       
       // CRITICAL SAFETY CHECK: Never redirect to /admin if user is not admin
       if (redirectPath === "/admin" && role !== "admin") {
-        console.error("🔴 AuthContext - SECURITY: Prevented redirect to /admin for non-admin user. Role:", role);
+        console.error("AuthContext - SECURITY: Prevented redirect to /admin for non-admin user. Role:", role);
         if (role === "artist") {
           redirectPath = "/artist/dashboard";
         } else if (role === "customer") {
@@ -365,13 +365,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      console.log("🔵 AuthContext - FINAL redirectPath:", redirectPath);
-      console.log("🔵 AuthContext - User role confirmed:", role || "❌ EMPTY");
-      console.log("🔵 AuthContext - Backend redirectPath (for reference):", backendRedirectPath);
-      console.log("🔵 AuthContext - Redirecting artist to portal:", role === "artist" && redirectPath === "/artist/dashboard");
+      console.log("AuthContext - FINAL redirectPath:", redirectPath);
+      console.log("AuthContext - User role confirmed:", role || "EMPTY");
+      console.log("AuthContext - Backend redirectPath (for reference):", backendRedirectPath);
+      console.log("AuthContext - Redirecting artist to portal:", role === "artist" && redirectPath === "/artist/dashboard");
       
       // CRITICAL DEBUG: Log everything before redirect
-      console.group("🚀 AUTH CONTEXT - PRE-REDIRECT DEBUG");
+      console.group("AUTH CONTEXT - PRE-REDIRECT DEBUG");
       console.log("Role extracted:", role);
       console.log("Normalized user role:", normalizedUser.role);
       console.log("User set in context role:", userToSet.role);
@@ -382,9 +382,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Use window.location for immediate, reliable redirect
       if (typeof window !== "undefined") {
-        console.log("🔵 AuthContext - Using window.location.href for redirect to:", redirectPath);
-        console.log("🔵 AuthContext - User is set in context before redirect. Role:", userToSet.role);
-        console.log("🔵 AuthContext - Executing redirect NOW...");
+        console.log("AuthContext - Using window.location.href for redirect to:", redirectPath);
+        console.log("AuthContext - User is set in context before redirect. Role:", userToSet.role);
+        console.log("AuthContext - Executing redirect NOW...");
         
         // Use href for immediate redirect
         window.location.href = redirectPath;
@@ -394,9 +394,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       return { success: true, user: normalizedUser };
     } catch (error: any) {
-      console.error("🔴 AuthContext - Login error:", error);
-      console.error("🔴 AuthContext - Error response:", error.response?.data);
-      console.error("🔴 AuthContext - Error status:", error.response?.status);
+      console.error("AuthContext - Login error:", error);
+      console.error("AuthContext - Error response:", error.response?.data);
+      console.error("AuthContext - Error status:", error.response?.status);
       
       // Handle rate limiting (429)
       if (error.response?.status === 429) {
@@ -413,7 +413,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         error.message ||
         "Login failed. Please check your credentials.";
 
-      console.log("🔴 AuthContext - Extracted error message:", msg);
+      console.log("AuthContext - Extracted error message:", msg);
       return { success: false, error: msg };
     }
   };

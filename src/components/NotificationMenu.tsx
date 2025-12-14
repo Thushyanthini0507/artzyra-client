@@ -154,21 +154,21 @@ export function NotificationMenu() {
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "booking_request":
-        return "📅";
+        return "";
       case "booking_accepted":
-        return "✅";
+        return "";
       case "booking_rejected":
-        return "❌";
+        return "";
       case "booking_completed":
-        return "🎉";
+        return "";
       case "payment_received":
-        return "💰";
+        return "";
       case "review_received":
-        return "⭐";
+        return "";
       case "approval_status":
-        return "🔔";
+        return "";
       default:
-        return "🔔";
+        return "";
     }
   };
 

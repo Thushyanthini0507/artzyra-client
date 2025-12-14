@@ -147,7 +147,7 @@ export default function PaymentPage() {
         const bookingData = bookingResponse.data;
         setBooking(bookingData);
         
-        console.log("📋 Booking data:", {
+        console.log("Booking data:", {
           id: bookingData._id,
           totalAmount: bookingData.totalAmount,
           paymentStatus: bookingData.paymentStatus,
@@ -172,13 +172,13 @@ export default function PaymentPage() {
         
         const paymentResponse = await apiClient.post("/payments", payload);
 
-        console.log("✅ Payment response:", paymentResponse.data);
+        console.log("Payment response:", paymentResponse.data);
 
         if (paymentResponse.data.success && paymentResponse.data.data.clientSecret) {
           setClientSecret(paymentResponse.data.data.clientSecret);
         } else {
           const errorMsg = paymentResponse.data.message || paymentResponse.data.error || "Failed to initialize payment";
-          console.error("❌ Payment initialization failed:", paymentResponse.data);
+          console.error("Payment initialization failed:", paymentResponse.data);
           toast.error(errorMsg);
         }
       } catch (error: any) {
@@ -192,7 +192,7 @@ export default function PaymentPage() {
           method: error.config?.method,
         };
         
-        console.error("❌ Payment initialization error details:", JSON.stringify(errorDetails, null, 2));
+        console.error("Payment initialization error details:", JSON.stringify(errorDetails, null, 2));
         
         // Extract detailed error message from backend
         const errorMessage = 

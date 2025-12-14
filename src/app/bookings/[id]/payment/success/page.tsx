@@ -36,7 +36,7 @@ function PaymentSuccessContent() {
         const response = await apiClient.post("/payments/verify", {
           paymentIntentId,
         });
-        console.log("✅ Verification response:", response.data);
+        console.log("Verification response:", response.data);
         
         if (response.data.success) {
           setVerified(true);
@@ -63,7 +63,7 @@ function PaymentSuccessContent() {
           setError(response.data.message || "Payment verification failed");
         }
       } catch (error: any) {
-        console.error("❌ Payment Verification Failed");
+        console.error("Payment Verification Failed");
         console.error("Full error object:", error);
         console.error("Error message:", error?.message);
         console.error("Error response data:", error?.response?.data);
@@ -96,7 +96,7 @@ function PaymentSuccessContent() {
               ) : error ? (
                 <div className="flex flex-col items-center">
                   <div className="h-20 w-20 bg-red-500/20 rounded-full flex items-center justify-center mb-6">
-                    <span className="text-4xl">⚠️</span>
+                    <span className="text-4xl">!</span>
                   </div>
                   <h1 className="text-3xl font-bold text-white mb-4">Verification Issue</h1>
                   <p className="text-gray-300 mb-8 leading-relaxed">{error}</p>
