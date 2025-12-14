@@ -127,7 +127,7 @@ export default function ArtistRegisterPage() {
           </CardHeader>
           
           <CardContent className="px-8 pb-10">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-8">
               <div className="space-y-4">
                 <div className="flex items-center gap-2 pb-2 border-b border-white/10">
                   <div className="h-6 w-1 bg-purple-500 rounded-full" />
@@ -149,9 +149,10 @@ export default function ArtistRegisterPage() {
                     <Label htmlFor="email" className="text-white font-medium ml-1">Email</Label>
                     <Input 
                       id="email" 
-                      type="email" 
+                      type="text" 
                       {...register("email")} 
                       className="h-12 bg-white/10 border-transparent focus:border-white/30 focus:bg-white/20 text-white placeholder:text-white/40 rounded-xl transition-all" 
+                      placeholder="john@example.com"
                     />
                     {errors.email && <p className="text-sm text-red-300 ml-1">{errors.email.message}</p>}
                   </div>

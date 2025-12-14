@@ -332,7 +332,7 @@ function BookingForm() {
                                       <div className="flex items-center justify-between w-full">
                                         <span>{service.name}</span>
                                         <span className="ml-4 text-[#a78bfa] text-sm">
-                                          {formatHourlyRate(service.price)} • {service.deliveryTime} {service.deliveryTime === 1 ? 'day' : 'days'}
+                                          LKR {service.price.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} • {service.deliveryTime} {service.deliveryTime === 1 ? 'day' : 'days'}
                                         </span>
                                       </div>
                                     </SelectItem>
@@ -552,7 +552,7 @@ function BookingForm() {
                       </div>
                       <div className="flex justify-between text-gray-400">
                         <span>Service Price</span>
-                        <span className="text-white">{formatHourlyRate(calculateTotal())}</span>
+                        <span className="text-white">LKR {calculateTotal().toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                       </div>
                       <div className="flex justify-between text-gray-400">
                         <span>Delivery Time</span>
@@ -565,8 +565,8 @@ function BookingForm() {
                         <span>{artist.artistType === 'remote' ? 'Service Price' : 'Hourly Rate'}</span>
                         <span className="text-white">
                           {artist.artistType === 'remote' && artist.pricing?.amount 
-                            ? formatHourlyRate(artist.pricing.amount) 
-                            : formatHourlyRate(artist.hourlyRate)
+                            ? `LKR ${artist.pricing.amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+                            : `LKR ${(artist.hourlyRate || 0).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
                           }
                         </span>
                       </div>
@@ -584,16 +584,12 @@ function BookingForm() {
                       )}
                     </>
                   )}
-                  <div className="flex justify-between text-gray-400">
-                    <span>Service Fee</span>
-                    <span className="text-white">$0.00</span>
-                  </div>
                 </div>
 
                 <div className="pt-4 border-t border-white/10">
                   <div className="flex justify-between items-center font-bold text-xl">
                     <span>Total</span>
-                    <span className="text-[#9b87f5]">{formatHourlyRate(calculateTotal())}</span>
+                    <span className="text-[#9b87f5]">LKR {calculateTotal().toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                   </div>
                 </div>
 
