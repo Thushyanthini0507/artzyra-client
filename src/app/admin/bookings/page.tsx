@@ -53,6 +53,13 @@ export default function BookingsPage() {
     fetchBookings();
   }, []);
 
+  // Helper function to get user display name
+  const getUserDisplayName = (user: any): string => {
+    if (!user) return "Unknown";
+    // Try multiple possible name fields
+    return user.name || user.fullName || user.firstName || user.email?.split('@')[0] || "Unknown";
+  };
+
   // Helper function to normalize status for filtering
   const normalizeStatus = (status: string): string => {
     if (!status) return "";
@@ -69,9 +76,11 @@ export default function BookingsPage() {
     if (normalized === "completed" || normalized === "done" || normalized === "finished") {
       return "completed";
     }
-    if (normalized === "cancelled" || normalized === "canceled" || normalized === "declined" || 
-        normalized === "rejected" || normalized === "failed") {
+    if (normalized === "cancelled" || normalized === "canceled") {
       return "cancelled";
+    }
+    if (normalized === "declined" || normalized === "rejected" || normalized === "failed") {
+      return "declined";
     }
     
     return normalized;
@@ -100,6 +109,7 @@ export default function BookingsPage() {
       confirmed: bookings.filter(b => normalizeStatus(b.status || "") === "confirmed").length,
       completed: bookings.filter(b => normalizeStatus(b.status || "") === "completed").length,
       cancelled: bookings.filter(b => normalizeStatus(b.status || "") === "cancelled").length,
+      declined: bookings.filter(b => normalizeStatus(b.status || "") === "declined").length,
     };
     return counts;
   };
@@ -135,6 +145,7 @@ export default function BookingsPage() {
             { id: "pending", label: "Pending", count: counts.pending, color: "bg-yellow-500/20 text-yellow-400" },
             { id: "confirmed", label: "Confirmed", count: counts.confirmed, color: "bg-blue-500/20 text-blue-400" },
             { id: "completed", label: "Completed", count: counts.completed, color: "bg-emerald-500/20 text-emerald-400" },
+            { id: "declined", label: "Declined", count: counts.declined, color: "bg-orange-500/20 text-orange-400" },
             { id: "cancelled", label: "Cancelled", count: counts.cancelled, color: "bg-red-500/20 text-red-400" },
           ].map((filter) => (
             <Button
@@ -205,18 +216,34 @@ export default function BookingsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <div className="h-6 w-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs text-blue-400">
-                              {booking.customer?.name?.charAt(0) || "C"}
-                            </div>
-                            <span className="text-gray-200">{booking.customer?.name || "Unknown"}</span>
+                            {(() => {
+                              const customerName = getUserDisplayName(booking.customer);
+                              const initial = customerName.charAt(0).toUpperCase();
+                              return (
+                                <>
+                                  <div className="h-6 w-6 rounded-full bg-blue-500/20 flex items-center justify-center text-xs text-blue-400">
+                                    {initial}
+                                  </div>
+                                  <span className="text-gray-200">{customerName}</span>
+                                </>
+                              );
+                            })()}
                           </div>
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <div className="h-6 w-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs text-purple-400">
-                              {booking.artist?.name?.charAt(0) || "A"}
-                            </div>
-                            <span className="text-gray-200">{booking.artist?.name || "Unknown"}</span>
+                            {(() => {
+                              const artistName = getUserDisplayName(booking.artist);
+                              const initial = artistName.charAt(0).toUpperCase();
+                              return (
+                                <>
+                                  <div className="h-6 w-6 rounded-full bg-purple-500/20 flex items-center justify-center text-xs text-purple-400">
+                                    {initial}
+                                  </div>
+                                  <span className="text-gray-200">{artistName}</span>
+                                </>
+                              );
+                            })()}
                           </div>
                         </TableCell>
                         <TableCell>
