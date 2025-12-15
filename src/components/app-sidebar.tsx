@@ -16,7 +16,7 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
 interface AppSidebarProps {
@@ -82,6 +82,10 @@ export function AppSidebar({ role }: AppSidebarProps) {
       <SidebarFooter className="border-t p-4">
         <div className="flex items-center gap-3 mb-3">
           <Avatar className="h-8 w-8">
+            <AvatarImage 
+              src={user?.profileImage} 
+              alt={user?.name || "User"} 
+            />
             <AvatarFallback className="text-xs">
               {user ? getInitials(user.name) : "U"}
             </AvatarFallback>

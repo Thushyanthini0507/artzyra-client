@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, LogOut, Settings, Heart, Menu } from "lucide-react";
 import { NotificationMenu } from "@/components/NotificationMenu";
 import {
@@ -175,6 +175,10 @@ export function PublicNavbar() {
                         className="relative h-10 w-10 rounded-full"
                       >
                         <Avatar>
+                          <AvatarImage 
+                            src={user.profileImage} 
+                            alt={user.name || "User"} 
+                          />
                           <AvatarFallback>
                             {getInitials(user.name)}
                           </AvatarFallback>

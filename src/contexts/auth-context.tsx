@@ -59,6 +59,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user.email?.split("@")[0] || 
       "User";
 
+    // Get profile image from profile
+    const profileImage = 
+      profile?.profileImage || 
+      user.profileImage || 
+      "";
+
     // CRITICAL: Spread user first, then override with normalized values
     // This ensures our normalized role is not overwritten
     return {
@@ -66,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       _id: user._id || user.id,
       email: user.email || "",
       name: userName,
+      profileImage: profileImage,
       role: normalizedRole as UserRole,  // Override with normalized role AFTER spread
       status: user.status || profile?.status,
     } as User;
@@ -110,7 +117,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const res = await authService.getCurrentUser();
       if (res.success && res.data) {
         // Pass both user and profile to normalizeUser
-        const normalized = normalizeUser({ user: res.data.user, profile: res.data.profile });
+        // Backend returns: { success: true, data: { user, profile } }
+        // authService.getCurrentUser() returns: response.data which is { success: true, data: { user, profile } }
+        // So res.data is the backend response, and res.data.data is { user, profile }
+        const responseData = res.data.data || res.data;
+        const userData = responseData.user || res.data.user;
+        const profileData = responseData.profile || res.data.profile || res.data.artist || res.data.customer || res.data.admin;
+        
+        console.log("AuthContext - getCurrentUser - userData:", userData ? "Found" : "Missing");
+        console.log("AuthContext - getCurrentUser - profileData:", profileData ? `Found (has profileImage: ${!!profileData.profileImage})` : "Missing");
+        
+        const normalized = normalizeUser({ user: userData, profile: profileData });
+        console.log("AuthContext - getCurrentUser - normalized user profileImage:", normalized?.profileImage || "Missing");
         setUser(normalized);
       } else {
         // Fallback: try to decode from JWT token

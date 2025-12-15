@@ -18,8 +18,10 @@ import { normalizeSriLankanPhone } from "@/lib/utils/phoneValidation";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { artistProfileSchema, type ArtistProfileFormData } from "@/lib/validations/artist";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function ArtistProfilePage() {
+  const { refreshUser } = useAuth();
   const [profile, setProfile] = useState<any>(null);
   const [userEmail, setUserEmail] = useState<string>("");
   const [categories, setCategories] = useState<any[]>([]);
@@ -151,6 +153,8 @@ export default function ArtistProfilePage() {
       if (response.success) {
         toast.success("Profile updated successfully");
         setProfile(response.data);
+        // Refresh auth context to update profile image in navbar
+        await refreshUser();
         // Refresh the page to update profile image everywhere
         window.location.reload();
       } else {
@@ -192,7 +196,7 @@ export default function ArtistProfilePage() {
                 control={control}
                 render={({ field }) => (
                   <ImageUpload
-                    value={field.value}
+                    value={field.value || ""}
                     onChange={field.onChange}
                     imageType="artist_profile"
                   />
