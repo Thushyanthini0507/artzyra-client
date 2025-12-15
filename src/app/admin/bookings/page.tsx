@@ -141,12 +141,54 @@ export default function BookingsPage() {
 
         <div className="flex flex-wrap gap-2">
           {[
-            { id: "all", label: "All Bookings", count: counts.all, color: "bg-gray-500/20 text-gray-300" },
-            { id: "pending", label: "Pending", count: counts.pending, color: "bg-yellow-500/20 text-yellow-400" },
-            { id: "confirmed", label: "Confirmed", count: counts.confirmed, color: "bg-blue-500/20 text-blue-400" },
-            { id: "completed", label: "Completed", count: counts.completed, color: "bg-emerald-500/20 text-emerald-400" },
-            { id: "declined", label: "Declined", count: counts.declined, color: "bg-orange-500/20 text-orange-400" },
-            { id: "cancelled", label: "Cancelled", count: counts.cancelled, color: "bg-red-500/20 text-red-400" },
+            { 
+              id: "all", 
+              label: "All Bookings", 
+              count: counts.all, 
+              color: "bg-gray-500/20 text-gray-300",
+              activeBg: "bg-gray-600 hover:bg-gray-700",
+              activeBorder: "border-gray-500"
+            },
+            { 
+              id: "pending", 
+              label: "Pending", 
+              count: counts.pending, 
+              color: "bg-yellow-500/20 text-yellow-400",
+              activeBg: "bg-yellow-600 hover:bg-yellow-700",
+              activeBorder: "border-yellow-500"
+            },
+            { 
+              id: "confirmed", 
+              label: "Confirmed", 
+              count: counts.confirmed, 
+              color: "bg-blue-500/20 text-blue-400",
+              activeBg: "bg-blue-600 hover:bg-blue-700",
+              activeBorder: "border-blue-500"
+            },
+            { 
+              id: "completed", 
+              label: "Completed", 
+              count: counts.completed, 
+              color: "bg-emerald-500/20 text-emerald-400",
+              activeBg: "bg-emerald-600 hover:bg-emerald-700",
+              activeBorder: "border-emerald-500"
+            },
+            { 
+              id: "declined", 
+              label: "Declined", 
+              count: counts.declined, 
+              color: "bg-orange-500/20 text-orange-400",
+              activeBg: "bg-orange-600 hover:bg-orange-700",
+              activeBorder: "border-orange-500"
+            },
+            { 
+              id: "cancelled", 
+              label: "Cancelled", 
+              count: counts.cancelled, 
+              color: "bg-red-500/20 text-red-400",
+              activeBg: "bg-red-600 hover:bg-red-700",
+              activeBorder: "border-red-500"
+            },
           ].map((filter) => (
             <Button
               key={filter.id}
@@ -155,7 +197,7 @@ export default function BookingsPage() {
               onClick={() => setStatusFilter(filter.id)}
               className={`border-white/10 transition-all ${
                 statusFilter === filter.id 
-                  ? "bg-purple-600 hover:bg-purple-700 text-white border-purple-500" 
+                  ? `${filter.activeBg} text-white ${filter.activeBorder}` 
                   : "bg-black/20 hover:bg-white/5 text-gray-400"
               }`}
             >
