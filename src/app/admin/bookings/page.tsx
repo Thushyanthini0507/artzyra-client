@@ -28,10 +28,16 @@ export default function BookingsPage() {
   const fetchBookings = async () => {
     setLoading(true);
     try {
-      const response = await adminService.getBookings();
+      // Fetch all bookings with a high limit to get complete count
+      const response = await adminService.getBookings({ limit: 10000 });
       if (response.success && response.data) {
+        // Handle both array and paginated response structure
+        const bookingsArray = Array.isArray(response.data) 
+          ? response.data 
+          : (response.data?.data || []);
+        
         // Sort by date (newest first)
-        const sortedBookings = (response.data as any[]).sort((a, b) => {
+        const sortedBookings = (bookingsArray as any[]).sort((a, b) => {
           return new Date(b.bookingDate || b.createdAt).getTime() - new Date(a.bookingDate || a.createdAt).getTime();
         });
         setBookings(sortedBookings);
@@ -47,13 +53,42 @@ export default function BookingsPage() {
     fetchBookings();
   }, []);
 
+  // Helper function to normalize status for filtering
+  const normalizeStatus = (status: string): string => {
+    if (!status) return "";
+    const normalized = status.toLowerCase().trim();
+    
+    // Map status variations to standard categories
+    if (normalized === "pending" || normalized === "pending approval") {
+      return "pending";
+    }
+    if (normalized === "confirmed" || normalized === "accepted" || normalized === "in_progress" || 
+        normalized === "in progress" || normalized === "active" || normalized === "approved") {
+      return "confirmed";
+    }
+    if (normalized === "completed" || normalized === "done" || normalized === "finished") {
+      return "completed";
+    }
+    if (normalized === "cancelled" || normalized === "canceled" || normalized === "declined" || 
+        normalized === "rejected" || normalized === "failed") {
+      return "cancelled";
+    }
+    
+    return normalized;
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     const matchesSearch = 
       booking._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.customer?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       booking.artist?.name?.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesStatus = statusFilter === "all" || booking.status === statusFilter;
+    if (statusFilter === "all") {
+      return matchesSearch;
+    }
+    
+    const bookingStatus = normalizeStatus(booking.status || "");
+    const matchesStatus = bookingStatus === statusFilter;
     
     return matchesSearch && matchesStatus;
   });
@@ -61,10 +96,10 @@ export default function BookingsPage() {
   const getStatusCounts = () => {
     const counts = {
       all: bookings.length,
-      pending: bookings.filter(b => b.status === "pending").length,
-      confirmed: bookings.filter(b => b.status === "confirmed").length,
-      completed: bookings.filter(b => b.status === "completed").length,
-      cancelled: bookings.filter(b => b.status === "cancelled").length,
+      pending: bookings.filter(b => normalizeStatus(b.status || "") === "pending").length,
+      confirmed: bookings.filter(b => normalizeStatus(b.status || "") === "confirmed").length,
+      completed: bookings.filter(b => normalizeStatus(b.status || "") === "completed").length,
+      cancelled: bookings.filter(b => normalizeStatus(b.status || "") === "cancelled").length,
     };
     return counts;
   };

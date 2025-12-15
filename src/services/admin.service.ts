@@ -36,8 +36,10 @@ export const adminService = {
     const response = await apiClient.put(`/admin/artists/${artistId}/reject`);
     return response.data;
   },
-  getBookings: async () => {
-    const response = await apiClient.get("/admin/bookings");
+  getBookings: async (params?: { limit?: number; page?: number }) => {
+    const response = await apiClient.get("/admin/bookings", { 
+      params: params || { limit: 10000 } // Fetch all bookings by default
+    });
     return response.data;
   },
   getPayments: async () => {
