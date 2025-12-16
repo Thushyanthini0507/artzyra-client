@@ -109,10 +109,10 @@ export default function CategoryPage() {
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="text-center space-y-8 max-w-5xl mx-auto">
-              {/* Category Icon Badge */}
+              {/* Category Icon Badge
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 mb-6">
                 <Layers className="h-10 w-10 text-white" />
-              </div>
+              </div> */}
 
               <div className="space-y-6">
                 <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight">
