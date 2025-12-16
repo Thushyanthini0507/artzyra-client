@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useCategories } from "@/hooks/useApi";
 import { getCategoryImage } from "@/lib/categoryImages";
 import Link from "next/link";
-import { Search, ArrowRight, Sparkles, Grid3x3 } from "lucide-react";
+import { Search, ArrowRight, Grid3x3, Layers } from "lucide-react";
 
 export default function CategoryPage() {
   const { categories, loading, error } = useCategories();
@@ -16,7 +16,7 @@ export default function CategoryPage() {
 
   const filteredCategories = useMemo(() => {
     if (!searchQuery.trim()) return categories;
-    
+
     const query = searchQuery.toLowerCase();
     return categories.filter(
       (category) =>
@@ -30,12 +30,15 @@ export default function CategoryPage() {
       <PublicLayout>
         <div className="min-h-screen bg-gradient-to-b from-[#f8f5ff] via-white to-white">
           {/* Hero Skeleton */}
-          <div className="relative bg-gradient-to-br from-[#3e1d56] via-[#5e3a8c] to-[#2d1b4e] py-24 overflow-hidden">
-            <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-top bg-no-repeat opacity-20"></div>
+          <div className="relative bg-gradient-to-br from-[#2d1b4e] via-[#3e1d56] to-[#5e3a8c] py-16 md:py-24 overflow-hidden">
             <div className="container mx-auto px-4 relative z-10">
-              <div className="text-center space-y-6 max-w-3xl mx-auto">
-                <div className="h-16 w-96 bg-white/20 rounded-lg animate-pulse mx-auto" />
-                <div className="h-6 w-2/3 bg-white/20 rounded animate-pulse mx-auto" />
+              <div className="text-center space-y-8 max-w-5xl mx-auto">
+                <div className="h-20 w-20 bg-white/20 rounded-2xl animate-pulse mx-auto" />
+                <div className="space-y-6">
+                  <div className="h-16 w-96 bg-white/20 rounded-lg animate-pulse mx-auto" />
+                  <div className="h-8 w-2/3 bg-white/20 rounded animate-pulse mx-auto" />
+                </div>
+                <div className="h-16 w-64 bg-white/20 rounded-2xl animate-pulse mx-auto" />
               </div>
             </div>
           </div>
@@ -73,7 +76,7 @@ export default function CategoryPage() {
             </div>
             <h1 className="text-3xl font-bold text-[#3e1d56]">Oops!</h1>
             <p className="text-destructive text-lg">{error}</p>
-            <Button 
+            <Button
               onClick={() => window.location.reload()}
               className="bg-[#3e1d56] hover:bg-[#3e1d56]/90 text-white rounded-full px-8"
             >
@@ -89,43 +92,58 @@ export default function CategoryPage() {
     <PublicLayout>
       <div className="min-h-screen bg-gradient-to-b from-[#f8f5ff] via-white to-white">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-br from-[#3e1d56] via-[#5e3a8c] to-[#2d1b4e] py-20 md:py-28 overflow-hidden">
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-top bg-no-repeat opacity-10"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
-          
-          {/* Decorative Elements */}
-          <div className="absolute top-10 left-10 w-32 h-32 bg-[#b39ddb]/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl"></div>
-          
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="text-center space-y-6 max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-4">
-                <Sparkles className="h-5 w-5 text-[#b39ddb]" />
-                <span className="text-sm font-medium text-white/90">Explore Our Categories</span>
-              </div>
-              
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
-                Discover Creative
-                <br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b39ddb] to-white">
-                  Talents & Skills
-                </span>
-              </h1>
-              
-              <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
-                Browse through our diverse collection of artistic categories. Find the perfect match for your creative project or discover new talents.
-              </p>
+        <section className="relative bg-gradient-to-br from-[#2d1b4e] via-[#3e1d56] to-[#5e3a8c] py-16 md:py-24 overflow-hidden">
+          {/* Modern Background Pattern */}
+          <div className="absolute inset-0">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(179,157,219,0.15),transparent_50%)]"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.15),transparent_50%)]"></div>
+            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(45,27,78,0.8),rgba(62,29,86,0.6))]"></div>
+          </div>
 
-              {/* Stats */}
+          {/* Geometric Shapes */}
+          <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-violet-500/5 rounded-full blur-3xl"></div>
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center space-y-8 max-w-5xl mx-auto">
+              {/* Category Icon Badge */}
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 mb-6">
+                <Layers className="h-10 w-10 text-white" />
+              </div>
+
+              <div className="space-y-6">
+                <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight tracking-tight">
+                  Explore Our
+                  <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b39ddb] via-white to-[#d4c4e8]">
+                    Creative Categories
+                  </span>
+                </h1>
+
+                <p className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto leading-relaxed font-light">
+                  Discover talented artists across diverse creative fields. 
+                  Find the perfect match for your next project.
+                </p>
+              </div>
+
+              {/* Stats Card */}
               {categories.length > 0 && (
-                <div className="flex flex-wrap items-center justify-center gap-6 pt-4">
-                  <div className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full">
-                    <Grid3x3 className="h-5 w-5 text-[#b39ddb]" />
-                    <span className="text-2xl font-bold text-white">{categories.length}</span>
-                    <span className="text-white/80">
-                      {categories.length === 1 ? "Category" : "Categories"}
-                    </span>
+                <div className="flex flex-wrap items-center justify-center gap-4 pt-6">
+                  <div className="flex items-center gap-3 px-8 py-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 shadow-lg">
+                    <div className="p-2 bg-white/20 rounded-lg">
+                      <Grid3x3 className="h-6 w-6 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-3xl font-bold text-white">
+                        {categories.length}
+                      </div>
+                      <div className="text-sm text-white/70 font-medium">
+                        {categories.length === 1 ? "Category Available" : "Categories Available"}
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -213,10 +231,12 @@ export default function CategoryPage() {
                     />
                     {/* Gradient Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    
+
                     {/* Category Badge */}
                     <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="text-xs font-semibold text-[#5e3a8c]">Explore</span>
+                      <span className="text-xs font-semibold text-[#5e3a8c]">
+                        Explore
+                      </span>
                     </div>
                   </div>
 
@@ -232,11 +252,12 @@ export default function CategoryPage() {
                         {category.description}
                       </p>
                     )}
-                    
-                    <Link href={`/browse?category=${category._id}`} className="block">
-                      <Button 
-                        className="w-full bg-gradient-to-r from-[#5e3a8c] to-[#3e1d56] hover:from-[#6e4a9c] hover:to-[#4e2d6e] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 group/btn"
-                      >
+
+                    <Link
+                      href={`/browse?category=${category._id}`}
+                      className="block"
+                    >
+                      <Button className="w-full bg-gradient-to-r from-[#5e3a8c] to-[#3e1d56] hover:from-[#6e4a9c] hover:to-[#4e2d6e] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 group/btn">
                         View Artists
                         <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                       </Button>
@@ -258,7 +279,8 @@ export default function CategoryPage() {
                   Ready to Find Your Perfect Artist?
                 </h2>
                 <p className="text-lg text-white/90 leading-relaxed">
-                  Browse through our talented artists and connect with the perfect match for your creative project.
+                  Browse through our talented artists and connect with the
+                  perfect match for your creative project.
                 </p>
                 <Link href="/browse">
                   <Button
@@ -277,4 +299,3 @@ export default function CategoryPage() {
     </PublicLayout>
   );
 }
-
