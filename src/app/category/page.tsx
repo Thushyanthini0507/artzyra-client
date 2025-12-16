@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { useCategories } from "@/hooks/useApi";
 import { getCategoryImage } from "@/lib/categoryImages";
 import Link from "next/link";
-import { Search, ArrowRight } from "lucide-react";
+import { Search, ArrowRight, Sparkles, Grid3x3 } from "lucide-react";
 
 export default function CategoryPage() {
   const { categories, loading, error } = useCategories();
@@ -28,23 +28,31 @@ export default function CategoryPage() {
   if (loading) {
     return (
       <PublicLayout>
-        <div className="container mx-auto px-4 py-12">
-          <div className="space-y-8">
-            <div className="text-center space-y-4">
-              <div className="h-10 w-64 bg-muted rounded animate-pulse mx-auto" />
-              <div className="h-6 w-96 bg-muted rounded animate-pulse mx-auto" />
+        <div className="min-h-screen bg-gradient-to-b from-[#f8f5ff] via-white to-white">
+          {/* Hero Skeleton */}
+          <div className="relative bg-gradient-to-br from-[#3e1d56] via-[#5e3a8c] to-[#2d1b4e] py-24 overflow-hidden">
+            <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-top bg-no-repeat opacity-20"></div>
+            <div className="container mx-auto px-4 relative z-10">
+              <div className="text-center space-y-6 max-w-3xl mx-auto">
+                <div className="h-16 w-96 bg-white/20 rounded-lg animate-pulse mx-auto" />
+                <div className="h-6 w-2/3 bg-white/20 rounded animate-pulse mx-auto" />
+              </div>
             </div>
-            <div className="h-12 w-full max-w-3xl bg-muted rounded animate-pulse mx-auto" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Card key={i} className="h-full">
-                  <div className="w-full h-48 bg-muted animate-pulse" />
-                  <CardHeader>
-                    <div className="h-6 bg-muted rounded animate-pulse" />
+          </div>
+
+          <div className="container mx-auto px-4 py-16">
+            <div className="h-14 w-full max-w-2xl bg-muted rounded-xl animate-pulse mx-auto mb-12" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                <Card key={i} className="h-full border-0 shadow-md">
+                  <div className="w-full h-56 bg-gradient-to-br from-purple-200 to-purple-300 animate-pulse rounded-t-lg" />
+                  <CardHeader className="pb-3">
+                    <div className="h-6 bg-muted rounded animate-pulse w-3/4 mx-auto" />
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="pt-0">
                     <div className="h-4 bg-muted rounded animate-pulse mb-2" />
-                    <div className="h-4 bg-muted rounded animate-pulse w-3/4" />
+                    <div className="h-4 bg-muted rounded animate-pulse w-5/6 mx-auto" />
+                    <div className="h-10 bg-muted rounded-lg animate-pulse mt-4" />
                   </CardContent>
                 </Card>
               ))}
@@ -58,11 +66,19 @@ export default function CategoryPage() {
   if (error) {
     return (
       <PublicLayout>
-        <div className="container mx-auto px-4 py-12">
-          <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold">Categories</h1>
-            <p className="text-destructive">{error}</p>
-            <Button onClick={() => window.location.reload()}>Try Again</Button>
+        <div className="min-h-screen bg-gradient-to-b from-[#f8f5ff] via-white to-white flex items-center justify-center">
+          <div className="text-center space-y-6 max-w-md mx-auto px-4">
+            <div className="w-20 h-20 bg-destructive/10 rounded-full flex items-center justify-center mx-auto">
+              <Search className="h-10 w-10 text-destructive" />
+            </div>
+            <h1 className="text-3xl font-bold text-[#3e1d56]">Oops!</h1>
+            <p className="text-destructive text-lg">{error}</p>
+            <Button 
+              onClick={() => window.location.reload()}
+              className="bg-[#3e1d56] hover:bg-[#3e1d56]/90 text-white rounded-full px-8"
+            >
+              Try Again
+            </Button>
           </div>
         </div>
       </PublicLayout>
@@ -71,111 +87,191 @@ export default function CategoryPage() {
 
   return (
     <PublicLayout>
-      <div className="container mx-auto px-4 py-12">
-        {/* Header Section */}
-        <div className="text-center space-y-4 mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold">Explore Categories</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Discover talented artists across various creative fields. Browse by category to find the perfect match for your project.
-          </p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-b from-[#f8f5ff] via-white to-white">
+        {/* Hero Section */}
+        <section className="relative bg-gradient-to-br from-[#3e1d56] via-[#5e3a8c] to-[#2d1b4e] py-20 md:py-28 overflow-hidden">
+          {/* Background Pattern */}
+          <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-top bg-no-repeat opacity-10"></div>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+          
+          {/* Decorative Elements */}
+          <div className="absolute top-10 left-10 w-32 h-32 bg-[#b39ddb]/20 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-10 w-40 h-40 bg-purple-400/20 rounded-full blur-3xl"></div>
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="text-center space-y-6 max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full mb-4">
+                <Sparkles className="h-5 w-5 text-[#b39ddb]" />
+                <span className="text-sm font-medium text-white/90">Explore Our Categories</span>
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white leading-tight">
+                Discover Creative
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#b39ddb] to-white">
+                  Talents & Skills
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto leading-relaxed">
+                Browse through our diverse collection of artistic categories. Find the perfect match for your creative project or discover new talents.
+              </p>
 
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Search categories..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 h-12 text-base"
-            />
-          </div>
-        </div>
-
-        {/* Categories Grid */}
-        {filteredCategories.length === 0 ? (
-          <div className="text-center py-12 space-y-4">
-            <p className="text-lg text-muted-foreground">
-              {searchQuery
-                ? `No categories found matching "${searchQuery}"`
-                : "No categories available at the moment."}
-            </p>
-            {searchQuery && (
-              <Button
-                variant="outline"
-                onClick={() => setSearchQuery("")}
-              >
-                Clear Search
-              </Button>
-            )}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {filteredCategories.map((category) => (
-              <Card
-                key={category._id}
-                className="h-full hover:shadow-lg transition-all duration-200 overflow-hidden group"
-              >
-                {/* Category Image */}
-                <div className="relative w-full h-48 overflow-hidden">
-                  <img
-                    src={getCategoryImage(category)}
-                    alt={category.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                    onError={(e) => {
-                      e.currentTarget.src = `https://res.cloudinary.com/demo/image/upload/w_400,h_300,c_fill,q_auto,f_auto/sample`;
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+              {/* Stats */}
+              {categories.length > 0 && (
+                <div className="flex flex-wrap items-center justify-center gap-6 pt-4">
+                  <div className="flex items-center gap-2 px-6 py-3 bg-white/10 backdrop-blur-sm rounded-full">
+                    <Grid3x3 className="h-5 w-5 text-[#b39ddb]" />
+                    <span className="text-2xl font-bold text-white">{categories.length}</span>
+                    <span className="text-white/80">
+                      {categories.length === 1 ? "Category" : "Categories"}
+                    </span>
+                  </div>
                 </div>
-
-                <CardHeader>
-                  <CardTitle className="text-center text-lg">
-                    {category.name}
-                  </CardTitle>
-                </CardHeader>
-
-                {category.description && (
-                  <CardContent className="space-y-4">
-                    <p className="text-sm text-muted-foreground text-center line-clamp-2">
-                      {category.description}
-                    </p>
-                    <Link href={`/browse?category=${category._id}`} className="block">
-                      <Button variant="outline" className="w-full group/btn">
-                        View Artists
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                )}
-
-                {!category.description && (
-                  <CardContent>
-                    <Link href={`/browse?category=${category._id}`} className="block">
-                      <Button variant="outline" className="w-full group/btn">
-                        View Artists
-                        <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
-                      </Button>
-                    </Link>
-                  </CardContent>
-                )}
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {/* Stats Section */}
-        {categories.length > 0 && (
-          <div className="mt-16 text-center space-y-4">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-muted rounded-full">
-              <span className="text-2xl font-bold">{categories.length}</span>
-              <span className="text-muted-foreground">
-                {categories.length === 1 ? "Category" : "Categories"} Available
-              </span>
+              )}
             </div>
           </div>
+        </section>
+
+        {/* Search Section */}
+        <section className="container mx-auto px-4 -mt-8 relative z-20">
+          <div className="max-w-3xl mx-auto">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#b39ddb] to-purple-400 rounded-2xl blur-lg opacity-30"></div>
+              <div className="relative bg-white rounded-2xl shadow-xl border border-purple-100 p-2">
+                <div className="flex items-center gap-3 px-4">
+                  <Search className="h-5 w-5 text-[#5e3a8c] flex-shrink-0" />
+                  <Input
+                    type="text"
+                    placeholder="Search categories by name or description..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-base h-14 bg-transparent placeholder:text-muted-foreground"
+                  />
+                  {searchQuery && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSearchQuery("")}
+                      className="text-muted-foreground hover:text-foreground"
+                    >
+                      Clear
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Categories Grid */}
+        <section className="container mx-auto px-4 py-16">
+          {filteredCategories.length === 0 ? (
+            <div className="text-center py-20 space-y-6">
+              <div className="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto">
+                <Search className="h-12 w-12 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-2xl font-bold text-[#3e1d56]">
+                  {searchQuery ? "No Results Found" : "No Categories Available"}
+                </h3>
+                <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                  {searchQuery
+                    ? `We couldn't find any categories matching "${searchQuery}". Try a different search term.`
+                    : "Check back soon for new categories!"}
+                </p>
+              </div>
+              {searchQuery && (
+                <Button
+                  variant="outline"
+                  onClick={() => setSearchQuery("")}
+                  className="rounded-full px-8 border-[#5e3a8c] text-[#5e3a8c] hover:bg-[#5e3a8c] hover:text-white"
+                >
+                  Clear Search
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filteredCategories.map((category, index) => (
+                <Card
+                  key={category._id}
+                  className="group h-full border-0 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden bg-white hover:-translate-y-2"
+                  style={{
+                    animationDelay: `${index * 50}ms`,
+                  }}
+                >
+                  {/* Category Image */}
+                  <div className="relative w-full h-56 overflow-hidden bg-gradient-to-br from-purple-100 to-purple-200">
+                    <img
+                      src={getCategoryImage(category)}
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      onError={(e) => {
+                        e.currentTarget.src = `https://res.cloudinary.com/demo/image/upload/w_400,h_300,c_fill,q_auto,f_auto/sample`;
+                      }}
+                    />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    
+                    {/* Category Badge */}
+                    <div className="absolute top-4 right-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <span className="text-xs font-semibold text-[#5e3a8c]">Explore</span>
+                    </div>
+                  </div>
+
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-center text-xl font-bold text-[#3e1d56] group-hover:text-[#5e3a8c] transition-colors">
+                      {category.name}
+                    </CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4 pt-0">
+                    {category.description && (
+                      <p className="text-sm text-muted-foreground text-center line-clamp-3 leading-relaxed min-h-[60px]">
+                        {category.description}
+                      </p>
+                    )}
+                    
+                    <Link href={`/browse?category=${category._id}`} className="block">
+                      <Button 
+                        className="w-full bg-gradient-to-r from-[#5e3a8c] to-[#3e1d56] hover:from-[#6e4a9c] hover:to-[#4e2d6e] text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 group/btn"
+                      >
+                        View Artists
+                        <ArrowRight className="ml-2 h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* CTA Section */}
+        {categories.length > 0 && (
+          <section className="container mx-auto px-4 py-16">
+            <div className="relative bg-gradient-to-r from-[#3e1d56] to-[#5e3a8c] rounded-3xl p-12 md:p-16 overflow-hidden">
+              <div className="absolute inset-0 bg-[url('/images/hero-bg.png')] bg-top bg-no-repeat opacity-5"></div>
+              <div className="relative z-10 text-center space-y-6 max-w-3xl mx-auto">
+                <h2 className="text-3xl md:text-4xl font-bold text-white">
+                  Ready to Find Your Perfect Artist?
+                </h2>
+                <p className="text-lg text-white/90 leading-relaxed">
+                  Browse through our talented artists and connect with the perfect match for your creative project.
+                </p>
+                <Link href="/browse">
+                  <Button
+                    size="lg"
+                    className="bg-white text-[#3e1d56] hover:bg-white/90 rounded-full px-10 py-6 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    Browse All Artists
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </section>
         )}
       </div>
     </PublicLayout>

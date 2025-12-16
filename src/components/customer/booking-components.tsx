@@ -26,19 +26,24 @@ interface BookingHeaderProps {
 }
 
 export function BookingHeader({ id, status }: BookingHeaderProps) {
-  const getStatusColor = (status: string) => {
+  const getStatusStyles = (status: string) => {
     switch (status) {
       case "confirmed":
       case "accepted":
-      case "completed":
-        return "default"; // usually primary color or green depending on theme, using default for now
-      case "pending":
-        return "secondary";
-      case "cancelled":
+        return "bg-green-500/20 text-green-400 border-green-500/30";
+      case "in_progress":
+        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+      case "declined":
       case "rejected":
-        return "destructive";
+        return "bg-red-500/20 text-red-400 border-red-500/30";
+      case "completed":
+        return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+      case "pending":
+        return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+      case "cancelled":
+        return "bg-red-500/20 text-red-400 border-red-500/30";
       default:
-        return "outline";
+        return "bg-gray-500/20 text-gray-400 border-gray-500/30";
     }
   };
 
@@ -48,7 +53,7 @@ export function BookingHeader({ id, status }: BookingHeaderProps) {
         <h1 className="text-3xl font-bold tracking-tight text-white">Booking #{id.slice(-6).toUpperCase()}</h1>
         <div className="flex items-center gap-2 mt-2">
           <span className="text-gray-400">Status:</span>
-          <Badge variant={getStatusColor(status)} className="capitalize">
+          <Badge variant="outline" className={`capitalize border ${getStatusStyles(status)}`}>
             {status}
           </Badge>
         </div>

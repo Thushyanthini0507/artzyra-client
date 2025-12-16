@@ -51,7 +51,7 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Email</p>
                     <p className="text-sm text-muted-foreground">support@artzyra.com</p>
-                    <p className="text-sm text-muted-foreground">partners@artzyra.com</p>
+                    <p className="text-sm text-muted-foreground">helper@artzyra.com</p>
                   </div>
                 </div>
 
@@ -61,7 +61,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="font-medium">Phone</p>
-                    <p className="text-sm text-muted-foreground">+94 77 123 4567</p>
+                    <p className="text-sm text-muted-foreground">+94 77 961 4032</p>
                     <p className="text-sm text-muted-foreground">Mon-Fri, 9am - 6pm</p>
                   </div>
                 </div>
@@ -73,8 +73,8 @@ export default function ContactPage() {
                   <div>
                     <p className="font-medium">Office</p>
                     <p className="text-sm text-muted-foreground">
-                      123 Creative Avenue,<br />
-                      Colombo 07,<br />
+                      Poonthoddam,<br />
+                      Vavuniya,<br />
                       Sri Lanka
                     </p>
                   </div>

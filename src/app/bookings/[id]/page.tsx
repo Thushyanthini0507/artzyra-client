@@ -108,7 +108,8 @@ export default function BookingDetailsPage() {
     switch (status) {
       case "pending": return "bg-yellow-500/10 text-yellow-500 border-yellow-500/20";
       case "confirmed": return "bg-green-500/10 text-green-500 border-green-500/20";
-      case "completed": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case "in_progress": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case "completed": return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
       case "cancelled": return "bg-red-500/10 text-red-500 border-red-500/20";
       case "declined": return "bg-red-500/10 text-red-500 border-red-500/20";
       default: return "bg-gray-500/10 text-gray-500 border-gray-500/20";
@@ -212,7 +213,7 @@ export default function BookingDetailsPage() {
                 {isArtist && booking.status === "pending" && (
                   <>
                     <Button 
-                      className="bg-green-600 hover:bg-green-700 text-white"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                       onClick={() => handleStatusUpdate("in_progress")}
                       disabled={actionLoading}
                     >
@@ -220,7 +221,7 @@ export default function BookingDetailsPage() {
                       Accept Booking
                     </Button>
                     <Button 
-                      variant="destructive"
+                      className="bg-red-600 hover:bg-red-700 text-white"
                       onClick={() => handleStatusUpdate("declined")}
                       disabled={actionLoading}
                     >
@@ -232,7 +233,7 @@ export default function BookingDetailsPage() {
 
                 {isArtist && booking.status === "confirmed" && (
                   <Button 
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                    className="bg-green-600 hover:bg-green-700 text-white"
                     onClick={handleCompleteBooking}
                     disabled={actionLoading}
                   >

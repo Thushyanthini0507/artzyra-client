@@ -36,13 +36,44 @@ export default function ArtistBookingsPage() {
 
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, "default" | "secondary" | "destructive" | "outline"> = {
-      pending: "secondary",
-      accepted: "default",
-      rejected: "destructive",
-      completed: "outline",
+    const getStatusStyles = (status: string) => {
+      const normalized = status.toLowerCase();
+      
+      switch (normalized) {
+        case "confirmed":
+        case "accepted":
+        case "approved":
+          return "bg-green-500/20 text-green-400 border-green-500/30";
+        case "in_progress":
+        case "in progress":
+          return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+        case "declined":
+        case "rejected":
+        case "failed":
+          return "bg-red-500/20 text-red-400 border-red-500/30";
+        case "completed":
+        case "succeeded":
+        case "paid":
+          return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+        case "pending":
+        case "processing":
+          return "bg-yellow-500/20 text-yellow-400 border-yellow-500/30";
+        case "cancelled":
+        case "canceled":
+          return "bg-red-500/20 text-red-400 border-red-500/30";
+        default:
+          return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+      }
     };
-    return <Badge variant={variants[status] || "secondary"}>{status}</Badge>;
+
+    return (
+      <Badge 
+        variant="outline" 
+        className={`capitalize border ${getStatusStyles(status)}`}
+      >
+        {status}
+      </Badge>
+    );
   };
 
   return (

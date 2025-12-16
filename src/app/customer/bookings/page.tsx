@@ -69,7 +69,22 @@ export default function CustomerBookingsPage() {
                       <div>
                         <div className="flex items-center gap-3 mb-2">
                            <h3 className="font-bold text-lg text-white">{booking.service}</h3>
-                            <Badge variant={booking.status === "completed" ? "default" : booking.status === "in_progress" ? "secondary" : "outline"} className="capitalize bg-[#2e1065] text-[#a78bfa] border-none hover:bg-[#3b157a]">
+                            <Badge 
+                              variant="outline" 
+                              className={`capitalize border ${
+                                booking.status === "confirmed" 
+                                  ? "bg-green-500/20 text-green-400 border-green-500/30" 
+                                  : booking.status === "in_progress" 
+                                  ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                  : booking.status === "declined"
+                                  ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                  : booking.status === "completed" 
+                                  ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+                                  : booking.status === "cancelled"
+                                  ? "bg-red-500/20 text-red-400 border-red-500/30"
+                                  : "bg-yellow-500/20 text-yellow-400 border-yellow-500/30"
+                              }`}
+                            >
                             {booking.status}
                           </Badge>
                         </div>

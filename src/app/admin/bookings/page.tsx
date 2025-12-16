@@ -161,9 +161,9 @@ export default function BookingsPage() {
               id: "confirmed", 
               label: "Confirmed", 
               count: counts.confirmed, 
-              color: "bg-blue-500/20 text-blue-400",
-              activeBg: "bg-blue-600 hover:bg-blue-700",
-              activeBorder: "border-blue-500"
+              color: "bg-green-500/20 text-green-400",
+              activeBg: "bg-green-600 hover:bg-green-700",
+              activeBorder: "border-green-500"
             },
             { 
               id: "completed", 
@@ -177,9 +177,9 @@ export default function BookingsPage() {
               id: "declined", 
               label: "Declined", 
               count: counts.declined, 
-              color: "bg-orange-500/20 text-orange-400",
-              activeBg: "bg-orange-600 hover:bg-orange-700",
-              activeBorder: "border-orange-500"
+              color: "bg-red-500/20 text-red-400",
+              activeBg: "bg-red-600 hover:bg-red-700",
+              activeBorder: "border-red-500"
             },
             { 
               id: "cancelled", 
