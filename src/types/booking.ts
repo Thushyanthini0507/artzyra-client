@@ -1,7 +1,7 @@
 import { Customer } from "./customer";
 import { Artist } from "./artist";
 
-export type BookingStatus = "pending" | "in_progress" | "review" | "completed" | "cancelled" | "declined";
+export type BookingStatus = "pending" | "in_progress" | "review" | "completed" | "cancelled" | "declined" | "confirmed";
 export type PaymentStatus = "pending" | "paid" | "succeeded" | "refunded" | "failed" | "partial";
 export type PackageType = "basic" | "standard" | "premium" | "custom";
 export type UrgencyType = "normal" | "express";
