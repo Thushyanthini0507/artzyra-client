@@ -134,7 +134,7 @@ function LoginForm() {
                 
                 <div className="text-center pt-4">
                   <p className="text-sm text-gray-500">
-                    Not a member yet?{" "}
+                    Not a artist yet?{" "}
                     <Link
                       href={registerUrl}
                       className="font-bold text-[#d97706] hover:text-[#b45309] transition-colors"

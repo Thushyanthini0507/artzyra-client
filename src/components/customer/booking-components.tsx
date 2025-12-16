@@ -30,12 +30,12 @@ export function BookingHeader({ id, status }: BookingHeaderProps) {
     switch (status) {
       case "confirmed":
       case "accepted":
-        return "bg-green-500/20 text-green-400 border-green-500/30";
+        return "bg-teal-500/20 text-teal-400 border-teal-500/30";
       case "in_progress":
-        return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+        return "bg-amber-500/20 text-amber-400 border-amber-500/30";
       case "declined":
       case "rejected":
-        return "bg-red-500/20 text-red-400 border-red-500/30";
+        return "bg-rose-500/20 text-rose-400 border-rose-500/30";
       case "completed":
         return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
       case "pending":

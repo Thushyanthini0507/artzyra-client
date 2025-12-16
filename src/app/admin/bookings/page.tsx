@@ -17,13 +17,16 @@ import { formatLKR } from "@/lib/utils/currency";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Filter, RefreshCcw, Calendar, User, ShoppingBag } from "lucide-react";
+import { Search, Filter, RefreshCcw, Calendar, User, ShoppingBag, CheckCircle, XCircle, Clock } from "lucide-react";
+import { bookingService } from "@/services/booking.service";
+import { toast } from "sonner";
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -116,6 +119,24 @@ export default function BookingsPage() {
 
   const counts = getStatusCounts();
 
+  const handleStatusUpdate = async (bookingId: string, newStatus: string) => {
+    setUpdatingStatus(bookingId);
+    try {
+      const response = await bookingService.updateStatus(bookingId, newStatus);
+      if (response.success) {
+        toast.success(`Booking status updated to ${newStatus}`);
+        fetchBookings();
+      } else {
+        toast.error(response.message || "Failed to update status");
+      }
+    } catch (error: any) {
+      console.error("Error updating booking status:", error);
+      toast.error(error.response?.data?.message || "Failed to update status");
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
+
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -161,9 +182,9 @@ export default function BookingsPage() {
               id: "confirmed", 
               label: "Confirmed", 
               count: counts.confirmed, 
-              color: "bg-green-500/20 text-green-400",
-              activeBg: "bg-green-600 hover:bg-green-700",
-              activeBorder: "border-green-500"
+              color: "bg-teal-500/20 text-teal-400",
+              activeBg: "bg-teal-600 hover:bg-teal-700",
+              activeBorder: "border-teal-500"
             },
             { 
               id: "completed", 
@@ -248,6 +269,7 @@ export default function BookingsPage() {
                       <TableHead className="text-gray-300">Date</TableHead>
                       <TableHead className="text-gray-300">Status</TableHead>
                       <TableHead className="text-right text-gray-300">Amount</TableHead>
+                      <TableHead className="text-gray-300">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -299,6 +321,60 @@ export default function BookingsPage() {
                         </TableCell>
                         <TableCell className="text-right font-medium text-white">
                           {formatLKR(booking.totalAmount)}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center justify-end gap-2 flex-wrap">
+                            {normalizeStatus(booking.status || "") !== "confirmed" && 
+                             normalizeStatus(booking.status || "") !== "in_progress" && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleStatusUpdate(booking._id, "confirmed")}
+                                disabled={updatingStatus === booking._id}
+                                className="bg-teal-600 hover:bg-teal-700 text-white border-0 h-8 px-3 text-xs"
+                                title="Mark as Confirmed"
+                              >
+                                {updatingStatus === booking._id ? (
+                                  <RefreshCcw className="h-3 w-3 animate-spin mr-1" />
+                                ) : (
+                                  <CheckCircle className="h-3 w-3 mr-1" />
+                                )}
+                                Confirm
+                              </Button>
+                            )}
+                            {normalizeStatus(booking.status || "") !== "in_progress" && 
+                             normalizeStatus(booking.status || "") !== "completed" && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleStatusUpdate(booking._id, "in_progress")}
+                                disabled={updatingStatus === booking._id}
+                                className="bg-amber-600 hover:bg-amber-700 text-white border-0 h-8 px-3 text-xs"
+                                title="Mark as In Progress"
+                              >
+                                {updatingStatus === booking._id ? (
+                                  <RefreshCcw className="h-3 w-3 animate-spin mr-1" />
+                                ) : (
+                                  <Clock className="h-3 w-3 mr-1" />
+                                )}
+                                In Progress
+                              </Button>
+                            )}
+                            {normalizeStatus(booking.status || "") !== "declined" && (
+                              <Button
+                                size="sm"
+                                onClick={() => handleStatusUpdate(booking._id, "declined")}
+                                disabled={updatingStatus === booking._id}
+                                className="bg-rose-600 hover:bg-rose-700 text-white border-0 h-8 px-3 text-xs"
+                                title="Decline Booking"
+                              >
+                                {updatingStatus === booking._id ? (
+                                  <RefreshCcw className="h-3 w-3 animate-spin mr-1" />
+                                ) : (
+                                  <XCircle className="h-3 w-3 mr-1" />
+                                )}
+                                Decline
+                              </Button>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

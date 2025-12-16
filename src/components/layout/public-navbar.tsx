@@ -87,7 +87,7 @@ export function PublicNavbar() {
                     src="/images/logo.png"
                     alt="Artzyra Logo"
                     fill
-                    className="object-contain brightness-200 contrast-200"
+                    className="object-contain "
                     priority
                   />
                 </div>
