@@ -24,7 +24,7 @@ export function PaymentDialog({ open, onOpenChange, booking, onSuccess }: Paymen
   const handlePayment = async () => {
     if (!booking) return;
     
-    console.log("💳 Initiating payment with data:", {
+    console.log("Initiating payment with data:", {
       bookingId: booking._id,
       paymentMethod,
     });

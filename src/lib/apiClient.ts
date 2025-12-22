@@ -129,7 +129,7 @@ apiClient.interceptors.response.use(
         };
 
         // Log error details in a way that ensures visibility
-        console.error("🔴 Network Error Detected");
+        console.error("Network Error Detected");
         console.error("Error Message:", errorDetails.message);
         console.error("Error Code:", errorDetails.code);
         console.error("Request URL:", errorDetails.requestUrl);

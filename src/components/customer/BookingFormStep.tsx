@@ -91,7 +91,7 @@ export function BookingFormStep({ artistId, categoryId, onBack }: BookingFormSte
       specialRequests: data.specialRequests || "",
     };
     
-    console.log("📤 Sending booking data:", bookingData);
+    console.log("Sending booking data:", bookingData);
     await createBooking(bookingData);
   };
 

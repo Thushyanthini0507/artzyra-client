@@ -93,14 +93,14 @@ export default function AdminDashboard() {
             if (tokenParts.length === 3) {
               const payload = JSON.parse(atob(tokenParts[1]));
               const userRole = String(payload.role || "").toLowerCase().trim();
-              console.log("🔵 AdminDashboard - Decoded role from JWT:", userRole);
+              console.log("AdminDashboard - Decoded role from JWT:", userRole);
               
               if (userRole === "admin") {
-                console.log("✅ AdminDashboard - Admin role found in JWT, allowing access");
+                console.log("AdminDashboard - Admin role found in JWT, allowing access");
                 // Don't redirect - user is admin, just wait for context to update
                 return;
               } else {
-                console.log("🔴 AdminDashboard - Non-admin role in JWT, redirecting. Role:", userRole);
+                console.log("AdminDashboard - Non-admin role in JWT, redirecting. Role:", userRole);
                 if (userRole === "artist") {
                   router.replace("/artist/dashboard");
                 } else if (userRole === "customer") {
@@ -112,17 +112,17 @@ export default function AdminDashboard() {
               }
             }
           } catch (e) {
-            console.warn("🔵 AdminDashboard - Could not decode JWT:", e);
+            console.warn("AdminDashboard - Could not decode JWT:", e);
           }
         }
         
-        console.log("🔴 AdminDashboard - No user and no valid token, redirecting to home");
+        console.log("AdminDashboard - No user and no valid token, redirecting to home");
         router.replace("/");
       } else if (user.role !== "admin") {
-        console.log("🔴 AdminDashboard - User is not admin, role is:", user.role);
+        console.log("AdminDashboard - User is not admin, role is:", user.role);
         // Redirect based on actual role
         if (user.role === "artist") {
-          console.log("🔴 AdminDashboard - Redirecting artist to /artist/dashboard");
+          console.log("AdminDashboard - Redirecting artist to /artist/dashboard");
           router.replace("/artist/dashboard");
         } else if (user.role === "customer") {
           router.replace("/customer");
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
           router.replace("/");
         }
       } else {
-        console.log("✅ AdminDashboard - User is admin, showing dashboard");
+        console.log("AdminDashboard - User is admin, showing dashboard");
       }
     }
   }, [user, userLoading, router]);
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     // Only fetch data if user is loaded and is an admin
     if (userLoading || !user || user.role !== "admin") {
-      console.log("🔵 Admin Dashboard - Skipping data fetch. Loading:", userLoading, "User:", user ? user.role : "none");
+      console.log("Admin Dashboard - Skipping data fetch. Loading:", userLoading, "User:", user ? user.role : "none");
       return;
     }
 
@@ -148,16 +148,16 @@ export default function AdminDashboard() {
       
       try {
         setLoading(true);
-        console.log("🔵 Admin Dashboard - Fetching stats...");
+        console.log("Admin Dashboard - Fetching stats...");
         
         // Fetch dashboard stats
         const statsResponse = await adminService.getDashboardStatus();
-        console.log("🔵 Admin Dashboard - Response:", statsResponse);
+        console.log("Admin Dashboard - Response:", statsResponse);
         
         if (statsResponse.success && statsResponse.data) {
           // API returns data.stats, not data directly
           const statsData = statsResponse.data.stats || statsResponse.data;
-          console.log("🔵 Admin Dashboard - Setting stats:", statsData);
+          console.log("Admin Dashboard - Setting stats:", statsData);
           // Ensure all values are numbers, not NaN or undefined
           // Use the API values directly (even if 0) - these are the source of truth
           setStats({
@@ -169,9 +169,9 @@ export default function AdminDashboard() {
           });
           apiStatsReceived = true;
         } else if ('error' in statsResponse && statsResponse.error) {
-          console.error("🔴 Admin Dashboard - Error:", statsResponse.error);
+          console.error("Admin Dashboard - Error:", statsResponse.error);
           // Don't show error toast - we'll calculate from fetched data instead
-          console.log("🔵 Admin Dashboard - Will calculate stats from fetched data");
+          console.log("Admin Dashboard - Will calculate stats from fetched data");
         }
         
         // Fetch all data in parallel (optional - don't break dashboard if any fails)
@@ -184,7 +184,7 @@ export default function AdminDashboard() {
         ] = await Promise.allSettled([
           // Fetch pending artists FIRST (most important for admin)
           adminService.getPendingArtists().catch((e) => {
-            console.warn("🔵 Admin Dashboard - Pending artists fetch failed, will use fallback:", e);
+            console.warn("Admin Dashboard - Pending artists fetch failed, will use fallback:", e);
             return { success: false, data: [] };
           }),
           // Fetch users (will be used as fallback for pending artists)
@@ -223,8 +223,8 @@ export default function AdminDashboard() {
                   !a.status || // If status is undefined/null, might be pending
                   (a.role === "artist" && !a.status) // Artists without status are likely pending
                 ).length;
-                console.log("🔵 Admin Dashboard - Artists:", totalArtistsCount, "Pending:", pendingArtistsCount);
-                console.log("🔵 Admin Dashboard - Artist statuses:", artists.map((a: any) => ({ name: a.name, status: a.status })));
+                console.log("Admin Dashboard - Artists:", totalArtistsCount, "Pending:", pendingArtistsCount);
+                console.log("Admin Dashboard - Artist statuses:", artists.map((a: any) => ({ name: a.name, status: a.status })));
               }
             }
 
@@ -236,7 +236,7 @@ export default function AdminDashboard() {
                 allUsers.push(...customers);
                 setAllCustomers(customers);
                 totalCustomersCount = customers.length;
-                console.log("🔵 Admin Dashboard - Customers:", totalCustomersCount);
+                console.log("Admin Dashboard - Customers:", totalCustomersCount);
               }
             }
 
@@ -277,7 +277,7 @@ export default function AdminDashboard() {
                 b.status === "pending" || b.status === "Pending"
               ).length;
               
-              console.log("🔵 Admin Dashboard - Bookings:", totalBookingsCount, "Pending:", pendingBookingsCount);
+              console.log("Admin Dashboard - Bookings:", totalBookingsCount, "Pending:", pendingBookingsCount);
               
               // Update stats from fetched bookings data only if API stats were not received
               setStats(prev => ({
@@ -329,15 +329,15 @@ export default function AdminDashboard() {
             const result = pendingArtistsResult.value;
             if (result.success && result.data && Array.isArray(result.data)) {
               pendingList = result.data;
-              console.log("🔵 Admin Dashboard - Pending Artists from dedicated endpoint:", pendingList.length);
+              console.log("Admin Dashboard - Pending Artists from dedicated endpoint:", pendingList.length);
             } else if ('error' in result && result.error) {
-              console.warn("🔵 Admin Dashboard - Pending artists endpoint failed, trying fallback...");
+              console.warn("Admin Dashboard - Pending artists endpoint failed, trying fallback...");
             }
           }
           
           // Fallback: If no pending artists from dedicated endpoint, get from all artists
           if (pendingList.length === 0 && allArtists.length > 0) {
-            console.log("🔵 Admin Dashboard - Using fallback: filtering pending from all artists");
+            console.log("Admin Dashboard - Using fallback: filtering pending from all artists");
             pendingList = allArtists
               .filter((a: any) => 
                 a.status === "pending" || 
@@ -353,22 +353,22 @@ export default function AdminDashboard() {
                 status: a.status || "pending",
                 createdAt: a.createdAt || a.created_at,
               }));
-            console.log("🔵 Admin Dashboard - Found", pendingList.length, "pending artists from all artists");
+            console.log("Admin Dashboard - Found", pendingList.length, "pending artists from all artists");
           }
           
           if (pendingList.length > 0) {
             setPendingArtistsList(pendingList);
-            console.log("🔵 Admin Dashboard - Setting pending artists list:", pendingList.length);
+            console.log("Admin Dashboard - Setting pending artists list:", pendingList.length);
             setStats(prev => ({
               ...prev,
               pendingArtists: pendingList.length, // Always use the actual count
             }));
           } else {
             setPendingArtistsList([]);
-            console.log("🔵 Admin Dashboard - No pending artists found");
+            console.log("Admin Dashboard - No pending artists found");
           }
         } catch (e) {
-          console.error("🔴 Admin Dashboard - Error processing pending artists:", e);
+          console.error("Admin Dashboard - Error processing pending artists:", e);
           setPendingArtistsList([]);
         }
       } catch (error: any) {
@@ -378,15 +378,15 @@ export default function AdminDashboard() {
             error.isNetworkError ||
             error.message?.includes("Network Error")) {
           const apiUrl = process.env.NEXT_PUBLIC_API_URL
-          console.log("🔵 Admin Dashboard - Backend appears to be down, using fallback data.");
-          console.log(`🔵 Admin Dashboard - Expected API URL: ${apiUrl}`);
+          console.log("Admin Dashboard - Backend appears to be down, using fallback data.");
+          console.log(`Admin Dashboard - Expected API URL: ${apiUrl}`);
           toast.error(
             `Cannot connect to backend server. Please ensure the API server is running at ${apiUrl}`,
             { duration: 5000 }
           );
         } else {
           // Only log unexpected errors (not network/connection errors)
-          console.error("🔴 Admin Dashboard - Failed to fetch stats:", error);
+          console.error("Admin Dashboard - Failed to fetch stats:", error);
           toast.error(error.userMessage || error.message || "Failed to load dashboard statistics");
         }
       } finally {

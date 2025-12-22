@@ -42,18 +42,18 @@ export default function PendingArtistsPage() {
       // Check Token
       const cookieToken = Cookies.get("token");
       const localToken = localStorage.getItem("token");
-      addLog(`Token in Cookie: ${cookieToken ? "✅ Present" : "❌ Missing"}`);
+      addLog(`Token in Cookie: ${cookieToken ? "Present" : "Missing"}`);
       addLog(
-        `Token in LocalStorage: ${localToken ? "✅ Present" : "❌ Missing"}`
+        `Token in LocalStorage: ${localToken ? "Present" : "Missing"}`
       );
 
       // Check Auth
       addLog("Checking /api/auth/me...");
       try {
         const me = await apiClient.get("/api/auth/me");
-        addLog(`✅ Auth OK: ${me.data.user?.email} (${me.data.user?.role})`);
+        addLog(`Auth OK: ${me.data.user?.email} (${me.data.user?.role})`);
       } catch (e: any) {
-        addLog(`❌ Auth Failed: ${e.response?.status} - ${e.message}`);
+        addLog(`Auth Failed: ${e.response?.status} - ${e.message}`);
       }
 
       // Check Dashboard Status
@@ -61,10 +61,10 @@ export default function PendingArtistsPage() {
       try {
         const status = await apiClient.get("/api/admin/dashboard/status");
         addLog(
-          `✅ Status Response Keys: ${Object.keys(status.data).join(", ")}`
+          `Status Response Keys: ${Object.keys(status.data).join(", ")}`
         );
       } catch (e: any) {
-        addLog(`❌ Status Failed: ${e.response?.status} - ${e.message}`);
+        addLog(`Status Failed: ${e.response?.status} - ${e.message}`);
       }
     } catch (error: any) {
       addLog(`Critical Error: ${error.message}`);

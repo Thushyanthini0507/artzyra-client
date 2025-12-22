@@ -161,7 +161,7 @@ export default function PaymentPage() {
         }
 
         // 2. Create PaymentIntent
-        console.log("💳 Initializing payment for booking:", bookingId);
+        console.log("Initializing payment for booking:", bookingId);
         
         // Send both booking and bookingId to handle potential backend version mismatches
         const payload = {

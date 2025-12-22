@@ -41,7 +41,7 @@ export async function isAdmin() {
     if (!isAdminUser) {
       console.log("[isAdmin] User is not admin, role:", decoded.role);
     } else {
-      console.log("[isAdmin] ✅ User IS admin!");
+      console.log("[isAdmin] User IS admin!");
     }
     
     return isAdminUser;

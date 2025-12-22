@@ -66,9 +66,9 @@ export function useCreateBooking() {
   const createBooking = async (data: any) => {
     setLoading(true);
     try {
-      console.log("📤 useCreateBooking - Sending data:", data);
+      console.log("useCreateBooking - Sending data:", data);
       const response = await bookingService.createBooking(data);
-      console.log("✅ useCreateBooking - Response:", response);
+      console.log("useCreateBooking - Response:", response);
       if (response.success) {
         toast.success("Booking created successfully!");
         router.push("/customer/bookings");
@@ -78,10 +78,10 @@ export function useCreateBooking() {
         return { success: false, error: response.error };
       }
     } catch (err: any) {
-      console.error("❌ useCreateBooking - Error:", err);
-      console.error("❌ useCreateBooking - Error response:", err.response?.data);
-      console.error("❌ useCreateBooking - Error status:", err.response?.status);
-      console.error("❌ useCreateBooking - Full error:", JSON.stringify(err.response?.data, null, 2));
+      console.error("useCreateBooking - Error:", err);
+      console.error("useCreateBooking - Error response:", err.response?.data);
+      console.error("useCreateBooking - Error status:", err.response?.status);
+      console.error("useCreateBooking - Full error:", JSON.stringify(err.response?.data, null, 2));
       
       const errorMsg = err.response?.data?.message || 
                        err.response?.data?.error || 
