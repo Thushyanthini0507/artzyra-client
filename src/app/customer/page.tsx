@@ -121,7 +121,7 @@ export default function CustomerDashboard() {
   return (
     <CustomerLayout>
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto bg-[#13111c]">
+      <div className="flex-1 overflow-y-auto bg-gray-50">
         <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Search Bar */}
           <div className="mb-10">
@@ -133,7 +133,7 @@ export default function CustomerDashboard() {
                   placeholder="Search for painters, musicians, photographers..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-12 bg-[#1e1b29] border-none text-white placeholder:text-gray-500 h-14 rounded-xl focus-visible:ring-1 focus-visible:ring-[#5b21b6] text-base"
+                  className="pl-12 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 h-14 rounded-xl focus-visible:ring-1 focus-visible:ring-[#5b21b6] text-base shadow-sm"
                 />
               </div>
             </form>
@@ -143,12 +143,12 @@ export default function CustomerDashboard() {
             {/* My Bookings Section */}
             <section>
               <div className="mb-6">
-                <h2 className="text-3xl font-bold text-white mb-2">My Bookings</h2>
-                <p className="text-gray-400">Manage your upcoming and past appointments</p>
+                <h2 className="text-3xl font-bold text-gray-900 mb-2">My Bookings</h2>
+                <p className="text-gray-500">Manage your upcoming and past appointments</p>
               </div>
             
             <Tabs defaultValue="upcoming" className="w-full">
-              <TabsList className="bg-[#1e1b29] text-gray-400 border border-white/5 mb-8 h-12">
+              <TabsList className="bg-white text-gray-500 border border-gray-200 mb-8 h-12 shadow-sm">
                 <TabsTrigger 
                   value="upcoming" 
                   className="data-[state=active]:bg-[#5b21b6] data-[state=active]:text-white px-6 rounded-lg"
@@ -165,9 +165,9 @@ export default function CustomerDashboard() {
 
               <TabsContent value="upcoming" className="space-y-4 mt-0">
                 {loading ? (
-                  <div className="text-gray-500 bg-[#1e1b29] rounded-2xl p-8 text-center">Loading bookings...</div>
+                  <div className="text-gray-500 bg-white rounded-2xl p-8 text-center border border-gray-100">Loading bookings...</div>
                 ) : upcomingBookings.length === 0 ? (
-                  <div className="text-gray-400 bg-[#1e1b29] rounded-2xl p-12 text-center">
+                  <div className="text-gray-500 bg-white rounded-2xl p-12 text-center border border-gray-100">
                     <p className="mb-4">No upcoming bookings.</p>
                     <Link href="/browse" className="text-[#a78bfa] hover:underline font-medium">
                       Browse artists to make a booking →
@@ -175,26 +175,26 @@ export default function CustomerDashboard() {
                   </div>
                 ) : (
                   upcomingBookings.map((booking) => (
-                    <Card key={booking._id} className="bg-[#1e1b29] border-white/5 hover:border-[#5b21b6]/30 transition-all rounded-2xl">
+                    <Card key={booking._id} className="bg-white border-gray-200 hover:border-[#5b21b6]/30 transition-all rounded-2xl shadow-sm hover:shadow-md">
                       <CardContent className="p-5 flex items-center gap-6">
-                        <Avatar className="h-16 w-16 rounded-xl border-2 border-white/5">
+                        <Avatar className="h-16 w-16 rounded-xl border-2 border-gray-100">
                           <AvatarImage src={booking.artist?.profileImage} className="rounded-xl object-cover" />
-                          <AvatarFallback className="rounded-xl bg-[#2e1065] text-white">
+                          <AvatarFallback className="rounded-xl bg-purple-100 text-purple-700">
                             {booking.artist?.name?.charAt(0) || "A"}
                           </AvatarFallback>
                         </Avatar>
                         
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg text-white mb-1 truncate">
+                          <h3 className="font-semibold text-lg text-gray-900 mb-1 truncate">
                             {booking.service || `Live ${booking.category?.name || "Service"} Session`}
                           </h3>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-gray-500">
                             with {booking.artist?.name ?? "Artist"}
                           </p>
                         </div>
 
-                        <div className="text-right px-4 border-l border-white/5">
-                          <p className="text-sm font-medium text-gray-300">
+                        <div className="text-right px-4 border-l border-gray-100">
+                          <p className="text-sm font-medium text-gray-700">
                             {formatDate(booking).split(',')[0]}
                           </p>
                           <p className="text-xs text-gray-500">
@@ -220,33 +220,33 @@ export default function CustomerDashboard() {
 
               <TabsContent value="past" className="space-y-4 mt-0">
                 {loading ? (
-                  <div className="text-gray-500 bg-[#1e1b29] rounded-2xl p-8 text-center">Loading bookings...</div>
+                  <div className="text-gray-500 bg-white rounded-2xl p-8 text-center border border-gray-100">Loading bookings...</div>
                 ) : pastBookings.length === 0 ? (
-                  <div className="text-gray-400 bg-[#1e1b29] rounded-2xl p-12 text-center">
+                  <div className="text-gray-500 bg-white rounded-2xl p-12 text-center border border-gray-100">
                     No past bookings yet.
                   </div>
                 ) : (
                   pastBookings.map((booking) => (
-                    <Card key={booking._id} className="bg-[#1e1b29] border-white/5 hover:border-white/10 transition-all rounded-2xl">
+                    <Card key={booking._id} className="bg-white border-gray-200 hover:border-gray-300 transition-all rounded-2xl shadow-sm">
                       <CardContent className="p-5 flex items-center gap-6">
-                        <Avatar className="h-16 w-16 rounded-xl border-2 border-white/5">
+                        <Avatar className="h-16 w-16 rounded-xl border-2 border-gray-100">
                           <AvatarImage src={booking.artist?.profileImage} className="rounded-xl object-cover" />
-                          <AvatarFallback className="rounded-xl bg-[#2e1065] text-white">
+                          <AvatarFallback className="rounded-xl bg-purple-100 text-purple-700">
                             {booking.artist?.name?.charAt(0) || "A"}
                           </AvatarFallback>
                         </Avatar>
                         
                         <div className="flex-1 min-w-0">
-                          <h3 className="font-semibold text-lg text-white mb-1 truncate">
+                          <h3 className="font-semibold text-lg text-gray-900 mb-1 truncate">
                             {booking.service || `Live ${booking.category?.name || "Service"} Session`}
                           </h3>
-                          <p className="text-sm text-gray-400">
+                          <p className="text-sm text-gray-500">
                             with {typeof booking.artist === 'object' ? booking.artist.name : "Artist"}
                           </p>
                         </div>
 
-                        <div className="text-right px-4 border-l border-white/5">
-                          <p className="text-sm font-medium text-gray-300">
+                        <div className="text-right px-4 border-l border-gray-100">
+                          <p className="text-sm font-medium text-gray-700">
                             {formatDate(booking).split(',')[0]}
                           </p>
                           <p className="text-xs text-gray-500">
@@ -259,7 +259,7 @@ export default function CustomerDashboard() {
                             {booking.status || "Completed"}
                           </Badge>
                           <Link href={`/customer/bookings/${booking._id}`}>
-                            <Button variant="outline" className="border-white/10 text-gray-300 hover:bg-white/5 hover:text-white">
+                            <Button variant="outline" className="border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                               View Details
                             </Button>
                           </Link>

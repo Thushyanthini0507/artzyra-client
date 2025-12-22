@@ -119,14 +119,14 @@ export default function CustomerProfilePage() {
       <main className="flex-1 p-8 overflow-y-auto h-full">
         <div className="max-w-4xl mx-auto space-y-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">Profile</h1>
-            <p className="text-gray-400">Manage your account information</p>
+            <h1 className="text-3xl font-bold text-gray-900">Profile</h1>
+            <p className="text-gray-500">Manage your account information</p>
           </div>
           <form onSubmit={handleSubmit}>
-            <Card className="bg-[#1e1b29] border-white/5 shadow-xl">
+            <Card className="bg-white border-gray-200 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-white">Personal Information</CardTitle>
-                <CardDescription className="text-gray-400">Update your profile details</CardDescription>
+                <CardTitle className="text-gray-900">Personal Information</CardTitle>
+                <CardDescription className="text-gray-500">Update your profile details</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex justify-center mb-8">
@@ -138,30 +138,30 @@ export default function CustomerProfilePage() {
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label htmlFor="name" className="text-gray-300">Name *</Label>
+                    <Label htmlFor="name" className="text-gray-700">Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
-                      className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                     />
                   </div>
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="phone" className="text-gray-300">Phone</Label>
+                    <Label htmlFor="phone" className="text-gray-700">Phone</Label>
                     <Input
                       id="phone"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                       placeholder="0712345678"
                     />
                   </div>
                 </div>
-                <div className="space-y-4 pt-4 border-t border-white/5">
-                  <h3 className="text-lg font-semibold text-white">Address</h3>
+                <div className="space-y-4 pt-4 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">Address</h3>
                   <div className="space-y-2">
-                    <Label htmlFor="street" className="text-gray-300">Street Address</Label>
+                    <Label htmlFor="street" className="text-gray-700">Street Address</Label>
                     <Input
                       id="street"
                       value={formData.address.street}
@@ -171,12 +171,12 @@ export default function CustomerProfilePage() {
                           address: { ...formData.address, street: e.target.value },
                         })
                       }
-                      className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                      className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                     />
                   </div>
                   <div className="grid gap-4 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label htmlFor="city" className="text-gray-300">City</Label>
+                      <Label htmlFor="city" className="text-gray-700">City</Label>
                       <Input
                         id="city"
                         value={formData.address.city}
@@ -186,11 +186,11 @@ export default function CustomerProfilePage() {
                             address: { ...formData.address, city: e.target.value },
                           })
                         }
-                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                        className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="state" className="text-gray-300">State/Province</Label>
+                      <Label htmlFor="state" className="text-gray-700">State/Province</Label>
                       <Input
                         id="state"
                         value={formData.address.state}
@@ -200,11 +200,11 @@ export default function CustomerProfilePage() {
                             address: { ...formData.address, state: e.target.value },
                           })
                         }
-                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                        className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="zipCode" className="text-gray-300">Zip Code</Label>
+                      <Label htmlFor="zipCode" className="text-gray-700">Zip Code</Label>
                       <Input
                         id="zipCode"
                         value={formData.address.zipCode}
@@ -214,11 +214,11 @@ export default function CustomerProfilePage() {
                             address: { ...formData.address, zipCode: e.target.value },
                           })
                         }
-                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                        className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="country" className="text-gray-300">Country</Label>
+                      <Label htmlFor="country" className="text-gray-700">Country</Label>
                       <Input
                         id="country"
                         value={formData.address.country}
@@ -228,13 +228,13 @@ export default function CustomerProfilePage() {
                             address: { ...formData.address, country: e.target.value },
                           })
                         }
-                        className="bg-[#13111c] border-white/10 text-white focus:border-[#5b21b6] focus:ring-[#5b21b6]"
+                        className="bg-white border-gray-300 text-gray-900 focus:border-purple-600 focus:ring-purple-600"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="space-y-4 pt-4 border-t border-white/5">
-                  <h3 className="text-lg font-semibold text-white">Preferences</h3>
+                <div className="space-y-4 pt-4 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">Preferences</h3>
                   <div className="space-y-3">
                     <div className="flex items-center space-x-3">
                       <input
@@ -245,9 +245,9 @@ export default function CustomerProfilePage() {
                           ...formData,
                           preferences: { ...formData.preferences, notifications: e.target.checked },
                         })}
-                        className="rounded border-white/20 bg-[#13111c] text-[#5b21b6] focus:ring-[#5b21b6] h-5 w-5"
+                        className="rounded border-gray-300 bg-white text-purple-600 focus:ring-purple-600 h-5 w-5"
                       />
-                      <Label htmlFor="notifications" className="text-gray-300 cursor-pointer">Enable Notifications</Label>
+                      <Label htmlFor="notifications" className="text-gray-700 cursor-pointer">Enable Notifications</Label>
                     </div>
                     <div className="flex items-center space-x-3">
                       <input
@@ -258,9 +258,9 @@ export default function CustomerProfilePage() {
                           ...formData,
                           preferences: { ...formData.preferences, emailUpdates: e.target.checked },
                         })}
-                        className="rounded border-white/20 bg-[#13111c] text-[#5b21b6] focus:ring-[#5b21b6] h-5 w-5"
+                        className="rounded border-gray-300 bg-white text-purple-600 focus:ring-purple-600 h-5 w-5"
                       />
-                      <Label htmlFor="emailUpdates" className="text-gray-300 cursor-pointer">Email Updates</Label>
+                      <Label htmlFor="emailUpdates" className="text-gray-700 cursor-pointer">Email Updates</Label>
                     </div>
                     <div className="flex items-center space-x-3">
                       <input
@@ -271,9 +271,9 @@ export default function CustomerProfilePage() {
                           ...formData,
                           preferences: { ...formData.preferences, smsUpdates: e.target.checked },
                         })}
-                        className="rounded border-white/20 bg-[#13111c] text-[#5b21b6] focus:ring-[#5b21b6] h-5 w-5"
+                        className="rounded border-gray-300 bg-white text-purple-600 focus:ring-purple-600 h-5 w-5"
                       />
-                      <Label htmlFor="smsUpdates" className="text-gray-300 cursor-pointer">SMS Updates</Label>
+                      <Label htmlFor="smsUpdates" className="text-gray-700 cursor-pointer">SMS Updates</Label>
                     </div>
                   </div>
                 </div>

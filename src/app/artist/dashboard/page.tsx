@@ -20,7 +20,8 @@ import {
   Clock,
   MessageSquare,
   ChevronRight,
-  User
+  User,
+  Image as ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 import { formatLKR } from "@/lib/utils/currency";
@@ -505,6 +506,21 @@ export default function ArtistDashboard() {
                         <div className="text-left">
                           <p className="font-medium text-sm">Edit Profile</p>
                           <p className="text-xs text-gray-400">Update your information</p>
+                        </div>
+                      </Button>
+                    </Link>
+
+                    <Link href="/artist/portfolio">
+                      <Button
+                        variant="outline"
+                        className="w-full h-auto py-4 flex items-center justify-start gap-3 bg-white/5 border-white/10 hover:bg-white/10 hover:border-[#5b21b6]/50 text-white transition-all"
+                      >
+                        <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-pink-500/20 to-rose-500/20 flex items-center justify-center flex-shrink-0">
+                          <ImageIcon className="h-5 w-5 text-pink-400" />
+                        </div>
+                        <div className="text-left">
+                          <p className="font-medium text-sm">Manage Portfolio</p>
+                          <p className="text-xs text-gray-400">Upload and edit images</p>
                         </div>
                       </Button>
                     </Link>

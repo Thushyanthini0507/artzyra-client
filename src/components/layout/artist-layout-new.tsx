@@ -16,6 +16,7 @@ import {
   LogOut,
   Sparkles,
   RefreshCw,
+  Image as ImageIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,11 @@ const sidebarItems = [
     title: "Profile",
     href: "/artist/profile",
     icon: User,
+  },
+  {
+    title: "Portfolio",
+    href: "/artist/portfolio",
+    icon: ImageIcon,
   },
   {
     title: "Earnings",

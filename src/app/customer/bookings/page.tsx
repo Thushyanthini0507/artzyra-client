@@ -42,22 +42,22 @@ export default function CustomerBookingsPage() {
         <div className="max-w-5xl mx-auto space-y-8">
           <div className="flex items-center justify-between">
             <div className="space-y-1">
-              <h1 className="text-3xl font-bold text-white">My Bookings</h1>
-              <p className="text-gray-400">Manage your appointments and services</p>
+              <h1 className="text-3xl font-bold text-gray-900">My Bookings</h1>
+              <p className="text-gray-500">Manage your appointments and services</p>
             </div>
           </div>
 
-          <Card className="bg-[#1e1b29] border-white/5 shadow-xl">
+          <Card className="bg-white border-gray-200 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-white">All Bookings</CardTitle>
-              <CardDescription className="text-gray-400">A list of all your scheduled and past bookings</CardDescription>
+              <CardTitle className="text-gray-900">All Bookings</CardTitle>
+              <CardDescription className="text-gray-500">A list of all your scheduled and past bookings</CardDescription>
             </CardHeader>
             <CardContent>
               {loading ? (
-                <p className="text-gray-400">Loading bookings...</p>
+                <p className="text-gray-500">Loading bookings...</p>
               ) : bookings.length === 0 ? (
                 <div className="text-center py-10">
-                  <p className="text-gray-400 mb-4">You haven't made any bookings yet.</p>
+                  <p className="text-gray-500 mb-4">You haven't made any bookings yet.</p>
                   <Link href="/customer/bookings/create">
                     <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl">Book Your First Artist</Button>
                   </Link>
@@ -65,10 +65,10 @@ export default function CustomerBookingsPage() {
               ) : (
                 <div className="space-y-4">
                   {bookings.map((booking) => (
-                    <div key={booking._id} className="flex flex-col md:flex-row md:items-center justify-between bg-[#13111c] border border-white/5 p-6 rounded-2xl gap-6 hover:border-[#5b21b6]/30 transition-colors">
+                    <div key={booking._id} className="flex flex-col md:flex-row md:items-center justify-between bg-gray-50 border border-gray-200 p-6 rounded-2xl gap-6 hover:border-purple-200 transition-colors">
                       <div>
                         <div className="flex items-center gap-3 mb-2">
-                           <h3 className="font-bold text-lg text-white">{booking.service}</h3>
+                           <h3 className="font-bold text-lg text-gray-900">{booking.service}</h3>
                             <Badge 
                               variant="outline" 
                               className={`capitalize border ${
@@ -88,8 +88,8 @@ export default function CustomerBookingsPage() {
                             {booking.status}
                           </Badge>
                         </div>
-                        <p className="text-sm text-gray-400 mb-2">
-                          with <span className="font-medium text-white">{(booking.artist as any)?.name ?? "Artist"}</span>
+                        <p className="text-sm text-gray-500 mb-2">
+                          with <span className="font-medium text-gray-900">{(booking.artist as any)?.name ?? "Artist"}</span>
                         </p>
                         <div className="flex items-center gap-4 text-sm text-gray-500">
                           {booking.bookingDate ? (
@@ -120,7 +120,7 @@ export default function CustomerBookingsPage() {
                         </div>
                         <p className="text-sm text-gray-500 mt-1">{booking.location}</p>
                         {booking.totalAmount && (
-                           <p className="text-[#a78bfa] font-semibold mt-2">{formatLKR(booking.totalAmount)}</p>
+                           <p className="text-purple-600 font-semibold mt-2">{formatLKR(booking.totalAmount)}</p>
                         )}
                       </div>
                       <div className="flex flex-col sm:flex-row gap-3">
@@ -158,18 +158,18 @@ export default function CustomerBookingsPage() {
                         
                         <div className="flex gap-2">
                           <Link href={`/customer/bookings/${booking._id}`}>
-                            <Button variant="outline" size="sm" className="gap-2 border-white/10 text-foreground hover:bg-accent hover:text-accent-foreground rounded-xl">
+                            <Button variant="outline" size="sm" className="gap-2 border-gray-200 text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded-xl">
                               <Eye className="h-4 w-4" /> View
                             </Button>
                           </Link>
                           {booking.status === "pending" && (
                             <>
                               <Link href={`/customer/bookings/${booking._id}/edit`}>
-                                <Button variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-xl">
+                                <Button variant="ghost" size="icon" className="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-xl">
                                   <Edit className="h-4 w-4" />
                                 </Button>
                               </Link>
-                              <Button variant="ghost" size="icon" onClick={() => handleDelete(booking._id)} className="text-gray-400 hover:text-red-400 hover:bg-red-500/10 rounded-xl">
+                              <Button variant="ghost" size="icon" onClick={() => handleDelete(booking._id)} className="text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-xl">
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </>
