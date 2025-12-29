@@ -69,7 +69,7 @@ export function AdminSidebar() {
     <div className="flex h-full w-64 flex-col bg-gradient-to-b from-[#1a1625] to-[#13111c] border-r border-white/10">
       {/* Logo Section with Glassmorphism */}
       <div className="flex h-20 items-center px-6 border-b border-white/10 backdrop-blur-md bg-white/5">
-        <Link href="/admin" className="flex items-center gap-2 font-semibold group">
+        <Link href="/" className="flex items-center gap-2 font-semibold group">
           <div className="relative h-12 w-40">
             <Image
               src="/images/logo.png"

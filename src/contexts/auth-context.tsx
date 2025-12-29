@@ -357,9 +357,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // CRITICAL: Only redirect to /admin if role is explicitly "admin"
       // Never redirect to /admin if role is empty, undefined, or anything else
       if (role === "admin") {
-        redirectPath = "/admin";
+        redirectPath = "/";
       } else if (role === "artist") {
-        redirectPath = "/artist/dashboard"; // Always redirect artists to artist portal
+        redirectPath = "/"; // Always redirect artists to home page
       } else if (role === "customer") {
         redirectPath = "/"; // Customers always go to home page
       } else if (backendRedirectPath && backendRedirectPath !== "/" && backendRedirectPath !== "/admin" && backendRedirectPath !== "/customer/dashboard") {
@@ -375,7 +375,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (redirectPath === "/admin" && role !== "admin") {
         console.error("AuthContext - SECURITY: Prevented redirect to /admin for non-admin user. Role:", role);
         if (role === "artist") {
-          redirectPath = "/artist/dashboard";
+          redirectPath = "/";
         } else if (role === "customer") {
           redirectPath = "/";
         } else {
